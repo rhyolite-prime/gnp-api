@@ -137,6 +137,7 @@ public:
 
   //affiliates
   ADD_METHOD_TO(AdminController::getAllAffiliates, std::string(PREFIX) + "get-all-affiliates", Get, Options, "JwtAuthFilter");
+  ADD_METHOD_TO(AdminController::getAffiliateApplicants, std::string(PREFIX) + "get-affiliate-applicants", Get, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::getAffiliateCommissions, std::string(PREFIX) + "get-affiliate-commissions", Get, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::getAffiliatePayouts, std::string(PREFIX) + "get-affiliate-payouts", Get, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::getAffiliateProgramSettings, std::string(PREFIX) + "get-affiliate-program-settings", Get, Options, "JwtAuthFilter");

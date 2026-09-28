@@ -113,7 +113,7 @@ drogon::Task<dto::BaseApiResponse> UserService::getAllSubscribers(int pageNo, in
   auto mp = CoroMapper<Users>(dbClient);
 
   // 1. Build the search criteria
-  Criteria searchCriteria = Criteria(Users::Cols::_is_admin_user, CompareOperator::EQ, false) && Criteria(Users::Cols::_is_partner_admin_user, CompareOperator::EQ, false) && Criteria(Users::Cols::_partner_id, CompareOperator::IsNull);
+  Criteria searchCriteria = Criteria(Users::Cols::_is_admin_user, CompareOperator::EQ, false);
   if (!query.empty()) {
     std::string likeQuery = "%" + query + "%";
     searchCriteria = Criteria(Users::Cols::_first_name, CompareOperator::Like, likeQuery) || Criteria(Users::Cols::_email, CompareOperator::Like, likeQuery) || Criteria(Users::Cols::_last_name, CompareOperator::Like, likeQuery);
@@ -168,7 +168,9 @@ drogon::Task<dto::BaseApiResponse> UserService::getAllSubscribers(int pageNo, in
       camelCaseRole["isLockedOut"] = roleJson["is_locked_out"];
       camelCaseRole["isActive"] = roleJson["is_active"];
       camelCaseRole["createdAt"] = roleJson["created_at"];
-      camelCaseRole["updatedAt"] = roleJson["updated_at"];
+      camelCaseRole["lastActive"] = roleJson["last_active"];
+      camelCaseRole["affiliateId"] = roleJson["affiliate_id"];
+      camelCaseRole["partnerId"] = roleJson["partner_id"];
       data.append(camelCaseRole);
     }
     response.result["data"] = data;
@@ -208,7 +210,9 @@ drogon::Task<dto::BaseApiResponse> UserService::getDetails(const std::string &us
     data["roles"]           = userJson["roles"];
     data["lastActive"]      = userJson["last_active"];
     data["createdAt"]       = userJson["created_at"];
-    data["updatedAt"]       = userJson["updated_at"];
+    data["lastActive"]       = userJson["last_active"];
+    data["affiliateId"] = userJson["affiliate_id"];
+    data["partnerId"] = userJson["partner_id"];
 
     response.success = true;
     response.result["data"] = data;

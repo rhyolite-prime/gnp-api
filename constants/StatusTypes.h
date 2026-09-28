@@ -26,7 +26,8 @@ namespace gnp::constants {
         APPROVED = 16,
         REJECTED = 17,
         PROCESSING_PAYOUT = 18,
-        PAID = 19
+        PAID = 19,
+        SUBMITTED = 20
     };
 
 

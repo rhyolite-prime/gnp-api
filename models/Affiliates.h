@@ -233,6 +233,7 @@ class Affiliates
     ///Set the value of the column bank_code
     void setBankCode(const std::string &pBankCode) noexcept;
     void setBankCode(std::string &&pBankCode) noexcept;
+    void setBankCodeToNull() noexcept;
 
     /**  For column affiliate_id  */
     ///Get the value of the column affiliate_id, returns the default value if the column is null
