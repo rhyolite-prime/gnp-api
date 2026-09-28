@@ -1215,11 +1215,22 @@ drogon::Task<dto::BaseApiResponse> UserService::validateAdminUserCredentials(con
       userToUpdate.setLastActive(trantor::Date::now());
       co_await mapper.update(userToUpdate);
 
+      std::unordered_set<std::string> allPermissions = co_await PermissionService::getUserPermissions(user.getValueOfId());
+
+      Json::Value permissionsArray = Json::arrayValue;
+      for (const auto& perm : allPermissions) {
+        permissionsArray.append(perm);
+      }
+      response.result["permissions"] = permissionsArray;
+
+      // Add permissions to JWT token payload
+      Json::FastWriter writer;
+      std::string permissionsStr = writer.write(permissionsArray);
+
       // Password is correct, generate JWT token
       auto &app = drogon::app();
       auto customConfig = app.getCustomConfig();
-      std::string jwtSecurityKey =
-          customConfig["JwtBearer"]["JwtSecurityKey"].asString();
+      std::string jwtSecurityKey = customConfig["JwtBearer"]["JwtSecurityKey"].asString();
       std::string jwtIssuer = customConfig["JwtBearer"]["JwtIssuer"].asString();
 
       auto token =
@@ -1231,6 +1242,7 @@ drogon::Task<dto::BaseApiResponse> UserService::validateAdminUserCredentials(con
               .set_payload_claim("userId", jwt::claim(user.getValueOfId()))
               .set_payload_claim("username", jwt::claim(user.getValueOfUsername()))
               .set_payload_claim("email", jwt::claim(user.getValueOfEmail()))
+              .set_payload_claim("permissions", jwt::claim(permissionsStr))
               .sign(jwt::algorithm::hs256{jwtSecurityKey});
 
       response.success = true;

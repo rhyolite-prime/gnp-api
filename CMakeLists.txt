@@ -163,6 +163,8 @@ add_executable(${PROJECT_NAME} main.cc
         services/joomla_api/JoomlaApi.h
         services/joomla_api/JoomlaApi.cc
         dto/JoomlaApiArticleResponse.h
+        services/permissions/PermissionService.h
+        services/permissions/PermissionService.cc
 )
 
 # ##############################################################################

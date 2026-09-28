@@ -17,7 +17,7 @@
 namespace gnp::services {
 
 class UserService {
-public:
+public: 
 
     // use redis to track the number of users who have logged in to a particular account
 
