@@ -108,21 +108,76 @@ drogon::Task<dto::BaseApiResponse> UserService::getAll(int pageNo, int pageSize,
 }
 
 
-drogon::Task<dto::BaseApiResponse> UserService::getAllSubscribers(int pageNo, int pageSize, const std::string &query) {
+  drogon::Task<dto::BaseApiResponse> UserService::getAllSubscribers(
+    int pageNo, int pageSize, const std::string &query,
+    const std::string &dateJoinedStartDate, const std::string &dateJoinedEndDate,
+    const std::string &lastActiveStartDate, const std::string &lastActiveEndDate,
+    const std::string &accountType) {
+
   auto dbClient = drogon::app().getDbClient();
   auto mp = CoroMapper<Users>(dbClient);
 
-  // 1. Build the search criteria
-  Criteria searchCriteria = Criteria(Users::Cols::_is_admin_user, CompareOperator::EQ, false);
+  // accountType: "partner", "affiliate", "regular", or "" / "all" for all types
+
+  // 1. Build base criteria: only non-admin users
+  Criteria criteria(Users::Cols::_is_admin_user, CompareOperator::EQ, false);
+
+  // 2. Search query (name / email)
   if (!query.empty()) {
     std::string likeQuery = "%" + query + "%";
-    searchCriteria = Criteria(Users::Cols::_first_name, CompareOperator::Like, likeQuery) || Criteria(Users::Cols::_email, CompareOperator::Like, likeQuery) || Criteria(Users::Cols::_last_name, CompareOperator::Like, likeQuery);
+    Criteria searchCriteria =
+        Criteria(Users::Cols::_first_name, CompareOperator::Like, likeQuery) ||
+        Criteria(Users::Cols::_email, CompareOperator::Like, likeQuery) ||
+        Criteria(Users::Cols::_last_name, CompareOperator::Like, likeQuery);
+    criteria = criteria && searchCriteria;
+  }
+
+  // 3. Account type filter
+  if (!accountType.empty() && accountType != "all") {
+    if (accountType == "partner") {
+      criteria = criteria &&
+                 Criteria(Users::Cols::_partner_id, CompareOperator::IsNotNull, 0) &&
+                 Criteria(Users::Cols::_partner_id, CompareOperator::NE, "");
+    } else if (accountType == "affiliate") {
+      criteria = criteria &&
+                 Criteria(Users::Cols::_affiliate_id, CompareOperator::IsNotNull, 0) &&
+                 Criteria(Users::Cols::_affiliate_id, CompareOperator::NE, "");
+    } else if (accountType == "regular") {
+      // Regular = no partner_id AND no affiliate_id
+      criteria = criteria &&
+                 Criteria(Users::Cols::_partner_id, CompareOperator::IsNull, 0) &&
+                 Criteria(Users::Cols::_affiliate_id, CompareOperator::IsNull, 0);
+    }
+  }
+
+  // 4. Date Joined range filter (created_at)
+  if (!dateJoinedStartDate.empty()) {
+    criteria = criteria &&
+               Criteria(Users::Cols::_created_at, CompareOperator::GE,
+                        dateJoinedStartDate + " 00:00:00");
+  }
+  if (!dateJoinedEndDate.empty()) {
+    criteria = criteria &&
+               Criteria(Users::Cols::_created_at, CompareOperator::LE,
+                        dateJoinedEndDate + " 23:59:59");
+  }
+
+  // 5. Last Active range filter
+  if (!lastActiveStartDate.empty()) {
+    criteria = criteria &&
+               Criteria(Users::Cols::_last_active, CompareOperator::GE,
+                        lastActiveStartDate + " 00:00:00");
+  }
+  if (!lastActiveEndDate.empty()) {
+    criteria = criteria &&
+               Criteria(Users::Cols::_last_active, CompareOperator::LE,
+                        lastActiveEndDate + " 23:59:59");
   }
 
   dto::BaseApiResponse response;
   try {
-    // 2. Get the total count matching the criteria
-    size_t totalCount = co_await mp.count(searchCriteria);
+    // 6. Total count
+    size_t totalCount = co_await mp.count(criteria);
 
     if (totalCount == 0) {
       response.success = true;
@@ -133,30 +188,30 @@ drogon::Task<dto::BaseApiResponse> UserService::getAllSubscribers(int pageNo, in
       response.result["totalPages"] = 0;
       response.result["lowerBound"] = 0;
       response.result["upperBound"] = 0;
-
       co_return response;
     }
 
-    // 3. Find the paginated data
+    // 7. Paginated fetch (newest first is usually nice for subscribers)
     int offset = (pageNo - 1) * pageSize;
-    auto users = co_await mp.limit(pageSize).offset(offset).findBy(searchCriteria);
+    auto users = co_await mp.orderBy(Users::Cols::_created_at, SortOrder::DESC)
+                        .limit(pageSize)
+                        .offset(offset)
+                        .findBy(criteria);
 
     auto totalPages = (totalCount + pageSize - 1) / pageSize;
 
-    // 4. Build the final response
+    // 8. Build response
     response.success = true;
     response.result["totalCount"] = (Json::UInt64)totalCount;
     response.result["pageNo"] = pageNo;
     response.result["pageSize"] = pageSize;
-    response.result["totalPages"] = (int)((totalCount + pageSize - 1) / pageSize);
+    response.result["totalPages"] = (int)totalPages;
     response.result["lowerBound"] = pageSize * (pageNo - 1) + 1;
-    response.result["upperBound"] = (int)totalPages == pageNo ? (Json::UInt64)totalCount  : (Json::UInt64)(pageNo * pageSize);
-
+    response.result["upperBound"] = (int)totalPages == pageNo ? (Json::UInt64)totalCount : (Json::UInt64)(pageNo * pageSize);
 
     Json::Value data = Json::arrayValue;
-
-    for (const auto &role : users) {
-      Json::Value roleJson = role.toJson();
+    for (const auto &user : users) {
+      Json::Value roleJson = user.toJson();
       Json::Value camelCaseRole;
       camelCaseRole["id"] = roleJson["id"];
       camelCaseRole["firstName"] = roleJson["first_name"];
@@ -177,7 +232,8 @@ drogon::Task<dto::BaseApiResponse> UserService::getAllSubscribers(int pageNo, in
 
   } catch (const DrogonDbException &e) {
     response.success = false;
-    response.error["message"] = "Database error while fetching users.";
+    response.message = "Database error while fetching subscribers.";
+    response.error["code"] = constants::ERR_DB_QUERY;
     response.error["detail"] = e.base().what();
   }
   co_return response;

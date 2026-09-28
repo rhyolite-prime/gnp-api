@@ -241,6 +241,7 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::getAllApplicants(int pageNo
 
 }
 
+
  drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::submitApplication(const ::gnp::dto::AffiliateSignupDto &dto) {
 
   auto dbClient = drogon::app().getDbClient();
@@ -340,7 +341,7 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::getAllApplicants(int pageNo
 }
 
 
-drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::createAsync(const ::gnp::dto::AffiliateDto &dto) {
+ drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::createAsync(const ::gnp::dto::AffiliateDto &dto) {
 
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Affiliates> mapper(dbClient);
@@ -1435,6 +1436,7 @@ drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::getAffiliateCommissi
   }
 }
 
+
 drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::getAffiliatePayouts(const std::string &affiliateId) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Affiliates> affiliateMapper(dbClient);
@@ -1491,6 +1493,7 @@ drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::getAffiliatePayouts(
     co_return errorResponse;
   }
 }
+
 
 drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::issueBulkPayout() {
 
@@ -1565,7 +1568,6 @@ drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::issueBulkPayout() {
     co_return errorResponse;
   }
 }
-
 
 
 drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::getAffiliateSettings() {

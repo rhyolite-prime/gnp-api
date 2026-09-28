@@ -1858,11 +1858,16 @@ drogon::Task<HttpResponsePtr> AdminController::getAllSubscribers(HttpRequestPtr 
   }
 
   std::string query = req->getParameter("query");
+  std::string dateJoinedStartDate = req->getParameter("dateJoinedStartDate");
+  std::string dateJoinedEndDate = req->getParameter("dateJoinedEndDate");
+  std::string lastActiveStartDate = req->getParameter("lastActiveStartDate");
+  std::string lastActiveEndDate = req->getParameter("lastActiveEndDate");
+  std::string accountType = req->getParameter("accountType");
 
   auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
   auto &userService = plugin->getUserService();
 
-  auto result = co_await userService.getAllSubscribers(pageNo, pageSize, query);
+  auto result = co_await userService.getAllSubscribers(pageNo, pageSize, query, dateJoinedStartDate, dateJoinedEndDate, lastActiveStartDate, lastActiveEndDate, accountType);
   co_return HttpResponse::newHttpJsonResponse(result.toJson());
 
 

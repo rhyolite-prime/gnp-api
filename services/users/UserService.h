@@ -23,7 +23,7 @@ public:
 
   drogon::Task<dto::BaseApiResponse> getAll(int pageNo, int pageSize, const std::string &query);
 
-  drogon::Task<dto::BaseApiResponse> getAllSubscribers(int pageNo, int pageSize, const std::string &query);
+  drogon::Task<dto::BaseApiResponse> getAllSubscribers(int pageNo, int pageSize, const std::string &query, const std::string &dateJoinedStartDate, const std::string &dateJoinedEndDate, const std::string &lastActiveStartDate, const std::string &lastActiveEndDate, const std::string &accountType);
 
   drogon::Task<dto::BaseApiResponse> getDetails(const std::string &userId);
 
