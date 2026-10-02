@@ -14,6 +14,7 @@
 #include "Users.h"
 #include "dto/NewsPaperDto.h"
 #include "dto/OcrIngestionDto.h"
+#include "dto/PublicationSearchRequestDto.h"
 #include "dto/ReportDto.h"
 #include "dto/UserEngagementDto.h"
 
@@ -68,7 +69,7 @@ public:
     drogon::Task<gnp::dto::BaseApiResponse> updateUserEngagement(const dto::UserEngagementDto &dto, const std::string &userId);
 
     //Graphic Archive
-    drogon::Task<gnp::dto::BaseApiResponse> searchArchives(const dto::PublicationSearchRequestDto &dto, const std::string &userId);
+    //drogon::Task<gnp::dto::BaseApiResponse> searchArchives(const dto::PublicationSearchRequestDto &dto, const std::string &userId);
 
 
     //reports
