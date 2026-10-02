@@ -165,6 +165,7 @@ add_executable(${PROJECT_NAME} main.cc
         dto/JoomlaApiArticleResponse.h
         services/permissions/PermissionService.h
         services/permissions/PermissionService.cc
+        dto/PublicationSearchRequestDto.h
 )
 
 # ##############################################################################

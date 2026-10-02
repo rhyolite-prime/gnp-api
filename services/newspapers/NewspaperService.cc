@@ -1506,7 +1506,7 @@ void NewspaperService::incrementViewCount(
       new_newspaper.setPublicationId("485ac7f9-022d-4a30-818e-41732d90da18");
       new_newspaper.setPublicationName("Daily Graphic");
       new_newspaper.setCreatorName("System");
-      new_newspaper.setThumbnailId("");
+      new_newspaper.setThumbnailId(dto.getThumbnailId());
       new_newspaper.setDocumentId("");
 
       new_newspaper.setFileType(dto.getFileType());

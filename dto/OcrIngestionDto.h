@@ -115,8 +115,8 @@ namespace gnp::dto {
             content_type_ = json["contentType"].asString();
         }
 
-        if (json.isMember("thumbnailId") && !json["thumbnailId"].isNull()) {
-            thumbnail_id_ = json["thumbnailId"].asString();
+        if (json.isMember("thumbnailUrl") && !json["thumbnailUrl"].isNull()) {
+            setThumbnailId(json["thumbnailUrl"].asString());
         }
 
         if (json.isMember("documentId") && !json["documentId"].isNull()) {
