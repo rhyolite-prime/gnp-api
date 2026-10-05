@@ -36,6 +36,8 @@ const std::string NewspaperDetails::Cols::_created_at = "\"created_at\"";
 const std::string NewspaperDetails::Cols::_modified_by = "\"modified_by\"";
 const std::string NewspaperDetails::Cols::_modifier_name = "\"modifier_name\"";
 const std::string NewspaperDetails::Cols::_modified_at = "\"modified_at\"";
+const std::string NewspaperDetails::Cols::_thumbnail_id = "\"thumbnail_id\"";
+const std::string NewspaperDetails::Cols::_document_id = "\"document_id\"";
 const std::string NewspaperDetails::primaryKeyName = "id";
 const bool NewspaperDetails::hasPrimaryKey = true;
 const std::string NewspaperDetails::tableName = "\"newspaper_details\"";
@@ -63,7 +65,9 @@ const std::vector<typename NewspaperDetails::MetaData> NewspaperDetails::metaDat
 {"created_at","::trantor::Date","timestamp with time zone",0,0,0,0},
 {"modified_by","std::string","uuid",0,0,0,0},
 {"modifier_name","std::string","character varying",255,0,0,0},
-{"modified_at","::trantor::Date","timestamp with time zone",0,0,0,0}
+{"modified_at","::trantor::Date","timestamp with time zone",0,0,0,0},
+{"thumbnail_id","std::string","character varying",255,0,0,0},
+{"document_id","std::string","character varying",255,0,0,0}
 };
 const std::string &NewspaperDetails::getColumnName(size_t index) noexcept(false)
 {
@@ -212,11 +216,19 @@ NewspaperDetails::NewspaperDetails(const Row &r, const ssize_t indexOffset) noex
                 modifiedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+        if(!r["thumbnail_id"].isNull())
+        {
+            thumbnailId_=std::make_shared<std::string>(r["thumbnail_id"].as<std::string>());
+        }
+        if(!r["document_id"].isNull())
+        {
+            documentId_=std::make_shared<std::string>(r["document_id"].as<std::string>());
+        }
     }
     else
     {
         size_t offset = (size_t)indexOffset;
-        if(offset + 23 > r.size())
+        if(offset + 25 > r.size())
         {
             LOG_FATAL << "Invalid SQL result for this model";
             return;
@@ -383,13 +395,23 @@ NewspaperDetails::NewspaperDetails(const Row &r, const ssize_t indexOffset) noex
                 modifiedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+        index = offset + 23;
+        if(!r[index].isNull())
+        {
+            thumbnailId_=std::make_shared<std::string>(r[index].as<std::string>());
+        }
+        index = offset + 24;
+        if(!r[index].isNull())
+        {
+            documentId_=std::make_shared<std::string>(r[index].as<std::string>());
+        }
     }
 
 }
 
 NewspaperDetails::NewspaperDetails(const Json::Value &pJson, const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 23)
+    if(pMasqueradingVector.size() != 25)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -622,6 +644,22 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson, const std::vector<s
                 }
                 modifiedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
+        }
+    }
+    if(!pMasqueradingVector[23].empty() && pJson.isMember(pMasqueradingVector[23]))
+    {
+        dirtyFlag_[23] = true;
+        if(!pJson[pMasqueradingVector[23]].isNull())
+        {
+            thumbnailId_=std::make_shared<std::string>(pJson[pMasqueradingVector[23]].asString());
+        }
+    }
+    if(!pMasqueradingVector[24].empty() && pJson.isMember(pMasqueradingVector[24]))
+    {
+        dirtyFlag_[24] = true;
+        if(!pJson[pMasqueradingVector[24]].isNull())
+        {
+            documentId_=std::make_shared<std::string>(pJson[pMasqueradingVector[24]].asString());
         }
     }
 }
@@ -858,12 +896,28 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+    if(pJson.isMember("thumbnail_id"))
+    {
+        dirtyFlag_[23]=true;
+        if(!pJson["thumbnail_id"].isNull())
+        {
+            thumbnailId_=std::make_shared<std::string>(pJson["thumbnail_id"].asString());
+        }
+    }
+    if(pJson.isMember("document_id"))
+    {
+        dirtyFlag_[24]=true;
+        if(!pJson["document_id"].isNull())
+        {
+            documentId_=std::make_shared<std::string>(pJson["document_id"].asString());
+        }
+    }
 }
 
 void NewspaperDetails::updateByMasqueradedJson(const Json::Value &pJson,
                                             const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 23)
+    if(pMasqueradingVector.size() != 25)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -1097,6 +1151,22 @@ void NewspaperDetails::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+    if(!pMasqueradingVector[23].empty() && pJson.isMember(pMasqueradingVector[23]))
+    {
+        dirtyFlag_[23] = true;
+        if(!pJson[pMasqueradingVector[23]].isNull())
+        {
+            thumbnailId_=std::make_shared<std::string>(pJson[pMasqueradingVector[23]].asString());
+        }
+    }
+    if(!pMasqueradingVector[24].empty() && pJson.isMember(pMasqueradingVector[24]))
+    {
+        dirtyFlag_[24] = true;
+        if(!pJson[pMasqueradingVector[24]].isNull())
+        {
+            documentId_=std::make_shared<std::string>(pJson[pMasqueradingVector[24]].asString());
+        }
+    }
 }
 
 void NewspaperDetails::updateByJson(const Json::Value &pJson) noexcept(false)
@@ -1328,6 +1398,22 @@ void NewspaperDetails::updateByJson(const Json::Value &pJson) noexcept(false)
                 }
                 modifiedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
+        }
+    }
+    if(pJson.isMember("thumbnail_id"))
+    {
+        dirtyFlag_[23] = true;
+        if(!pJson["thumbnail_id"].isNull())
+        {
+            thumbnailId_=std::make_shared<std::string>(pJson["thumbnail_id"].asString());
+        }
+    }
+    if(pJson.isMember("document_id"))
+    {
+        dirtyFlag_[24] = true;
+        if(!pJson["document_id"].isNull())
+        {
+            documentId_=std::make_shared<std::string>(pJson["document_id"].asString());
         }
     }
 }
@@ -1883,6 +1969,60 @@ void NewspaperDetails::setModifiedAtToNull() noexcept
     dirtyFlag_[22] = true;
 }
 
+const std::string &NewspaperDetails::getValueOfThumbnailId() const noexcept
+{
+    static const std::string defaultValue = std::string();
+    if(thumbnailId_)
+        return *thumbnailId_;
+    return defaultValue;
+}
+const std::shared_ptr<std::string> &NewspaperDetails::getThumbnailId() const noexcept
+{
+    return thumbnailId_;
+}
+void NewspaperDetails::setThumbnailId(const std::string &pThumbnailId) noexcept
+{
+    thumbnailId_ = std::make_shared<std::string>(pThumbnailId);
+    dirtyFlag_[23] = true;
+}
+void NewspaperDetails::setThumbnailId(std::string &&pThumbnailId) noexcept
+{
+    thumbnailId_ = std::make_shared<std::string>(std::move(pThumbnailId));
+    dirtyFlag_[23] = true;
+}
+void NewspaperDetails::setThumbnailIdToNull() noexcept
+{
+    thumbnailId_.reset();
+    dirtyFlag_[23] = true;
+}
+
+const std::string &NewspaperDetails::getValueOfDocumentId() const noexcept
+{
+    static const std::string defaultValue = std::string();
+    if(documentId_)
+        return *documentId_;
+    return defaultValue;
+}
+const std::shared_ptr<std::string> &NewspaperDetails::getDocumentId() const noexcept
+{
+    return documentId_;
+}
+void NewspaperDetails::setDocumentId(const std::string &pDocumentId) noexcept
+{
+    documentId_ = std::make_shared<std::string>(pDocumentId);
+    dirtyFlag_[24] = true;
+}
+void NewspaperDetails::setDocumentId(std::string &&pDocumentId) noexcept
+{
+    documentId_ = std::make_shared<std::string>(std::move(pDocumentId));
+    dirtyFlag_[24] = true;
+}
+void NewspaperDetails::setDocumentIdToNull() noexcept
+{
+    documentId_.reset();
+    dirtyFlag_[24] = true;
+}
+
 void NewspaperDetails::updateId(const uint64_t id)
 {
 }
@@ -1912,7 +2052,9 @@ const std::vector<std::string> &NewspaperDetails::insertColumns() noexcept
         "created_at",
         "modified_by",
         "modifier_name",
-        "modified_at"
+        "modified_at",
+        "thumbnail_id",
+        "document_id"
     };
     return inCols;
 }
@@ -2172,6 +2314,28 @@ void NewspaperDetails::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+    if(dirtyFlag_[23])
+    {
+        if(getThumbnailId())
+        {
+            binder << getValueOfThumbnailId();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[24])
+    {
+        if(getDocumentId())
+        {
+            binder << getValueOfDocumentId();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
 }
 
 const std::vector<std::string> NewspaperDetails::updateColumns() const
@@ -2268,6 +2432,14 @@ const std::vector<std::string> NewspaperDetails::updateColumns() const
     if(dirtyFlag_[22])
     {
         ret.push_back(getColumnName(22));
+    }
+    if(dirtyFlag_[23])
+    {
+        ret.push_back(getColumnName(23));
+    }
+    if(dirtyFlag_[24])
+    {
+        ret.push_back(getColumnName(24));
     }
     return ret;
 }
@@ -2527,6 +2699,28 @@ void NewspaperDetails::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+    if(dirtyFlag_[23])
+    {
+        if(getThumbnailId())
+        {
+            binder << getValueOfThumbnailId();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[24])
+    {
+        if(getDocumentId())
+        {
+            binder << getValueOfDocumentId();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
 }
 Json::Value NewspaperDetails::toJson() const
 {
@@ -2715,6 +2909,22 @@ Json::Value NewspaperDetails::toJson() const
     {
         ret["modified_at"]=Json::Value();
     }
+    if(getThumbnailId())
+    {
+        ret["thumbnail_id"]=getValueOfThumbnailId();
+    }
+    else
+    {
+        ret["thumbnail_id"]=Json::Value();
+    }
+    if(getDocumentId())
+    {
+        ret["document_id"]=getValueOfDocumentId();
+    }
+    else
+    {
+        ret["document_id"]=Json::Value();
+    }
     return ret;
 }
 
@@ -2727,7 +2937,7 @@ Json::Value NewspaperDetails::toMasqueradedJson(
     const std::vector<std::string> &pMasqueradingVector) const
 {
     Json::Value ret;
-    if(pMasqueradingVector.size() == 23)
+    if(pMasqueradingVector.size() == 25)
     {
         if(!pMasqueradingVector[0].empty())
         {
@@ -2982,6 +3192,28 @@ Json::Value NewspaperDetails::toMasqueradedJson(
                 ret[pMasqueradingVector[22]]=Json::Value();
             }
         }
+        if(!pMasqueradingVector[23].empty())
+        {
+            if(getThumbnailId())
+            {
+                ret[pMasqueradingVector[23]]=getValueOfThumbnailId();
+            }
+            else
+            {
+                ret[pMasqueradingVector[23]]=Json::Value();
+            }
+        }
+        if(!pMasqueradingVector[24].empty())
+        {
+            if(getDocumentId())
+            {
+                ret[pMasqueradingVector[24]]=getValueOfDocumentId();
+            }
+            else
+            {
+                ret[pMasqueradingVector[24]]=Json::Value();
+            }
+        }
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
@@ -3169,6 +3401,22 @@ Json::Value NewspaperDetails::toMasqueradedJson(
     {
         ret["modified_at"]=Json::Value();
     }
+    if(getThumbnailId())
+    {
+        ret["thumbnail_id"]=getValueOfThumbnailId();
+    }
+    else
+    {
+        ret["thumbnail_id"]=Json::Value();
+    }
+    if(getDocumentId())
+    {
+        ret["document_id"]=getValueOfDocumentId();
+    }
+    else
+    {
+        ret["document_id"]=Json::Value();
+    }
     return ret;
 }
 
@@ -3304,13 +3552,23 @@ bool NewspaperDetails::validateJsonForCreation(const Json::Value &pJson, std::st
         if(!validJsonOfField(22, "modified_at", pJson["modified_at"], err, true))
             return false;
     }
+    if(pJson.isMember("thumbnail_id"))
+    {
+        if(!validJsonOfField(23, "thumbnail_id", pJson["thumbnail_id"], err, true))
+            return false;
+    }
+    if(pJson.isMember("document_id"))
+    {
+        if(!validJsonOfField(24, "document_id", pJson["document_id"], err, true))
+            return false;
+    }
     return true;
 }
 bool NewspaperDetails::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                                                           const std::vector<std::string> &pMasqueradingVector,
                                                           std::string &err)
 {
-    if(pMasqueradingVector.size() != 23)
+    if(pMasqueradingVector.size() != 25)
     {
         err = "Bad masquerading vector";
         return false;
@@ -3515,6 +3773,22 @@ bool NewspaperDetails::validateMasqueradedJsonForCreation(const Json::Value &pJs
                   return false;
           }
       }
+      if(!pMasqueradingVector[23].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[23]))
+          {
+              if(!validJsonOfField(23, pMasqueradingVector[23], pJson[pMasqueradingVector[23]], err, true))
+                  return false;
+          }
+      }
+      if(!pMasqueradingVector[24].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[24]))
+          {
+              if(!validJsonOfField(24, pMasqueradingVector[24], pJson[pMasqueradingVector[24]], err, true))
+                  return false;
+          }
+      }
     }
     catch(const Json::LogicError &e)
     {
@@ -3645,13 +3919,23 @@ bool NewspaperDetails::validateJsonForUpdate(const Json::Value &pJson, std::stri
         if(!validJsonOfField(22, "modified_at", pJson["modified_at"], err, false))
             return false;
     }
+    if(pJson.isMember("thumbnail_id"))
+    {
+        if(!validJsonOfField(23, "thumbnail_id", pJson["thumbnail_id"], err, false))
+            return false;
+    }
+    if(pJson.isMember("document_id"))
+    {
+        if(!validJsonOfField(24, "document_id", pJson["document_id"], err, false))
+            return false;
+    }
     return true;
 }
 bool NewspaperDetails::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
                                                         const std::vector<std::string> &pMasqueradingVector,
                                                         std::string &err)
 {
-    if(pMasqueradingVector.size() != 23)
+    if(pMasqueradingVector.size() != 25)
     {
         err = "Bad masquerading vector";
         return false;
@@ -3775,6 +4059,16 @@ bool NewspaperDetails::validateMasqueradedJsonForUpdate(const Json::Value &pJson
       if(!pMasqueradingVector[22].empty() && pJson.isMember(pMasqueradingVector[22]))
       {
           if(!validJsonOfField(22, pMasqueradingVector[22], pJson[pMasqueradingVector[22]], err, false))
+              return false;
+      }
+      if(!pMasqueradingVector[23].empty() && pJson.isMember(pMasqueradingVector[23]))
+      {
+          if(!validJsonOfField(23, pMasqueradingVector[23], pJson[pMasqueradingVector[23]], err, false))
+              return false;
+      }
+      if(!pMasqueradingVector[24].empty() && pJson.isMember(pMasqueradingVector[24]))
+      {
+          if(!validJsonOfField(24, pMasqueradingVector[24], pJson[pMasqueradingVector[24]], err, false))
               return false;
       }
     }
@@ -4090,6 +4384,44 @@ bool NewspaperDetails::validJsonOfField(size_t index,
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            break;
+        case 23:
+            if(pJson.isNull())
+            {
+                return true;
+            }
+            if(!pJson.isString())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 255)
+            {
+                err="String length exceeds limit for the " +
+                    fieldName +
+                    " field (the maximum value is 255)";
+                return false;
+            }
+            break;
+        case 24:
+            if(pJson.isNull())
+            {
+                return true;
+            }
+            if(!pJson.isString())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 255)
+            {
+                err="String length exceeds limit for the " +
+                    fieldName +
+                    " field (the maximum value is 255)";
                 return false;
             }
             break;

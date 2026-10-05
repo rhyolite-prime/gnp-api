@@ -71,7 +71,6 @@ public:
     //Graphic Archive
     //drogon::Task<gnp::dto::BaseApiResponse> searchArchives(const dto::PublicationSearchRequestDto &dto, const std::string &userId);
 
-
     //reports
     drogon::Task<::gnp::dto::BaseApiResponse> getNewspaperEngagementReport(const gnp::dto::ReportDto &dto);
 

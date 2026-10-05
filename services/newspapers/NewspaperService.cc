@@ -1524,12 +1524,15 @@ void NewspaperService::incrementViewCount(
 
     drogon_model::Gnp::NewspaperDetails detail;
     detail.setNewspaperId(newspaper.getValueOfId());
+    detail.setId(dto.getId());
     detail.setPageText(dto.getPageText());
     detail.setPageNumber(dto.getPageNumber());
     detail.setFileType(dto.getFileType());
     detail.setPublicationId("485ac7f9-022d-4a30-818e-41732d90da18");
     detail.setPublicationName("Daily Graphic");
     detail.setCreatorName("System");
+    detail.setThumbnailId(dto.getThumbnailId());
+    detail.setDocumentId("");
 
     detail.setPublishedDate(trantor::Date::fromDbStringLocal("2023-02-02 00:00:00"));
 
