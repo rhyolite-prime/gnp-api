@@ -1462,8 +1462,19 @@ void NewspaperService::incrementViewCount(
 
  drogon::Task<gnp::dto::BaseApiResponse> NewspaperService::handleOcrIngestion(const dto::OcrIngestionDto &dto) {
 
+  LOG_INFO << "OCR Ingestion request received:"
+           << " id=" << dto.getId()
+           << ", publicationDate=" << dto.getPublicationDate().toDbStringLocal()
+           << ", pageNumber=" << dto.getPageNumber()
+           << ", editionNumber=" << dto.getEditionNumber()
+           << ", fileType=" << dto.getFileType()
+           << ", thumbnailId=" << dto.getThumbnailId()
+           << ", contentType=" << dto.getContentType()
+           << ", pageSummary=" << dto.getPageSummary()
+           << ", pageTextLength=" << dto.getPageText().size();
+
   auto dbClient = drogon::app().getDbClient();
-  auto mp_newspaper = drogon::orm::CoroMapper<drogon_model::Gnp::Newspapers>(dbClient);
+  auto mp_newspaper = drogon::orm::CoroMapper<Newspapers>(dbClient);
   auto mp_detail = drogon::orm::CoroMapper<drogon_model::Gnp::NewspaperDetails>(dbClient);
 
   try {
