@@ -1521,7 +1521,6 @@ void NewspaperService::incrementViewCount(
       new_newspaper.setDocumentId("");
 
       new_newspaper.setFileType(dto.getFileType());
-
       new_newspaper.setCreatedAt(trantor::Date::now());
       new_newspaper.setIsPublished(false);
       new_newspaper.setIsFree(false);
