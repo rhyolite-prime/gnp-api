@@ -136,17 +136,15 @@ drogon::Task<dto::BaseApiResponse> UserService::getAll(int pageNo, int pageSize,
   if (!accountType.empty() && accountType != "all") {
     if (accountType == "partner") {
       criteria = criteria &&
-                 Criteria(Users::Cols::_partner_id, CompareOperator::IsNotNull, 0) &&
-                 Criteria(Users::Cols::_partner_id, CompareOperator::NE, "");
+                 Criteria(Users::Cols::_partner_id, CompareOperator::IsNotNull);
     } else if (accountType == "affiliate") {
       criteria = criteria &&
-                 Criteria(Users::Cols::_affiliate_id, CompareOperator::IsNotNull, 0) &&
-                 Criteria(Users::Cols::_affiliate_id, CompareOperator::NE, "");
+                 Criteria(Users::Cols::_affiliate_id, CompareOperator::IsNotNull);
     } else if (accountType == "regular") {
       // Regular = no partner_id AND no affiliate_id
       criteria = criteria &&
-                 Criteria(Users::Cols::_partner_id, CompareOperator::IsNull, 0) &&
-                 Criteria(Users::Cols::_affiliate_id, CompareOperator::IsNull, 0);
+                 Criteria(Users::Cols::_partner_id, CompareOperator::IsNull) &&
+                 Criteria(Users::Cols::_affiliate_id, CompareOperator::IsNull);
     }
   }
 
