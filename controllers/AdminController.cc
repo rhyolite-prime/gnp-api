@@ -479,10 +479,13 @@ drogon::Task<HttpResponsePtr> AdminController::getAllAdminUsers(const HttpReques
     query = "";
   }
 
+  std::string roleId = req->getParameter("roleId");
+  std::string userGroupId = req->getParameter("userGroupId");
+
   auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
   auto &userService = plugin->getUserService();
 
-  auto apiResp = co_await userService.getAdminUsers(pageNo, pageSize, query);
+  auto apiResp = co_await userService.getAdminUsers(pageNo, pageSize, query, roleId, userGroupId);
 
   auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
   resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
@@ -584,7 +587,7 @@ drogon::Task<HttpResponsePtr> AdminController::updateAdminUser(const HttpRequest
   auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
   auto &userService = plugin->getUserService();
 
-  auto apiResp = co_await userService.createAdminUser(dto);
+  auto apiResp = co_await userService.updateAdminUser(dto, userId);
 
   auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
   resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
@@ -594,7 +597,6 @@ drogon::Task<HttpResponsePtr> AdminController::updateAdminUser(const HttpRequest
 
 
 drogon::Task<HttpResponsePtr> AdminController::activateAdminUser(const HttpRequestPtr req, const std::string &userId) {
-
 
   if (userId.empty()) {
     gnp::dto::BaseApiResponse response;
@@ -618,7 +620,6 @@ drogon::Task<HttpResponsePtr> AdminController::activateAdminUser(const HttpReque
 
 
 drogon::Task<HttpResponsePtr> AdminController::deactivateAdminUser(const HttpRequestPtr req, const std::string &userId) {
-
 
   if (userId.empty()) {
     gnp::dto::BaseApiResponse response;

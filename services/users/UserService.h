@@ -26,7 +26,7 @@ public:
 
   drogon::Task<dto::BaseApiResponse> getDetails(const std::string &userId);
 
-  drogon::Task<dto::BaseApiResponse> getAdminUsers(int pageNo, int pageSize, const std::string &query);
+  drogon::Task<dto::BaseApiResponse> getAdminUsers(int pageNo, int pageSize, const std::string &query, const std::string &roleId, const std::string &userGroupId);
 
   drogon::Task<dto::BaseApiResponse> getPartnerAdminUsers(const std::string &partnerId, int pageNo, int pageSize, const std::string &query);
 

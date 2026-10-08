@@ -29,7 +29,7 @@ public:
   ADD_METHOD_TO(AdminController::updateNewsPaper, std::string(PREFIX) + "update-newspaper/{1}", Put, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::deleteNewsPaper, std::string(PREFIX) + "delete-newspaper", Delete, Options, "JwtAuthFilter");
   // manage admin users
-  ADD_METHOD_TO(AdminController::getAllAdminUsers, std::string(PREFIX) + "get-all-users", Get, Options, "JwtAuthFilter");
+  ADD_METHOD_TO(AdminController::getAllAdminUsers, std::string(PREFIX) + "get-all-admin-users", Get, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::getUserDetails, std::string(PREFIX) + "get-user-details", Get, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::lockUserAccount, std::string(PREFIX) + "lock-admin-user-account", Get, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::unLockUserAccount, std::string(PREFIX) + "unlock-admin-user-account", Get, Options, "JwtAuthFilter");
