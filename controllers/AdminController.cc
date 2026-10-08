@@ -949,6 +949,18 @@ Task<HttpResponsePtr> AdminController::getPartnerSubscriberInfo(HttpRequestPtr r
 
 }
 
+Task<HttpResponsePtr> AdminController::getSubscriberInfo(HttpRequestPtr req, const std::string &userId) {
+
+  auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
+  auto &userService = plugin->getUserService();
+
+  auto apiResp = co_await userService.getSubscriberSubscriptionSummary(userId);
+  auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
+  resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
+  co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
+
+}
+
 // campaigns
 
 drogon::Task<HttpResponsePtr> AdminController::getAllCampaigns(const HttpRequestPtr req) {

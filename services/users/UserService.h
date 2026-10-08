@@ -62,6 +62,8 @@ public:
 
   drogon::Task<gnp::dto::BaseApiResponse> resetUserPassword(const std::string &userId);
 
+    drogon::Task<::gnp::dto::BaseApiResponse> getSubscriberSubscriptionSummary(std::string userId);
+
   drogon::Task<gnp::dto::BaseApiResponse> deletePartnerAdminUser(const std::string &userId, const std::string &partnerId);
 
   // auth

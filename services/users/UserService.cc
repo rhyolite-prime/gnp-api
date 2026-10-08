@@ -22,6 +22,7 @@
 
 #include "Affiliates.h"
 #include "CommercialPartners.h"
+#include "SubscriptionRenewalHistory.h"
 #include "UserGroups.h"
 #include "plugins/GnpServicePlugin.h"
 #include "utils/PasswordUtils.h"
@@ -30,6 +31,7 @@
 using namespace drogon::orm;
 using drogon_model::Gnp::UserGroups;
 using drogon_model::Gnp::Users;
+using drogon_model::Gnp::UserSubscriptions;
 
 namespace gnp::services {
 
@@ -243,6 +245,108 @@ drogon::Task<dto::BaseApiResponse> UserService::getAllSubscribers(
     response.error["detail"] = e.base().what();
   }
   co_return response;
+}
+
+  drogon::Task<::gnp::dto::BaseApiResponse> UserService::getSubscriberSubscriptionSummary(std::string userId) {
+  auto dbClient = drogon::app().getDbClient();
+  CoroMapper<UserSubscriptions> subMapper(dbClient);
+  CoroMapper<drogon_model::Gnp::SubscriptionRenewalHistory> renewalMapper(dbClient);
+  CoroMapper<drogon_model::Gnp::CommercialPartners> partnerMapper(dbClient);
+
+  try {
+    // 1. Fetch UserSubscription summary
+    auto subscriptions = co_await subMapper.findBy(Criteria(UserSubscriptions::Cols::_user_id,  CompareOperator::EQ, userId) && Criteria(UserSubscriptions::Cols::_is_active, CompareOperator::EQ, true));
+
+    if (subscriptions.empty()) {
+      dto::BaseApiResponse response;
+      response.success = true;
+      response.result["subscriptionSummary"] = Json::nullValue;
+      response.result["renewalHistory"] = Json::arrayValue;
+      co_return response;
+    }
+
+    auto subscription = subscriptions.front();
+
+    // 2. Fetch Partner for Name
+    auto partner = co_await partnerMapper.findOne(Criteria(
+      drogon_model::Gnp::CommercialPartners::Cols::_id, CompareOperator::EQ, partnerId));
+
+    // 3. Fetch Renewal History
+    auto renewals =
+        co_await renewalMapper
+            .orderBy(drogon_model::Gnp::SubscriptionRenewalHistory::Cols::
+                         _created_at,
+                     SortOrder::DESC)
+            .findBy(Criteria(drogon_model::Gnp::SubscriptionRenewalHistory::
+                                 Cols::_user_id,
+                             CompareOperator::EQ, userId) &&
+                    Criteria(drogon_model::Gnp::SubscriptionRenewalHistory::
+                                 Cols::_partner_id,
+                             CompareOperator::EQ, partnerId));
+
+    // 4. Build JSON Response
+    Json::Value result;
+
+    Json::Value summary;
+    summary["package"] =
+        subscription.getValueOfSubscriptionPlanDescription() + " (Assigned)";
+    summary["dueDate"] =
+        subscription.getValueOfEndDate().toCustomFormattedString("%b %d, %Y");
+    summary["billingCycle"] = subscription.getValueOfBillingCycle();
+    summary["subscriptionId"] = subscription.getValueOfId();
+
+    const auto &startDateObj = subscription.getValueOfStartDate();
+    const auto &endDateObj = subscription.getValueOfEndDate();
+    summary["activatedOn"] = startDateObj.toCustomFormattedString("%Y-%m-%d");
+    summary["validUntil"] = endDateObj.toCustomFormattedString("%Y-%m-%d");
+
+    auto now = trantor::Date::now();
+
+    int64_t diffDays =
+        (endDateObj.microSecondsSinceEpoch() - now.microSecondsSinceEpoch()) /
+        (1000000LL * 3600 * 24);
+    summary["daysRemaining"] = (Json::Int64)std::max((int64_t)0, diffDays);
+
+    result["subscriptionSummary"] = summary;
+
+    Json::Value historyArray = Json::arrayValue;
+    for (const auto &renewal : renewals) {
+
+      Json::Value historyItem;
+      historyItem["date"] =
+          renewal.getValueOfCreatedAt().toCustomFormattedString("%b %d, %Y");
+      historyItem["package"] = renewal.getValueOfSubscriptionPlanName();
+
+      // Amount format: $0.00 (Covered by {Partner Name})
+      std::string amountStr = renewal.getValueOfAmountPaid();
+      std::string partnerName = partner.getValueOfName();
+      historyItem["amount"] =
+          "GHS " + amountStr + " (Covered by " + partnerName + ")";
+
+      historyItem["status"] = renewal.getValueOfTransactionStatus();
+
+      // Reference from created_at yyyymmddhhmmss
+      historyItem["reference"] =
+          renewal.getValueOfCreatedAt().toCustomFormattedString("%Y%m%d%H%M%S");
+
+      historyArray.append(historyItem);
+    }
+
+    result["renewalHistory"] = historyArray;
+
+    ::gnp::dto::BaseApiResponse response;
+    response.success = true;
+    response.result = result;
+    co_return response;
+
+  } catch (const DrogonDbException &e) {
+    ::gnp::dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.message = "Failed to fetch subscriber subscription details";
+    errorResponse.error["code"] = constants::ERR_DB_QUERY;
+    errorResponse.error["detail"] = e.base().what();
+    co_return errorResponse;
+  }
 }
 
 drogon::Task<dto::BaseApiResponse> UserService::getDetails(const std::string &userId) {
