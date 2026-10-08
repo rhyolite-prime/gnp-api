@@ -573,6 +573,71 @@ drogon::Task<dto::BaseApiResponse> UserService::create(const dto::UserDto &userD
 }
 
 
+  drogon::Task<dto::BaseApiResponse> UserService::createAdminUser(const dto::AdminUserDto &userDto) {
+
+  auto dbClient = drogon::app().getDbClient();
+  CoroMapper<Users> mp(dbClient);
+
+  Users newUser;
+  newUser.setFirstName(userDto.getFirstName());
+  newUser.setLastName(userDto.getLastName());
+  std::string standardEmail = userDto.getEmail();
+  std::transform(standardEmail.begin(), standardEmail.end(), standardEmail.begin(), [](unsigned char c) { return std::tolower(c); });
+
+  newUser.setEmail(standardEmail);
+  newUser.setUsername(userDto.getUsername());
+  newUser.setPhoneNumber(userDto.getPhoneNumber());
+  newUser.setCountry("GH");
+  newUser.setPasswordHash(bcrypt::generateHash(userDto.getPassword()));
+  newUser.setIsActive(true);
+  newUser.setIsLockedOut(false);
+  newUser.setIsAdminUser(true);
+
+  // Convert roles vector to JSON string if provided
+  Json::Value userGroupsArray = Json::arrayValue;
+  Json::Value rolesArray = Json::arrayValue;
+  for (const auto& perm : userDto.getUserGroups()) {
+    userGroupsArray.append(perm);
+  }
+
+  Json::FastWriter writer;
+  std::string userGroupsStr = writer.write(userGroupsArray);
+  if (!userGroupsStr.empty() && userGroupsStr.back() == '\n') {
+    userGroupsStr.pop_back();
+  }
+
+  newUser.setUserGroups(userGroupsStr);
+
+  for (const auto& perm : userDto.getRoles()) {
+    rolesArray.append(perm);
+  }
+
+
+  std::string rolesStr = writer.write(rolesArray);
+  if (!rolesStr.empty() && rolesStr.back() == '\n') {
+    rolesStr.pop_back();
+  }
+
+  newUser.setRoles(rolesStr);
+
+  newUser.setCreatedAt(trantor::Date::now());
+
+  dto::BaseApiResponse response;
+  try {
+    Users insertedUser = co_await mp.insert(newUser);
+    response.success = true;
+    response.message = "Admin user created successfully";
+    response.result["id"] = insertedUser.getValueOfId();
+  } catch (const drogon::orm::DrogonDbException &e) {
+    response.success = false;
+    response.message = "Database error while creating admin user";
+    response.error["code"] = constants::ERR_DB_QUERY;
+    response.error["detail"] = e.base().what();
+  }
+  co_return response;
+}
+
+
 drogon::Task<dto::BaseApiResponse> UserService::update(const dto::UserDto &userDto, const std::string &userId) {
 
   auto dbClient = drogon::app().getDbClient();
@@ -625,6 +690,95 @@ drogon::Task<dto::BaseApiResponse> UserService::update(const dto::UserDto &userD
   } catch (const DrogonDbException &e) {
     response.success = false;
     response.message = "User not found or database error";
+    response.error["code"] = constants::ERR_DB_QUERY;
+    response.error["detail"] = e.base().what();
+  }
+
+  co_return response;
+}
+
+
+
+drogon::Task<dto::BaseApiResponse> UserService::updateAdminUser(const dto::AdminUserDto &userDto, const std::string &userId) {
+
+  auto dbClient = drogon::app().getDbClient();
+  CoroMapper<Users> mp(dbClient);
+
+  dto::BaseApiResponse response;
+
+  try {
+
+    Criteria criteria = Criteria(Users::Cols::_id, CompareOperator::EQ, userId) &&
+                        Criteria(Users::Cols::_is_admin_user, CompareOperator::EQ, true);
+
+    Users user = co_await mp.findOne(criteria);
+
+    if (!userDto.getFirstName().empty()) {
+      user.setFirstName(userDto.getFirstName());
+    }
+
+    if (!userDto.getLastName().empty()) {
+      user.setLastName(userDto.getLastName());
+    }
+
+    if (!userDto.getEmail().empty()) {
+      std::string standardEmail = userDto.getEmail();
+      std::transform(standardEmail.begin(), standardEmail.end(), standardEmail.begin(), [](unsigned char c) { return std::tolower(c); });
+      user.setEmail(standardEmail);
+    }
+
+    if (!userDto.getPhoneNumber().empty()) {
+      user.setPhoneNumber(userDto.getPhoneNumber());
+    }
+
+    if (!userDto.getCountry().empty()) {
+      user.setCountry(userDto.getCountry());
+    }
+
+    if (!userDto.getUsername().empty()) {
+      user.setUsername(userDto.getUsername());
+    }
+
+    if (!userDto.getPassword().empty()) {
+      user.setPasswordHash(bcrypt::generateHash(userDto.getPassword()));
+    }
+
+    // Update roles if provided
+    Json::Value userGroupsArray = Json::arrayValue;
+    Json::Value rolesArray = Json::arrayValue;
+    for (const auto& perm : userDto.getUserGroups()) {
+      userGroupsArray.append(perm);
+    }
+
+    Json::FastWriter writer;
+    std::string userGroupsStr = writer.write(userGroupsArray);
+    if (!userGroupsStr.empty() && userGroupsStr.back() == '\n') {
+      userGroupsStr.pop_back();
+    }
+
+    user.setUserGroups(userGroupsStr);
+
+    for (const auto& perm : userDto.getRoles()) {
+      rolesArray.append(perm);
+    }
+
+
+    std::string rolesStr = writer.write(rolesArray);
+    if (!rolesStr.empty() && rolesStr.back() == '\n') {
+      rolesStr.pop_back();
+    }
+
+    user.setRoles(rolesStr);
+
+    user.setUpdatedAt(trantor::Date::now());
+
+    co_await mp.update(user);
+
+    response.success = true;
+    response.message = "Admin user updated successfully";
+  } catch (const DrogonDbException &e) {
+    response.success = false;
+    response.message = "Admin user not found or database error";
     response.error["code"] = constants::ERR_DB_QUERY;
     response.error["detail"] = e.base().what();
   }

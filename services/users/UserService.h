@@ -7,8 +7,6 @@
 #include "dto/UserDto.h"
 #include "dto/SigninDto.h"
 #include <drogon/drogon.h>
-
-#include "dto/AdminUserDto.h"
 #include "dto/ChangePasswordDto.h"
 #include "dto/LoginUserPasskeyDto.h"
 #include "dto/RegisterUserPasskeysDto.h"
@@ -36,6 +34,10 @@ public:
 
   drogon::Task<dto::BaseApiResponse> create(const dto::UserDto &userDto);
 
+  drogon::Task<dto::BaseApiResponse> createAdminUser(const dto::AdminUserDto &userDto);
+
+  drogon::Task<dto::BaseApiResponse> updateAdminUser(const dto::AdminUserDto &userDto, const std::string &userId);
+
   drogon::Task<dto::BaseApiResponse> update(const dto::UserDto &userDto, const std::string &userId);
 
   drogon::Task<dto::BaseApiResponse> invitePartnerAdminUser(const dto::AdminUserDto &adminUserDto, const std::string &partnerId);
@@ -61,7 +63,6 @@ public:
   drogon::Task<gnp::dto::BaseApiResponse> resetUserPassword(const std::string &userId);
 
   drogon::Task<gnp::dto::BaseApiResponse> deletePartnerAdminUser(const std::string &userId, const std::string &partnerId);
-
 
   // auth
   drogon::Task<dto::BaseApiResponse> validateUserCredentials(const dto::SigninDto &signin_dto);
