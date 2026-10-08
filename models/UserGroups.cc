@@ -15,6 +15,7 @@ using namespace drogon_model::Gnp;
 
 const std::string UserGroups::Cols::_id = "\"id\"";
 const std::string UserGroups::Cols::_title = "\"title\"";
+const std::string UserGroups::Cols::_description = "\"description\"";
 const std::string UserGroups::Cols::_parent_id = "\"parent_id\"";
 const std::string UserGroups::Cols::_roles = "\"roles\"";
 const std::string UserGroups::Cols::_active_users = "\"active_users\"";
@@ -30,6 +31,7 @@ const std::string UserGroups::tableName = "\"user_groups\"";
 const std::vector<typename UserGroups::MetaData> UserGroups::metaData_={
 {"id","std::string","uuid",0,0,1,1},
 {"title","std::string","character varying",255,0,0,1},
+{"description","std::string","character varying",250,0,0,0},
 {"parent_id","std::string","uuid",0,0,0,0},
 {"roles","std::string","jsonb",0,0,0,0},
 {"active_users","int32_t","integer",4,0,0,1},
@@ -55,6 +57,10 @@ UserGroups::UserGroups(const Row &r, const ssize_t indexOffset) noexcept
         if(!r["title"].isNull())
         {
             title_=std::make_shared<std::string>(r["title"].as<std::string>());
+        }
+        if(!r["description"].isNull())
+        {
+            description_=std::make_shared<std::string>(r["description"].as<std::string>());
         }
         if(!r["parent_id"].isNull())
         {
@@ -128,7 +134,7 @@ UserGroups::UserGroups(const Row &r, const ssize_t indexOffset) noexcept
     else
     {
         size_t offset = (size_t)indexOffset;
-        if(offset + 10 > r.size())
+        if(offset + 11 > r.size())
         {
             LOG_FATAL << "Invalid SQL result for this model";
             return;
@@ -147,29 +153,34 @@ UserGroups::UserGroups(const Row &r, const ssize_t indexOffset) noexcept
         index = offset + 2;
         if(!r[index].isNull())
         {
-            parentId_=std::make_shared<std::string>(r[index].as<std::string>());
+            description_=std::make_shared<std::string>(r[index].as<std::string>());
         }
         index = offset + 3;
         if(!r[index].isNull())
         {
-            roles_=std::make_shared<std::string>(r[index].as<std::string>());
+            parentId_=std::make_shared<std::string>(r[index].as<std::string>());
         }
         index = offset + 4;
         if(!r[index].isNull())
         {
-            activeUsers_=std::make_shared<int32_t>(r[index].as<int32_t>());
+            roles_=std::make_shared<std::string>(r[index].as<std::string>());
         }
         index = offset + 5;
         if(!r[index].isNull())
         {
-            blockedUsers_=std::make_shared<int32_t>(r[index].as<int32_t>());
+            activeUsers_=std::make_shared<int32_t>(r[index].as<int32_t>());
         }
         index = offset + 6;
         if(!r[index].isNull())
         {
-            createdBy_=std::make_shared<std::string>(r[index].as<std::string>());
+            blockedUsers_=std::make_shared<int32_t>(r[index].as<int32_t>());
         }
         index = offset + 7;
+        if(!r[index].isNull())
+        {
+            createdBy_=std::make_shared<std::string>(r[index].as<std::string>());
+        }
+        index = offset + 8;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
@@ -192,12 +203,12 @@ UserGroups::UserGroups(const Row &r, const ssize_t indexOffset) noexcept
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
-        index = offset + 8;
+        index = offset + 9;
         if(!r[index].isNull())
         {
             modifiedBy_=std::make_shared<std::string>(r[index].as<std::string>());
         }
-        index = offset + 9;
+        index = offset + 10;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
@@ -226,7 +237,7 @@ UserGroups::UserGroups(const Row &r, const ssize_t indexOffset) noexcept
 
 UserGroups::UserGroups(const Json::Value &pJson, const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 10)
+    if(pMasqueradingVector.size() != 11)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -252,7 +263,7 @@ UserGroups::UserGroups(const Json::Value &pJson, const std::vector<std::string> 
         dirtyFlag_[2] = true;
         if(!pJson[pMasqueradingVector[2]].isNull())
         {
-            parentId_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
+            description_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
@@ -260,7 +271,7 @@ UserGroups::UserGroups(const Json::Value &pJson, const std::vector<std::string> 
         dirtyFlag_[3] = true;
         if(!pJson[pMasqueradingVector[3]].isNull())
         {
-            roles_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
+            parentId_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
@@ -268,7 +279,7 @@ UserGroups::UserGroups(const Json::Value &pJson, const std::vector<std::string> 
         dirtyFlag_[4] = true;
         if(!pJson[pMasqueradingVector[4]].isNull())
         {
-            activeUsers_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[4]].asInt64());
+            roles_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
@@ -276,7 +287,7 @@ UserGroups::UserGroups(const Json::Value &pJson, const std::vector<std::string> 
         dirtyFlag_[5] = true;
         if(!pJson[pMasqueradingVector[5]].isNull())
         {
-            blockedUsers_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[5]].asInt64());
+            activeUsers_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[5]].asInt64());
         }
     }
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
@@ -284,7 +295,7 @@ UserGroups::UserGroups(const Json::Value &pJson, const std::vector<std::string> 
         dirtyFlag_[6] = true;
         if(!pJson[pMasqueradingVector[6]].isNull())
         {
-            createdBy_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
+            blockedUsers_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[6]].asInt64());
         }
     }
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
@@ -292,7 +303,15 @@ UserGroups::UserGroups(const Json::Value &pJson, const std::vector<std::string> 
         dirtyFlag_[7] = true;
         if(!pJson[pMasqueradingVector[7]].isNull())
         {
-            auto timeStr = pJson[pMasqueradingVector[7]].asString();
+            createdBy_=std::make_shared<std::string>(pJson[pMasqueradingVector[7]].asString());
+        }
+    }
+    if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
+    {
+        dirtyFlag_[8] = true;
+        if(!pJson[pMasqueradingVector[8]].isNull())
+        {
+            auto timeStr = pJson[pMasqueradingVector[8]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
@@ -313,20 +332,20 @@ UserGroups::UserGroups(const Json::Value &pJson, const std::vector<std::string> 
             }
         }
     }
-    if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
-    {
-        dirtyFlag_[8] = true;
-        if(!pJson[pMasqueradingVector[8]].isNull())
-        {
-            modifiedBy_=std::make_shared<std::string>(pJson[pMasqueradingVector[8]].asString());
-        }
-    }
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
     {
         dirtyFlag_[9] = true;
         if(!pJson[pMasqueradingVector[9]].isNull())
         {
-            auto timeStr = pJson[pMasqueradingVector[9]].asString();
+            modifiedBy_=std::make_shared<std::string>(pJson[pMasqueradingVector[9]].asString());
+        }
+    }
+    if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
+    {
+        dirtyFlag_[10] = true;
+        if(!pJson[pMasqueradingVector[10]].isNull())
+        {
+            auto timeStr = pJson[pMasqueradingVector[10]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
@@ -367,9 +386,17 @@ UserGroups::UserGroups(const Json::Value &pJson) noexcept(false)
             title_=std::make_shared<std::string>(pJson["title"].asString());
         }
     }
-    if(pJson.isMember("parent_id"))
+    if(pJson.isMember("description"))
     {
         dirtyFlag_[2]=true;
+        if(!pJson["description"].isNull())
+        {
+            description_=std::make_shared<std::string>(pJson["description"].asString());
+        }
+    }
+    if(pJson.isMember("parent_id"))
+    {
+        dirtyFlag_[3]=true;
         if(!pJson["parent_id"].isNull())
         {
             parentId_=std::make_shared<std::string>(pJson["parent_id"].asString());
@@ -377,7 +404,7 @@ UserGroups::UserGroups(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("roles"))
     {
-        dirtyFlag_[3]=true;
+        dirtyFlag_[4]=true;
         if(!pJson["roles"].isNull())
         {
             roles_=std::make_shared<std::string>(pJson["roles"].asString());
@@ -385,7 +412,7 @@ UserGroups::UserGroups(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("active_users"))
     {
-        dirtyFlag_[4]=true;
+        dirtyFlag_[5]=true;
         if(!pJson["active_users"].isNull())
         {
             activeUsers_=std::make_shared<int32_t>((int32_t)pJson["active_users"].asInt64());
@@ -393,7 +420,7 @@ UserGroups::UserGroups(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("blocked_users"))
     {
-        dirtyFlag_[5]=true;
+        dirtyFlag_[6]=true;
         if(!pJson["blocked_users"].isNull())
         {
             blockedUsers_=std::make_shared<int32_t>((int32_t)pJson["blocked_users"].asInt64());
@@ -401,7 +428,7 @@ UserGroups::UserGroups(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("created_by"))
     {
-        dirtyFlag_[6]=true;
+        dirtyFlag_[7]=true;
         if(!pJson["created_by"].isNull())
         {
             createdBy_=std::make_shared<std::string>(pJson["created_by"].asString());
@@ -409,7 +436,7 @@ UserGroups::UserGroups(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("created_at"))
     {
-        dirtyFlag_[7]=true;
+        dirtyFlag_[8]=true;
         if(!pJson["created_at"].isNull())
         {
             auto timeStr = pJson["created_at"].asString();
@@ -435,7 +462,7 @@ UserGroups::UserGroups(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("modified_by"))
     {
-        dirtyFlag_[8]=true;
+        dirtyFlag_[9]=true;
         if(!pJson["modified_by"].isNull())
         {
             modifiedBy_=std::make_shared<std::string>(pJson["modified_by"].asString());
@@ -443,7 +470,7 @@ UserGroups::UserGroups(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("modified_at"))
     {
-        dirtyFlag_[9]=true;
+        dirtyFlag_[10]=true;
         if(!pJson["modified_at"].isNull())
         {
             auto timeStr = pJson["modified_at"].asString();
@@ -472,7 +499,7 @@ UserGroups::UserGroups(const Json::Value &pJson) noexcept(false)
 void UserGroups::updateByMasqueradedJson(const Json::Value &pJson,
                                             const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 10)
+    if(pMasqueradingVector.size() != 11)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -497,7 +524,7 @@ void UserGroups::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[2] = true;
         if(!pJson[pMasqueradingVector[2]].isNull())
         {
-            parentId_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
+            description_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
@@ -505,7 +532,7 @@ void UserGroups::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[3] = true;
         if(!pJson[pMasqueradingVector[3]].isNull())
         {
-            roles_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
+            parentId_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
@@ -513,7 +540,7 @@ void UserGroups::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[4] = true;
         if(!pJson[pMasqueradingVector[4]].isNull())
         {
-            activeUsers_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[4]].asInt64());
+            roles_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
@@ -521,7 +548,7 @@ void UserGroups::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[5] = true;
         if(!pJson[pMasqueradingVector[5]].isNull())
         {
-            blockedUsers_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[5]].asInt64());
+            activeUsers_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[5]].asInt64());
         }
     }
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
@@ -529,7 +556,7 @@ void UserGroups::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[6] = true;
         if(!pJson[pMasqueradingVector[6]].isNull())
         {
-            createdBy_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
+            blockedUsers_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[6]].asInt64());
         }
     }
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
@@ -537,7 +564,15 @@ void UserGroups::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[7] = true;
         if(!pJson[pMasqueradingVector[7]].isNull())
         {
-            auto timeStr = pJson[pMasqueradingVector[7]].asString();
+            createdBy_=std::make_shared<std::string>(pJson[pMasqueradingVector[7]].asString());
+        }
+    }
+    if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
+    {
+        dirtyFlag_[8] = true;
+        if(!pJson[pMasqueradingVector[8]].isNull())
+        {
+            auto timeStr = pJson[pMasqueradingVector[8]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
@@ -558,20 +593,20 @@ void UserGroups::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
-    if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
-    {
-        dirtyFlag_[8] = true;
-        if(!pJson[pMasqueradingVector[8]].isNull())
-        {
-            modifiedBy_=std::make_shared<std::string>(pJson[pMasqueradingVector[8]].asString());
-        }
-    }
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
     {
         dirtyFlag_[9] = true;
         if(!pJson[pMasqueradingVector[9]].isNull())
         {
-            auto timeStr = pJson[pMasqueradingVector[9]].asString();
+            modifiedBy_=std::make_shared<std::string>(pJson[pMasqueradingVector[9]].asString());
+        }
+    }
+    if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
+    {
+        dirtyFlag_[10] = true;
+        if(!pJson[pMasqueradingVector[10]].isNull())
+        {
+            auto timeStr = pJson[pMasqueradingVector[10]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
@@ -611,9 +646,17 @@ void UserGroups::updateByJson(const Json::Value &pJson) noexcept(false)
             title_=std::make_shared<std::string>(pJson["title"].asString());
         }
     }
-    if(pJson.isMember("parent_id"))
+    if(pJson.isMember("description"))
     {
         dirtyFlag_[2] = true;
+        if(!pJson["description"].isNull())
+        {
+            description_=std::make_shared<std::string>(pJson["description"].asString());
+        }
+    }
+    if(pJson.isMember("parent_id"))
+    {
+        dirtyFlag_[3] = true;
         if(!pJson["parent_id"].isNull())
         {
             parentId_=std::make_shared<std::string>(pJson["parent_id"].asString());
@@ -621,7 +664,7 @@ void UserGroups::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("roles"))
     {
-        dirtyFlag_[3] = true;
+        dirtyFlag_[4] = true;
         if(!pJson["roles"].isNull())
         {
             roles_=std::make_shared<std::string>(pJson["roles"].asString());
@@ -629,7 +672,7 @@ void UserGroups::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("active_users"))
     {
-        dirtyFlag_[4] = true;
+        dirtyFlag_[5] = true;
         if(!pJson["active_users"].isNull())
         {
             activeUsers_=std::make_shared<int32_t>((int32_t)pJson["active_users"].asInt64());
@@ -637,7 +680,7 @@ void UserGroups::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("blocked_users"))
     {
-        dirtyFlag_[5] = true;
+        dirtyFlag_[6] = true;
         if(!pJson["blocked_users"].isNull())
         {
             blockedUsers_=std::make_shared<int32_t>((int32_t)pJson["blocked_users"].asInt64());
@@ -645,7 +688,7 @@ void UserGroups::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("created_by"))
     {
-        dirtyFlag_[6] = true;
+        dirtyFlag_[7] = true;
         if(!pJson["created_by"].isNull())
         {
             createdBy_=std::make_shared<std::string>(pJson["created_by"].asString());
@@ -653,7 +696,7 @@ void UserGroups::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("created_at"))
     {
-        dirtyFlag_[7] = true;
+        dirtyFlag_[8] = true;
         if(!pJson["created_at"].isNull())
         {
             auto timeStr = pJson["created_at"].asString();
@@ -679,7 +722,7 @@ void UserGroups::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("modified_by"))
     {
-        dirtyFlag_[8] = true;
+        dirtyFlag_[9] = true;
         if(!pJson["modified_by"].isNull())
         {
             modifiedBy_=std::make_shared<std::string>(pJson["modified_by"].asString());
@@ -687,7 +730,7 @@ void UserGroups::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("modified_at"))
     {
-        dirtyFlag_[9] = true;
+        dirtyFlag_[10] = true;
         if(!pJson["modified_at"].isNull())
         {
             auto timeStr = pJson["modified_at"].asString();
@@ -762,6 +805,33 @@ void UserGroups::setTitle(std::string &&pTitle) noexcept
     dirtyFlag_[1] = true;
 }
 
+const std::string &UserGroups::getValueOfDescription() const noexcept
+{
+    static const std::string defaultValue = std::string();
+    if(description_)
+        return *description_;
+    return defaultValue;
+}
+const std::shared_ptr<std::string> &UserGroups::getDescription() const noexcept
+{
+    return description_;
+}
+void UserGroups::setDescription(const std::string &pDescription) noexcept
+{
+    description_ = std::make_shared<std::string>(pDescription);
+    dirtyFlag_[2] = true;
+}
+void UserGroups::setDescription(std::string &&pDescription) noexcept
+{
+    description_ = std::make_shared<std::string>(std::move(pDescription));
+    dirtyFlag_[2] = true;
+}
+void UserGroups::setDescriptionToNull() noexcept
+{
+    description_.reset();
+    dirtyFlag_[2] = true;
+}
+
 const std::string &UserGroups::getValueOfParentId() const noexcept
 {
     static const std::string defaultValue = std::string();
@@ -776,17 +846,17 @@ const std::shared_ptr<std::string> &UserGroups::getParentId() const noexcept
 void UserGroups::setParentId(const std::string &pParentId) noexcept
 {
     parentId_ = std::make_shared<std::string>(pParentId);
-    dirtyFlag_[2] = true;
+    dirtyFlag_[3] = true;
 }
 void UserGroups::setParentId(std::string &&pParentId) noexcept
 {
     parentId_ = std::make_shared<std::string>(std::move(pParentId));
-    dirtyFlag_[2] = true;
+    dirtyFlag_[3] = true;
 }
 void UserGroups::setParentIdToNull() noexcept
 {
     parentId_.reset();
-    dirtyFlag_[2] = true;
+    dirtyFlag_[3] = true;
 }
 
 const std::string &UserGroups::getValueOfRoles() const noexcept
@@ -803,17 +873,17 @@ const std::shared_ptr<std::string> &UserGroups::getRoles() const noexcept
 void UserGroups::setRoles(const std::string &pRoles) noexcept
 {
     roles_ = std::make_shared<std::string>(pRoles);
-    dirtyFlag_[3] = true;
+    dirtyFlag_[4] = true;
 }
 void UserGroups::setRoles(std::string &&pRoles) noexcept
 {
     roles_ = std::make_shared<std::string>(std::move(pRoles));
-    dirtyFlag_[3] = true;
+    dirtyFlag_[4] = true;
 }
 void UserGroups::setRolesToNull() noexcept
 {
     roles_.reset();
-    dirtyFlag_[3] = true;
+    dirtyFlag_[4] = true;
 }
 
 const int32_t &UserGroups::getValueOfActiveUsers() const noexcept
@@ -830,7 +900,7 @@ const std::shared_ptr<int32_t> &UserGroups::getActiveUsers() const noexcept
 void UserGroups::setActiveUsers(const int32_t &pActiveUsers) noexcept
 {
     activeUsers_ = std::make_shared<int32_t>(pActiveUsers);
-    dirtyFlag_[4] = true;
+    dirtyFlag_[5] = true;
 }
 
 const int32_t &UserGroups::getValueOfBlockedUsers() const noexcept
@@ -847,7 +917,7 @@ const std::shared_ptr<int32_t> &UserGroups::getBlockedUsers() const noexcept
 void UserGroups::setBlockedUsers(const int32_t &pBlockedUsers) noexcept
 {
     blockedUsers_ = std::make_shared<int32_t>(pBlockedUsers);
-    dirtyFlag_[5] = true;
+    dirtyFlag_[6] = true;
 }
 
 const std::string &UserGroups::getValueOfCreatedBy() const noexcept
@@ -864,17 +934,17 @@ const std::shared_ptr<std::string> &UserGroups::getCreatedBy() const noexcept
 void UserGroups::setCreatedBy(const std::string &pCreatedBy) noexcept
 {
     createdBy_ = std::make_shared<std::string>(pCreatedBy);
-    dirtyFlag_[6] = true;
+    dirtyFlag_[7] = true;
 }
 void UserGroups::setCreatedBy(std::string &&pCreatedBy) noexcept
 {
     createdBy_ = std::make_shared<std::string>(std::move(pCreatedBy));
-    dirtyFlag_[6] = true;
+    dirtyFlag_[7] = true;
 }
 void UserGroups::setCreatedByToNull() noexcept
 {
     createdBy_.reset();
-    dirtyFlag_[6] = true;
+    dirtyFlag_[7] = true;
 }
 
 const ::trantor::Date &UserGroups::getValueOfCreatedAt() const noexcept
@@ -891,12 +961,12 @@ const std::shared_ptr<::trantor::Date> &UserGroups::getCreatedAt() const noexcep
 void UserGroups::setCreatedAt(const ::trantor::Date &pCreatedAt) noexcept
 {
     createdAt_ = std::make_shared<::trantor::Date>(pCreatedAt);
-    dirtyFlag_[7] = true;
+    dirtyFlag_[8] = true;
 }
 void UserGroups::setCreatedAtToNull() noexcept
 {
     createdAt_.reset();
-    dirtyFlag_[7] = true;
+    dirtyFlag_[8] = true;
 }
 
 const std::string &UserGroups::getValueOfModifiedBy() const noexcept
@@ -913,17 +983,17 @@ const std::shared_ptr<std::string> &UserGroups::getModifiedBy() const noexcept
 void UserGroups::setModifiedBy(const std::string &pModifiedBy) noexcept
 {
     modifiedBy_ = std::make_shared<std::string>(pModifiedBy);
-    dirtyFlag_[8] = true;
+    dirtyFlag_[9] = true;
 }
 void UserGroups::setModifiedBy(std::string &&pModifiedBy) noexcept
 {
     modifiedBy_ = std::make_shared<std::string>(std::move(pModifiedBy));
-    dirtyFlag_[8] = true;
+    dirtyFlag_[9] = true;
 }
 void UserGroups::setModifiedByToNull() noexcept
 {
     modifiedBy_.reset();
-    dirtyFlag_[8] = true;
+    dirtyFlag_[9] = true;
 }
 
 const ::trantor::Date &UserGroups::getValueOfModifiedAt() const noexcept
@@ -940,12 +1010,12 @@ const std::shared_ptr<::trantor::Date> &UserGroups::getModifiedAt() const noexce
 void UserGroups::setModifiedAt(const ::trantor::Date &pModifiedAt) noexcept
 {
     modifiedAt_ = std::make_shared<::trantor::Date>(pModifiedAt);
-    dirtyFlag_[9] = true;
+    dirtyFlag_[10] = true;
 }
 void UserGroups::setModifiedAtToNull() noexcept
 {
     modifiedAt_.reset();
-    dirtyFlag_[9] = true;
+    dirtyFlag_[10] = true;
 }
 
 void UserGroups::updateId(const uint64_t id)
@@ -957,6 +1027,7 @@ const std::vector<std::string> &UserGroups::insertColumns() noexcept
     static const std::vector<std::string> inCols={
         "id",
         "title",
+        "description",
         "parent_id",
         "roles",
         "active_users",
@@ -995,6 +1066,17 @@ void UserGroups::outputArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[2])
     {
+        if(getDescription())
+        {
+            binder << getValueOfDescription();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[3])
+    {
         if(getParentId())
         {
             binder << getValueOfParentId();
@@ -1004,7 +1086,7 @@ void UserGroups::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[3])
+    if(dirtyFlag_[4])
     {
         if(getRoles())
         {
@@ -1015,7 +1097,7 @@ void UserGroups::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[4])
+    if(dirtyFlag_[5])
     {
         if(getActiveUsers())
         {
@@ -1026,7 +1108,7 @@ void UserGroups::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[5])
+    if(dirtyFlag_[6])
     {
         if(getBlockedUsers())
         {
@@ -1037,7 +1119,7 @@ void UserGroups::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[6])
+    if(dirtyFlag_[7])
     {
         if(getCreatedBy())
         {
@@ -1048,7 +1130,7 @@ void UserGroups::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[7])
+    if(dirtyFlag_[8])
     {
         if(getCreatedAt())
         {
@@ -1059,7 +1141,7 @@ void UserGroups::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[8])
+    if(dirtyFlag_[9])
     {
         if(getModifiedBy())
         {
@@ -1070,7 +1152,7 @@ void UserGroups::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[9])
+    if(dirtyFlag_[10])
     {
         if(getModifiedAt())
         {
@@ -1126,6 +1208,10 @@ const std::vector<std::string> UserGroups::updateColumns() const
     {
         ret.push_back(getColumnName(9));
     }
+    if(dirtyFlag_[10])
+    {
+        ret.push_back(getColumnName(10));
+    }
     return ret;
 }
 
@@ -1155,6 +1241,17 @@ void UserGroups::updateArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[2])
     {
+        if(getDescription())
+        {
+            binder << getValueOfDescription();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[3])
+    {
         if(getParentId())
         {
             binder << getValueOfParentId();
@@ -1164,7 +1261,7 @@ void UserGroups::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[3])
+    if(dirtyFlag_[4])
     {
         if(getRoles())
         {
@@ -1175,7 +1272,7 @@ void UserGroups::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[4])
+    if(dirtyFlag_[5])
     {
         if(getActiveUsers())
         {
@@ -1186,7 +1283,7 @@ void UserGroups::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[5])
+    if(dirtyFlag_[6])
     {
         if(getBlockedUsers())
         {
@@ -1197,7 +1294,7 @@ void UserGroups::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[6])
+    if(dirtyFlag_[7])
     {
         if(getCreatedBy())
         {
@@ -1208,7 +1305,7 @@ void UserGroups::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[7])
+    if(dirtyFlag_[8])
     {
         if(getCreatedAt())
         {
@@ -1219,7 +1316,7 @@ void UserGroups::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[8])
+    if(dirtyFlag_[9])
     {
         if(getModifiedBy())
         {
@@ -1230,7 +1327,7 @@ void UserGroups::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[9])
+    if(dirtyFlag_[10])
     {
         if(getModifiedAt())
         {
@@ -1260,6 +1357,14 @@ Json::Value UserGroups::toJson() const
     else
     {
         ret["title"]=Json::Value();
+    }
+    if(getDescription())
+    {
+        ret["description"]=getValueOfDescription();
+    }
+    else
+    {
+        ret["description"]=Json::Value();
     }
     if(getParentId())
     {
@@ -1337,7 +1442,7 @@ Json::Value UserGroups::toMasqueradedJson(
     const std::vector<std::string> &pMasqueradingVector) const
 {
     Json::Value ret;
-    if(pMasqueradingVector.size() == 10)
+    if(pMasqueradingVector.size() == 11)
     {
         if(!pMasqueradingVector[0].empty())
         {
@@ -1363,9 +1468,9 @@ Json::Value UserGroups::toMasqueradedJson(
         }
         if(!pMasqueradingVector[2].empty())
         {
-            if(getParentId())
+            if(getDescription())
             {
-                ret[pMasqueradingVector[2]]=getValueOfParentId();
+                ret[pMasqueradingVector[2]]=getValueOfDescription();
             }
             else
             {
@@ -1374,9 +1479,9 @@ Json::Value UserGroups::toMasqueradedJson(
         }
         if(!pMasqueradingVector[3].empty())
         {
-            if(getRoles())
+            if(getParentId())
             {
-                ret[pMasqueradingVector[3]]=getValueOfRoles();
+                ret[pMasqueradingVector[3]]=getValueOfParentId();
             }
             else
             {
@@ -1385,9 +1490,9 @@ Json::Value UserGroups::toMasqueradedJson(
         }
         if(!pMasqueradingVector[4].empty())
         {
-            if(getActiveUsers())
+            if(getRoles())
             {
-                ret[pMasqueradingVector[4]]=getValueOfActiveUsers();
+                ret[pMasqueradingVector[4]]=getValueOfRoles();
             }
             else
             {
@@ -1396,9 +1501,9 @@ Json::Value UserGroups::toMasqueradedJson(
         }
         if(!pMasqueradingVector[5].empty())
         {
-            if(getBlockedUsers())
+            if(getActiveUsers())
             {
-                ret[pMasqueradingVector[5]]=getValueOfBlockedUsers();
+                ret[pMasqueradingVector[5]]=getValueOfActiveUsers();
             }
             else
             {
@@ -1407,9 +1512,9 @@ Json::Value UserGroups::toMasqueradedJson(
         }
         if(!pMasqueradingVector[6].empty())
         {
-            if(getCreatedBy())
+            if(getBlockedUsers())
             {
-                ret[pMasqueradingVector[6]]=getValueOfCreatedBy();
+                ret[pMasqueradingVector[6]]=getValueOfBlockedUsers();
             }
             else
             {
@@ -1418,9 +1523,9 @@ Json::Value UserGroups::toMasqueradedJson(
         }
         if(!pMasqueradingVector[7].empty())
         {
-            if(getCreatedAt())
+            if(getCreatedBy())
             {
-                ret[pMasqueradingVector[7]]=getCreatedAt()->toDbStringLocal();
+                ret[pMasqueradingVector[7]]=getValueOfCreatedBy();
             }
             else
             {
@@ -1429,9 +1534,9 @@ Json::Value UserGroups::toMasqueradedJson(
         }
         if(!pMasqueradingVector[8].empty())
         {
-            if(getModifiedBy())
+            if(getCreatedAt())
             {
-                ret[pMasqueradingVector[8]]=getValueOfModifiedBy();
+                ret[pMasqueradingVector[8]]=getCreatedAt()->toDbStringLocal();
             }
             else
             {
@@ -1440,13 +1545,24 @@ Json::Value UserGroups::toMasqueradedJson(
         }
         if(!pMasqueradingVector[9].empty())
         {
-            if(getModifiedAt())
+            if(getModifiedBy())
             {
-                ret[pMasqueradingVector[9]]=getModifiedAt()->toDbStringLocal();
+                ret[pMasqueradingVector[9]]=getValueOfModifiedBy();
             }
             else
             {
                 ret[pMasqueradingVector[9]]=Json::Value();
+            }
+        }
+        if(!pMasqueradingVector[10].empty())
+        {
+            if(getModifiedAt())
+            {
+                ret[pMasqueradingVector[10]]=getModifiedAt()->toDbStringLocal();
+            }
+            else
+            {
+                ret[pMasqueradingVector[10]]=Json::Value();
             }
         }
         return ret;
@@ -1467,6 +1583,14 @@ Json::Value UserGroups::toMasqueradedJson(
     else
     {
         ret["title"]=Json::Value();
+    }
+    if(getDescription())
+    {
+        ret["description"]=getValueOfDescription();
+    }
+    else
+    {
+        ret["description"]=Json::Value();
     }
     if(getParentId())
     {
@@ -1552,44 +1676,49 @@ bool UserGroups::validateJsonForCreation(const Json::Value &pJson, std::string &
         err="The title column cannot be null";
         return false;
     }
+    if(pJson.isMember("description"))
+    {
+        if(!validJsonOfField(2, "description", pJson["description"], err, true))
+            return false;
+    }
     if(pJson.isMember("parent_id"))
     {
-        if(!validJsonOfField(2, "parent_id", pJson["parent_id"], err, true))
+        if(!validJsonOfField(3, "parent_id", pJson["parent_id"], err, true))
             return false;
     }
     if(pJson.isMember("roles"))
     {
-        if(!validJsonOfField(3, "roles", pJson["roles"], err, true))
+        if(!validJsonOfField(4, "roles", pJson["roles"], err, true))
             return false;
     }
     if(pJson.isMember("active_users"))
     {
-        if(!validJsonOfField(4, "active_users", pJson["active_users"], err, true))
+        if(!validJsonOfField(5, "active_users", pJson["active_users"], err, true))
             return false;
     }
     if(pJson.isMember("blocked_users"))
     {
-        if(!validJsonOfField(5, "blocked_users", pJson["blocked_users"], err, true))
+        if(!validJsonOfField(6, "blocked_users", pJson["blocked_users"], err, true))
             return false;
     }
     if(pJson.isMember("created_by"))
     {
-        if(!validJsonOfField(6, "created_by", pJson["created_by"], err, true))
+        if(!validJsonOfField(7, "created_by", pJson["created_by"], err, true))
             return false;
     }
     if(pJson.isMember("created_at"))
     {
-        if(!validJsonOfField(7, "created_at", pJson["created_at"], err, true))
+        if(!validJsonOfField(8, "created_at", pJson["created_at"], err, true))
             return false;
     }
     if(pJson.isMember("modified_by"))
     {
-        if(!validJsonOfField(8, "modified_by", pJson["modified_by"], err, true))
+        if(!validJsonOfField(9, "modified_by", pJson["modified_by"], err, true))
             return false;
     }
     if(pJson.isMember("modified_at"))
     {
-        if(!validJsonOfField(9, "modified_at", pJson["modified_at"], err, true))
+        if(!validJsonOfField(10, "modified_at", pJson["modified_at"], err, true))
             return false;
     }
     return true;
@@ -1598,7 +1727,7 @@ bool UserGroups::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                                                     const std::vector<std::string> &pMasqueradingVector,
                                                     std::string &err)
 {
-    if(pMasqueradingVector.size() != 10)
+    if(pMasqueradingVector.size() != 11)
     {
         err = "Bad masquerading vector";
         return false;
@@ -1689,6 +1818,14 @@ bool UserGroups::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                   return false;
           }
       }
+      if(!pMasqueradingVector[10].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[10]))
+          {
+              if(!validJsonOfField(10, pMasqueradingVector[10], pJson[pMasqueradingVector[10]], err, true))
+                  return false;
+          }
+      }
     }
     catch(const Json::LogicError &e)
     {
@@ -1714,44 +1851,49 @@ bool UserGroups::validateJsonForUpdate(const Json::Value &pJson, std::string &er
         if(!validJsonOfField(1, "title", pJson["title"], err, false))
             return false;
     }
+    if(pJson.isMember("description"))
+    {
+        if(!validJsonOfField(2, "description", pJson["description"], err, false))
+            return false;
+    }
     if(pJson.isMember("parent_id"))
     {
-        if(!validJsonOfField(2, "parent_id", pJson["parent_id"], err, false))
+        if(!validJsonOfField(3, "parent_id", pJson["parent_id"], err, false))
             return false;
     }
     if(pJson.isMember("roles"))
     {
-        if(!validJsonOfField(3, "roles", pJson["roles"], err, false))
+        if(!validJsonOfField(4, "roles", pJson["roles"], err, false))
             return false;
     }
     if(pJson.isMember("active_users"))
     {
-        if(!validJsonOfField(4, "active_users", pJson["active_users"], err, false))
+        if(!validJsonOfField(5, "active_users", pJson["active_users"], err, false))
             return false;
     }
     if(pJson.isMember("blocked_users"))
     {
-        if(!validJsonOfField(5, "blocked_users", pJson["blocked_users"], err, false))
+        if(!validJsonOfField(6, "blocked_users", pJson["blocked_users"], err, false))
             return false;
     }
     if(pJson.isMember("created_by"))
     {
-        if(!validJsonOfField(6, "created_by", pJson["created_by"], err, false))
+        if(!validJsonOfField(7, "created_by", pJson["created_by"], err, false))
             return false;
     }
     if(pJson.isMember("created_at"))
     {
-        if(!validJsonOfField(7, "created_at", pJson["created_at"], err, false))
+        if(!validJsonOfField(8, "created_at", pJson["created_at"], err, false))
             return false;
     }
     if(pJson.isMember("modified_by"))
     {
-        if(!validJsonOfField(8, "modified_by", pJson["modified_by"], err, false))
+        if(!validJsonOfField(9, "modified_by", pJson["modified_by"], err, false))
             return false;
     }
     if(pJson.isMember("modified_at"))
     {
-        if(!validJsonOfField(9, "modified_at", pJson["modified_at"], err, false))
+        if(!validJsonOfField(10, "modified_at", pJson["modified_at"], err, false))
             return false;
     }
     return true;
@@ -1760,7 +1902,7 @@ bool UserGroups::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
                                                   const std::vector<std::string> &pMasqueradingVector,
                                                   std::string &err)
 {
-    if(pMasqueradingVector.size() != 10)
+    if(pMasqueradingVector.size() != 11)
     {
         err = "Bad masquerading vector";
         return false;
@@ -1821,6 +1963,11 @@ bool UserGroups::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
           if(!validJsonOfField(9, pMasqueradingVector[9], pJson[pMasqueradingVector[9]], err, false))
               return false;
       }
+      if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
+      {
+          if(!validJsonOfField(10, pMasqueradingVector[10], pJson[pMasqueradingVector[10]], err, false))
+              return false;
+      }
     }
     catch(const Json::LogicError &e)
     {
@@ -1879,6 +2026,14 @@ bool UserGroups::validJsonOfField(size_t index,
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 250)
+            {
+                err="String length exceeds limit for the " +
+                    fieldName +
+                    " field (the maximum value is 250)";
+                return false;
+            }
             break;
         case 3:
             if(pJson.isNull())
@@ -1894,10 +2049,9 @@ bool UserGroups::validJsonOfField(size_t index,
         case 4:
             if(pJson.isNull())
             {
-                err="The " + fieldName + " column cannot be null";
-                return false;
+                return true;
             }
-            if(!pJson.isInt())
+            if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
@@ -1918,9 +2072,10 @@ bool UserGroups::validJsonOfField(size_t index,
         case 6:
             if(pJson.isNull())
             {
-                return true;
+                err="The " + fieldName + " column cannot be null";
+                return false;
             }
-            if(!pJson.isString())
+            if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
@@ -1949,6 +2104,17 @@ bool UserGroups::validJsonOfField(size_t index,
             }
             break;
         case 9:
+            if(pJson.isNull())
+            {
+                return true;
+            }
+            if(!pJson.isString())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            break;
+        case 10:
             if(pJson.isNull())
             {
                 return true;

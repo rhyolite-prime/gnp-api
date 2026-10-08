@@ -509,6 +509,16 @@
                         "id": 7,
                         "systemName": "subscribers.view_subscriptions",
                         "friendlyName": "View Subscriptions"
+                    },
+                    {
+                        "id": 8,
+                        "systemName": "subscribers.activate_account",
+                        "friendlyName": "Activate Subscriber Account"
+                    },
+                    {
+                        "id": 9,
+                        "systemName": "subscribers.deactivate_account",
+                        "friendlyName": "DeActivate Subscriber Account"
                     }
                 ]
             },
@@ -516,206 +526,231 @@
                 "systemName": "content.manage",
                 "friendlyName": "Manage Content",
                 "subPermissions": [
+
                     {
-                        "id": 8,
+                        "id": 12,
                         "systemName": "content.newspapers.view",
                         "friendlyName": "View Newspapers"
                     },
                     {
-                        "id": 9,
+                        "id": 13,
                         "systemName": "content.newspapers.ingest",
                         "friendlyName": "Ingest Newspapers"
                     },
                     {
-                        "id": 10,
+                        "id": 14,
                         "systemName": "content.newspapers.edit",
                         "friendlyName": "Edit Newspapers"
                     },
                     {
-                        "id": 11,
+                        "id": 15,
                         "systemName": "content.newspapers.publish",
                         "friendlyName": "Publish Newspapers"
                     },
                     {
-                        "id": 12,
+                        "id": 16,
                         "systemName": "content.newspapers.make_free",
                         "friendlyName": "Waive Newspapers Fees"
                     },
                     {
-                        "id": 13,
+                        "id": 17,
                         "systemName": "content.newspapers.delete",
                         "friendlyName": "Delete Newspapers"
                     },
                     {
-                        "id": 14,
-                        "systemName": "content.ingestion_jobs.view",
-                        "friendlyName": "View Ingestion Jobs"
+                        "id": 18,
+                        "systemName": "content.videos.view",
+                        "friendlyName": "View Videos"
                     },
                     {
-                        "id": 15,
-                        "systemName": "content.ingestion_jobs.delete",
-                        "friendlyName": "Delete Ingestion Jobs"
+                        "id": 19,
+                        "systemName": "content.videos.create",
+                        "friendlyName": "Create Videos"
+                    },
+                    {
+                        "id": 20,
+                        "systemName": "content.videos.update",
+                        "friendlyName": "Update Videos"
+                    },
+                    {
+                        "id": 21,
+                        "systemName": "content.videos.delete",
+                        "friendlyName": "Delete Videos"
+                    },
+                    {
+                        "id": 22,
+                        "systemName": "content.audios.view",
+                        "friendlyName": "View Videos"
+                    },
+                    {
+                        "id": 23,
+                        "systemName": "content.audios.create",
+                        "friendlyName": "Create Audios"
+                    },
+                    {
+                        "id": 24,
+                        "systemName": "content.audios.update",
+                        "friendlyName": "Update Audios"
+                    },
+                    {
+                        "id": 25,
+                        "systemName": "content.audios.delete",
+                        "friendlyName": "Delete Audios"
                     }
                 ]
             },
             {
-                "systemName": "archived_content.manage",
+                "systemName": "content.archives.manage",
                 "friendlyName": "Manage Archived Content",
                 "subPermissions": [
                     {
-                        "id": 16,
-                        "systemName": "archived_content.dashboard.view",
-                        "friendlyName": "View Archived Content Dashboard"
+                        "id": 24,
+                        "systemName": "content.archives.dashboard.view",
+                        "friendlyName": "View Archives Dashboard"
                     },
                     {
-                        "id": 17,
-                        "systemName": "archived_content.newspapers.view",
+                        "id": 25,
+                        "systemName": "content.archives.newspapers.view",
                         "friendlyName": "View Archived Newspapers"
                     },
                     {
-                        "id": 18,
-                        "systemName": "archived_content.newspapers.ingest",
+                        "id": 26,
+                        "systemName": "content.archives.newspapers.ingest",
                         "friendlyName": "Ingest Archived Newspapers"
                     },
                     {
-                        "id": 19,
-                        "systemName": "archived_content.newspapers.edit",
+                        "id": 27,
+                        "systemName": "content.archives.newspapers.edit",
                         "friendlyName": "Edit Archived Newspapers"
                     },
                     {
-                        "id": 20,
-                        "systemName": "archived_content.newspapers.delete",
-                        "friendlyName": "Delete Archived Newspapers"
+                        "id": 28,
+                        "systemName": "content.archives.enterprise_subscrbers.view",
+                        "friendlyName": "View Enterprise Subscribers"
                     },
                     {
-                        "id": 21,
-                        "systemName": "archived_content.institutions.create",
-                        "friendlyName": "Create Institution"
+                        "id": 28,
+                        "systemName": "content.archives.enterprise_subscrbers.create",
+                        "friendlyName": "Create Enterprise Subscriber"
                     },
                     {
-                        "id": 22,
-                        "systemName": "archived_content.institutions.delete",
-                        "friendlyName": "Delete Institution"
+                        "id": 29,
+                        "systemName": "content.archives.enterprise_subscrbers.update",
+                        "friendlyName": "Update Enterprise Subscriber"
                     },
                     {
-                        "id": 23,
-                        "systemName": "archived_content.access_credits.configure",
+                        "id": 30,
+                        "systemName": "content.archives.enterprise_subscrbers.delete",
+                        "friendlyName": "Delete Enterprise Subscriber"
+                    },
+                    {
+                        "id": 31,
+                        "systemName": "content.archives.access_credits.configure",
                         "friendlyName": "Configure Access Credits"
                     }
                 ]
             },
             {
-                "systemName": "partners.manage",
+                "systemName": "commercial_partners.manage",
                 "friendlyName": "Manage Partners",
                 "subPermissions": [
                     {
-                        "id": 24,
-                        "systemName": "partners.view",
-                        "friendlyName": "View Partners"
-                    },
-                    {
-                        "id": 25,
-                        "systemName": "partners.create",
-                        "friendlyName": "Create Partner"
-                    },
-                    {
-                        "id": 26,
-                        "systemName": "partners.edit",
-                        "friendlyName": "Edit Partner"
-                    },
-                    {
-                        "id": 27,
-                        "systemName": "partners.delete",
-                        "friendlyName": "Delete Partner"
-                    },
-                    {
-                        "id": 28,
-                        "systemName": "partners.assign_subscription",
-                        "friendlyName": "Assign Partner Subscription"
-                    },
-                    {
-                        "id": 29,
-                        "systemName": "partners.view_admin_users",
-                        "friendlyName": "View Partner Admin Users"
-                    },
-                    {
-                        "id": 30,
-                        "systemName": "partners.view_subscribers",
-                        "friendlyName": "View Partner Subscribers"
-                    },
-                    {
-                        "id": 31,
-                        "systemName": "partners.enable_or_disable_subaccount",
-                        "friendlyName": "Enable/Disable Partner Subaccount"
-                    },
-                    {
                         "id": 32,
-                        "systemName": "partners.update_status",
-                        "friendlyName": "Update Partner Status"
+                        "systemName": "commercial_partners.view",
+                        "friendlyName": "View Commercial Partners"
                     },
                     {
                         "id": 33,
-                        "systemName": "partners.update_status",
-                        "friendlyName": "Update Partner Status"
+                        "systemName": "commercial_partners.create",
+                        "friendlyName": "Create Commercial Partner"
                     },
                     {
                         "id": 34,
-                        "systemName": "partners.create_api_key",
-                        "friendlyName": "Create Partner API Key"
+                        "systemName": "commercial_partners.update",
+                        "friendlyName": "Update Commercial Partner"
                     },
                     {
                         "id": 35,
-                        "systemName": "partners.create_api_key",
-                        "friendlyName": "Create Partner API Key"
+                        "systemName": "commercial_partners.delete",
+                        "friendlyName": "Delete Commercial Partner"
                     },
                     {
                         "id": 36,
-                        "systemName": "partners.create_api_key",
-                        "friendlyName": "Create Partner API Key"
+                        "systemName": "commercial_partners.subscription.assign",
+                        "friendlyName": "Assign Partner Subscription"
                     },
                     {
                         "id": 37,
-                        "systemName": "partners.update_api_key",
-                        "friendlyName": "Update Partner API Key"
+                        "systemName": "commercial_partners.admin_users.view",
+                        "friendlyName": "View Partner Admin Users"
                     },
                     {
                         "id": 38,
-                        "systemName": "partners.revoke_api_key",
-                        "friendlyName": "Revoke Partner API Key"
+                        "systemName": "commercial_partners.subscribers.view",
+                        "friendlyName": "View Partner Subscribers"
                     },
                     {
                         "id": 39,
-                        "systemName": "partners.api_logs",
-                        "friendlyName": "View Partner API Logs"
-                    }
-                ]
-            },
-            {
-                "systemName": "partners.invoices.manage",
-                "friendlyName": "Manage Partner Invoices",
-                "subPermissions": [
+                        "systemName": "commercial_partners.subaccount.enable_or_disable",
+                        "friendlyName": "Enable/Disable Partner Subaccount"
+                    },
                     {
                         "id": 40,
+                        "systemName": "commercial_partners.quota.update",
+                        "friendlyName": "Update Partner Quota"
+                    },
+                    {
+                        "id": 41,
+                        "systemName": "commercial_partners.status.update",
+                        "friendlyName": "Update Partner Status"
+                    },
+                    {
+                        "id": 42,
+                        "systemName": "commercial_partners.api_key.view",
+                        "friendlyName": "View Partner API Keys"
+                    },
+                    {
+                        "id": 43,
+                        "systemName": "partners.api_key.create",
+                        "friendlyName": "Create Partner API Key"
+                    },
+                    {
+                        "id": 44,
+                        "systemName": "partners.api_key.revoke",
+                        "friendlyName": "Revoke Partner API Key"
+                    },
+                    {
+                        "id": 45,
+                        "systemName": "partners.api_logs.view",
+                        "friendlyName": "View Partner API Logs"
+                    },
+                    {
+                        "id": 46,
                         "systemName": "partners.invoices.view",
                         "friendlyName": "View Partner Invoices"
                     },
                     {
-                        "id": 41,
+                        "id": 47,
                         "systemName": "partners.invoices.mark_as_paid",
                         "friendlyName": "Manually Settle Partner Invoices"
                     },
                     {
-                        "id": 42,
+                        "id": 48,
                         "systemName": "partners.invoices.make_part_payment",
                         "friendlyName": "Apply Partial Payment To Partner Invoices"
                     },
                     {
-                        "id": 42,
+                        "id": 49,
                         "systemName": "partners.invoices.make_full_payment",
                         "friendlyName": "Apply Full Payment To Partner Invoices"
                     },
                     {
-                        "id": 43,
+                        "id": 50,
+                        "systemName": "partners.invoices.download",
+                        "friendlyName": "Download Partner Invoices"
+                    },
+                    {
+                        "id": 51,
                         "systemName": "partners.invoices.delete",
                         "friendlyName": "Delete Partner Invoices"
                     }
@@ -726,62 +761,72 @@
                 "friendlyName": "Manage Affiliates",
                 "subPermissions": [
                     {
-                        "id": 44,
+                        "id": 52,
+                        "systemName": "affiliates.dashboard.view",
+                        "friendlyName": "View Affiliate Dashboard"
+                    },
+                    {
+                        "id": 52,
                         "systemName": "affiliates.view",
                         "friendlyName": "View Affiliates"
                     },
                     {
-                        "id": 45,
+                        "id": 53,
                         "systemName": "affiliates.create",
                         "friendlyName": "Create Affiliates"
                     },
                     {
-                        "id": 46,
+                        "id": 54,
                         "systemName": "affiliates.update",
                         "friendlyName": "Update Affiliates"
                     },
                     {
-                        "id": 47,
+                        "id": 55,
                         "systemName": "affiliates.delete",
                         "friendlyName": "Delete Affiliates"
                     },
                     {
-                        "id": 48,
-                        "systemName": "affiliates.suspend_account",
+                        "id": 56,
+                        "systemName": "affiliates.reset_password",
+                        "friendlyName": "Reset Affiliate Password"
+                    },
+                    {
+                        "id": 57,
+                        "systemName": "affiliates.earnings.view",
+                        "friendlyName": "View Affiliate Earnings"
+                    },
+                    {
+                        "id": 58,
+                        "systemName": "affiliates.account.suspend",
                         "friendlyName": "Suspend Affiliate Account"
                     },
                     {
-                        "id": 49,
+                        "id": 59,
                         "systemName": "affiliates.applications.view",
                         "friendlyName": "View Affiliate Applications"
                     },
                     {
-                        "id": 50,
-                        "systemName": "affiliates.applications.approve",
-                        "friendlyName": "Approve Affiliate Application"
+                        "id": 60,
+                        "systemName": "affiliates.applications.update_status",
+                        "friendlyName": "Update Affiliate Application Status"
                     },
                     {
-                        "id": 51,
-                        "systemName": "affiliates.applications.reject",
-                        "friendlyName": "Reject Affiliate Application"
-                    },
-                    {
-                        "id": 52,
+                        "id": 61,
                         "systemName": "affiliates.commssions.view",
                         "friendlyName": "View Affiliate Commissions"
                     },
                     {
-                        "id": 53,
+                        "id": 62,
                         "systemName": "affiliates.payouts.view",
-                        "friendlyName": "View Affiliate Payments"
+                        "friendlyName": "View Affiliate Payouts"
                     },
                     {
-                        "id": 54,
+                        "id": 63,
                         "systemName": "affiliates.settings.view",
                         "friendlyName": "View Affiliate Settings"
                     },
                     {
-                        "id": 55,
+                        "id": 64,
                         "systemName": "affiliates.settings.update",
                         "friendlyName": "Edit Affiliate Settings"
                     }
@@ -792,22 +837,22 @@
                 "friendlyName": "Manage Subscription Plans",
                 "subPermissions": [
                     {
-                        "id": 56,
+                        "id": 65,
                         "systemName": "subscription_plans.view",
                         "friendlyName": "View Subscription Plans"
                     },
                     {
-                        "id": 57,
+                        "id": 66,
                         "systemName": "subscription_plans.create",
                         "friendlyName": "Create Subscription Plans"
                     },
                     {
-                        "id": 58,
+                        "id": 67,
                         "systemName": "subscription_plans.update",
-                        "friendlyName": "Edit Subscription Plans"
+                        "friendlyName": "Update Subscription Plans"
                     },
                     {
-                        "id": 59,
+                        "id": 68,
                         "systemName": "subscription_plans.delete",
                         "friendlyName": "Delete Subscription Plans"
                     }
@@ -818,7 +863,7 @@
                 "friendlyName": "Manage Payments",
                 "subPermissions": [
                     {
-                        "id": 60,
+                        "id": 69,
                         "systemName": "payments.view",
                         "friendlyName": "View Payments"
                     }
@@ -829,24 +874,24 @@
                 "friendlyName": "Manage Campaigns",
                 "subPermissions": [
                     {
-                        "id": 61,
+                        "id": 70,
                         "systemName": "campaigns.view",
                         "friendlyName": "View Campaigns"
                     },
                     {
-                        "id": 62,
+                        "id": 71,
                         "systemName": "campaigns.create",
                         "friendlyName": "Create Campaigns"
                     },
                     {
-                        "id": 63,
+                        "id": 72,
                         "systemName": "campaigns.publish",
                         "friendlyName": "Publish Campaigns"
                     },
                     {
-                        "id": 64,
-                        "systemName": "campaigns.delete",
-                        "friendlyName": "Delete Campaigns"
+                        "id": 73,
+                        "systemName": "campaigns.archive",
+                        "friendlyName": "Archive Campaigns"
                     }
                 ]
             },
@@ -855,22 +900,22 @@
                 "friendlyName": "Manage Coupons",
                 "subPermissions": [
                     {
-                        "id": 65,
+                        "id": 74,
                         "systemName": "coupons.view",
                         "friendlyName": "View Coupons"
                     },
                     {
-                        "id": 66,
+                        "id": 75,
                         "systemName": "coupons.create",
                         "friendlyName": "Create Coupons"
                     },
                     {
-                        "id": 67,
+                        "id": 76,
                         "systemName": "coupons.update",
                         "friendlyName": "Update Coupons"
                     },
                     {
-                        "id": 68,
+                        "id": 77,
                         "systemName": "coupons.delete",
                         "friendlyName": "Delete Coupons"
                     }
@@ -881,72 +926,72 @@
                 "friendlyName": "Manage Advertisement",
                 "subPermissions": [
                     {
-                        "id": 69,
+                        "id": 78,
                         "systemName": "adverts.categories.view",
-                        "friendlyName": "View Advertisement Categories"
+                        "friendlyName": "View Advert Categories"
                     },
                     {
-                        "id": 70,
+                        "id": 79,
                         "systemName": "adverts.categories.create",
-                        "friendlyName": "Create Advertisement Categories"
+                        "friendlyName": "Create Advert Categories"
                     },
                     {
-                        "id": 71,
+                        "id": 80,
                         "systemName": "adverts.categories.update",
-                        "friendlyName": "Update Advertisement Categories"
+                        "friendlyName": "Update Advert Categories"
                     },
                     {
-                        "id": 72,
+                        "id": 81,
                         "systemName": "adverts.categories.delete",
-                        "friendlyName": "Delete Advertisement Categories"
+                        "friendlyName": "Delete Advert Categories"
                     },
                     {
-                        "id": 73,
+                        "id": 82,
                         "systemName": "adverts.sizes.view",
                         "friendlyName": "View Advert Sizes"
                     },
                     {
-                        "id": 74,
+                        "id": 83,
                         "systemName": "adverts.sizes.create",
                         "friendlyName": "Create Advert Sizes"
                     },
                     {
-                        "id": 75,
+                        "id": 84,
                         "systemName": "adverts.sizes.update",
                         "friendlyName": "Update Advert Sizes"
                     },
                     {
-                        "id": 76,
+                        "id": 85,
                         "systemName": "adverts.sizes.delete",
                         "friendlyName": "Delete Advert Sizes"
                     },
                     {
-                        "id": 77,
+                        "id": 86,
                         "systemName": "adverts.publication_slots.view",
                         "friendlyName": "View Publication Slots"
                     },
                     {
-                        "id": 78,
+                        "id": 87,
                         "systemName": "adverts.publication_slots.create",
                         "friendlyName": "Create Publication Slots"
                     },
                     {
-                        "id": 79,
+                        "id": 88,
                         "systemName": "adverts.publication_slots.update",
                         "friendlyName": "Update Publication Slots"
                     },
                     {
-                        "id": 80,
+                        "id": 89,
                         "systemName": "adverts.publication_slots.delete",
                         "friendlyName": "Delete Publication Slots"
                     },
                     {
-                        "id": 81,
+                        "id": 90,
                         "systemName": "adverts.ad_request.view",
                         "friendlyName": "View Ad Requests"
                     },
                     {
-                        "id": 82,
+                        "id": 91,
                         "systemName": "adverts.ad_request.change_state",
                         "friendlyName": "Update Ad Request"
                     }
@@ -957,47 +1002,47 @@
                 "friendlyName": "Manage Users",
                 "subPermissions": [
                     {
-                        "id": 83,
+                        "id": 93,
                         "systemName": "user_management.roles.view",
                         "friendlyName": "View Roles"
                     },
                     {
-                        "id": 84,
+                        "id": 94,
                         "systemName": "user_management.roles.create",
                         "friendlyName": "Create Roles"
                     },
                     {
-                        "id": 85,
+                        "id": 95,
                         "systemName": "user_management.roles.update",
                         "friendlyName": "Update Roles"
                     },
                     {
-                        "id": 86,
+                        "id": 96,
                         "systemName": "user_management.roles.delete",
                         "friendlyName": "Delete Roles"
                     },
                     {
-                        "id": 87,
+                        "id": 97,
                         "systemName": "user_management.users.view",
                         "friendlyName": "View Users"
                     },
                     {
-                        "id": 88,
+                        "id": 98,
                         "systemName": "user_management.users.create",
                         "friendlyName": "Create Users"
                     },
                     {
-                        "id": 89,
+                        "id": 99,
                         "systemName": "user_management.users.update",
                         "friendlyName": "Update Users"
                     },
                     {
-                        "id": 90,
+                        "id": 100,
                         "systemName": "user_management.users.delete",
                         "friendlyName": "Delete Users"
                     },
                     {
-                        "id": 91,
+                        "id": 101,
                         "systemName": "user_management.users.invitations.view",
                         "friendlyName": "View User Invitations"
                     }
@@ -1008,12 +1053,12 @@
                 "friendlyName": "Manage Support Tickets",
                 "subPermissions": [
                     {
-                        "id": 92,
+                        "id": 102,
                         "systemName": "support_ticket.view",
                         "friendlyName": "View Support Tickets"
                     },
                     {
-                        "id": 93,
+                        "id": 103,
                         "systemName": "support_ticket.change_state",
                         "friendlyName": "Update Support Ticket Status"
                     }
@@ -1024,32 +1069,32 @@
                 "friendlyName": "Run Reports",
                 "subPermissions": [
                     {
-                        "id": 94,
+                        "id": 104,
                         "systemName": "reports.revenue_and_financial.run",
                         "friendlyName": "Run Revenue & Financial Reports"
                     },
                     {
-                        "id": 95,
+                        "id": 105,
                         "systemName": "reports.user_and_subscriber.run",
                         "friendlyName": "Run User & Subscriber Reports"
                     },
                     {
-                        "id": 96,
+                        "id": 106,
                         "systemName": "reports.content_and_newspaper.run",
                         "friendlyName": "Run Content & Newspaper Reports"
                     },
                     {
-                        "id": 97,
+                        "id": 107,
                         "systemName": "reports.commercial_partners.run",
                         "friendlyName": "Run Commercial Partner Reports"
                     },
                     {
-                        "id": 98,
+                        "id": 108,
                         "systemName": "reports.marketing_and_campaigns.run",
                         "friendlyName": "Run Marketing & Campaigns Reports"
                     },
                     {
-                        "id": 99,
+                        "id": 109,
                         "systemName": "reports.admin_and_security.run",
                         "friendlyName": "Run Admin & Security Reports"
                     }
@@ -1060,7 +1105,7 @@
                 "friendlyName": "Manage System Settings",
                 "subPermissions": [
                     {
-                        "id": 100,
+                        "id": 110,
                         "systemName": "settings.update",
                         "friendlyName": "Update System Settings"
                     }

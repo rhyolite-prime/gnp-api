@@ -22,12 +22,14 @@
 
 #include "Affiliates.h"
 #include "CommercialPartners.h"
+#include "UserGroups.h"
 #include "plugins/GnpServicePlugin.h"
 #include "utils/PasswordUtils.h"
 #include "utils/StringUtils.h"
 
 using namespace drogon::orm;
 using drogon_model::Gnp::Users;
+using drogon_model::Gnp::UserGroups;
 
 namespace gnp::services {
 
@@ -2124,6 +2126,226 @@ drogon::Task<dto::BaseApiResponse> UserService::changeUserPassword(const std::st
 
   co_return response;
 }
+
+
+drogon::Task<dto::BaseApiResponse> UserService::getAllUserGroups(int pageNo, int pageSize, const std::string &query) {
+  auto dbClient = drogon::app().getDbClient();
+  auto mp = CoroMapper<UserGroups>(dbClient);
+
+  Criteria searchCriteria;
+  if (!query.empty()) {
+    std::string likeQuery = "%" + query + "%";
+    searchCriteria =
+        Criteria(UserGroups::Cols::_title, CompareOperator::Like, likeQuery);
+  }
+
+  dto::BaseApiResponse response;
+  try {
+    size_t totalCount = co_await mp.count(searchCriteria);
+    if (totalCount == 0) {
+      response.success = true;
+      response.result["data"] = Json::arrayValue;
+      response.result["totalCount"] = 0;
+      co_return response;
+    }
+
+    int offset = (pageNo - 1) * pageSize;
+    auto groups =
+        co_await mp.limit(pageSize).offset(offset).findBy(searchCriteria);
+
+    auto totalPages = (totalCount + pageSize - 1) / pageSize;
+
+    response.success = true;
+    response.result["totalCount"] = (Json::UInt64)totalCount;
+    response.result["pageNo"] = pageNo;
+    response.result["pageSize"] = pageSize;
+    response.result["totalPages"] = (int)((totalCount + pageSize - 1) / pageSize);
+    response.result["lowerBound"] = pageSize * (pageNo - 1) + 1;
+    response.result["upperBound"] = (int)totalPages == pageNo ? (Json::UInt64)totalCount  : (Json::UInt64)(pageNo * pageSize);
+
+
+    Json::Value data = Json::arrayValue;
+
+    for (const auto &group : groups) {
+      Json::Value groupJson = group.toJson();
+      Json::Value camelCaseGroup;
+      camelCaseGroup["id"] = groupJson["id"];
+      camelCaseGroup["title"] = groupJson["title"];
+      camelCaseGroup["parentId"] = groupJson["parent_id"];
+      camelCaseGroup["path"] = groupJson["path"];
+
+      if (group.getRoles()) {
+        Json::Value rolesJson;
+        Json::Reader reader;
+        if (reader.parse(group.getValueOfRoles(), rolesJson)) {
+          camelCaseGroup["roles"] = rolesJson;
+        } else {
+          camelCaseGroup["roles"] = group.getValueOfRoles();
+        }
+      } else {
+        camelCaseGroup["roles"] = Json::arrayValue;
+      }
+
+      camelCaseGroup["activeUsers"] = groupJson["active_users"];
+      camelCaseGroup["blockedUsers"] = groupJson["blocked_users"];
+      camelCaseGroup["createdBy"] = groupJson["created_by"];
+      camelCaseGroup["createdAt"] = groupJson["created_at"];
+      camelCaseGroup["modifiedBy"] = groupJson["modified_by"];
+      camelCaseGroup["modifiedAt"] = groupJson["modified_at"];
+      data.append(camelCaseGroup);
+    }
+    response.result["data"] = data;
+
+  } catch (const DrogonDbException &e) {
+    response.success = false;
+    response.error["message"] = "Database error while fetching user groups.";
+    response.error["detail"] = e.base().what();
+  }
+  co_return response;
+}
+
+  
+drogon::Task<dto::BaseApiResponse> UserService::createUserGroup(const dto::UserGroupDto &userGroupDto) {
+  auto dbClient = drogon::app().getDbClient();
+  auto mp = CoroMapper<UserGroups>(dbClient);
+
+  dto::BaseApiResponse response;
+  try {
+    size_t count = co_await mp.count(Criteria(UserGroups::Cols::_title, CompareOperator::EQ, userGroupDto.getTitle()));
+    if (count > 0) {
+      response.success = false;
+      response.message = "User group with this name already exists";
+      response.error["code"] = constants::ERR_DUPLICATE_RESOURCE;
+      co_return response;
+    }
+
+    UserGroups group;
+    group.setTitle(userGroupDto.getTitle());
+    group.setDescription(userGroupDto.getDescription());
+
+    if (userGroupDto.hasParentId() && !userGroupDto.getParentId().empty()) {
+      group.setParentId(userGroupDto.getParentId());
+    }
+
+    if (userGroupDto.hasRoles() && !userGroupDto.getRoles().empty()) {
+      Json::Value rolesJson = Json::arrayValue;
+      for (const auto &item : userGroupDto.getRoles()) {
+        Json::Value r;
+        r["id"] = item.id;
+        r["name"] = item.name;
+        rolesJson.append(r);
+      }
+      Json::FastWriter writer;
+      group.setRoles(writer.write(rolesJson));
+    }
+
+    group.setActiveUsers(0);
+    group.setBlockedUsers(0);
+    auto now = trantor::Date::now();
+    group.setCreatedAt(now);
+    group.setModifiedAt(now);
+
+    auto inserted = co_await mp.insert(group);
+
+    response.success = true;
+    response.message = "User group created successfully";
+    response.result["userGroupId"] = inserted.getValueOfId();
+
+  } catch (const DrogonDbException &e) {
+    response.success = false;
+    response.message = "Failed to create user group";
+    response.error["detail"] = e.base().what();
+  }
+  co_return response;
+}
+
+drogon::Task<dto::BaseApiResponse> UserService::updateUserGroup(const dto::UserGroupDto &userGroupDto, const std::string &userGroupId) {
+  auto dbClient = drogon::app().getDbClient();
+  auto mp = CoroMapper<UserGroups>(dbClient);
+
+  dto::BaseApiResponse response;
+  try {
+    auto group = co_await mp.findOne(Criteria(UserGroups::Cols::_id, CompareOperator::EQ, userGroupId));
+
+    if (!userGroupDto.getTitle().empty() && userGroupDto.getTitle() != group.getValueOfTitle()) {
+      size_t nameCount = co_await mp.count(Criteria(UserGroups::Cols::_title, CompareOperator::EQ, userGroupDto.getTitle()));
+      if (nameCount > 0) {
+        response.success = false;
+        response.message = "User group with this name already exists";
+        response.error["code"] = constants::ERR_DUPLICATE_RESOURCE;
+        co_return response;
+      }
+      group.setTitle(userGroupDto.getTitle());
+      group.setDescription(userGroupDto.getDescription());
+    }
+
+    if (userGroupDto.hasRoles()) {
+      if (!userGroupDto.getRoles().empty()) {
+        Json::Value rolesJson = Json::arrayValue;
+        for (const auto &item : userGroupDto.getRoles()) {
+          Json::Value r;
+          r["id"] = item.id;
+          r["name"] = item.name;
+          rolesJson.append(r);
+        }
+        Json::FastWriter writer;
+        group.setRoles(writer.write(rolesJson));
+      } else {
+        group.setRolesToNull();
+      }
+    }
+
+    if (userGroupDto.hasParentId()) {
+      if (!userGroupDto.getParentId().empty()) {
+        group.setParentId(userGroupDto.getParentId());
+      } else {
+        group.setParentIdToNull();
+      }
+    }
+
+    group.setModifiedAt(trantor::Date::now());
+    co_await mp.update(group);
+
+    response.success = true;
+    response.message = "User group updated successfully";
+
+  } catch (const UnexpectedRows &e) {
+    response.success = false;
+    response.message = "User group not found";
+    response.error["code"] = constants::ERR_RESOURCE_NOT_FOUND;
+  } catch (const DrogonDbException &e) {
+    response.success = false;
+    response.message = "Failed to update user group";
+    response.error["detail"] = e.base().what();
+  }
+  co_return response;
+}
+
+drogon::Task<dto::BaseApiResponse> UserService::deleteUserGroup(const std::string &userGroupId) {
+  auto dbClient = drogon::app().getDbClient();
+  auto mp = CoroMapper<UserGroups>(dbClient);
+
+  dto::BaseApiResponse response;
+  try {
+    auto count = co_await mp.deleteBy(Criteria(UserGroups::Cols::_id, CompareOperator::EQ, userGroupId));
+
+    if (count > 0) {
+      response.success = true;
+      response.message = "User group deleted successfully";
+    } else {
+      response.success = false;
+      response.message = "User group not found";
+      response.error["code"] = constants::ERR_RESOURCE_NOT_FOUND;
+    }
+
+  } catch (const DrogonDbException &e) {
+    response.success = false;
+    response.message = "Failed to delete user group";
+    response.error["detail"] = e.base().what();
+  }
+  co_return response;
+}
+
 
   void UserService::checkAccountStatus(
     const std::string &identifier, const std::string &identifierType,

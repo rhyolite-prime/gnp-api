@@ -60,7 +60,7 @@ drogon::Task<dto::BaseApiResponse> RoleService::getAll(int pageNo, int pageSize,
       camelCaseRole["id"] = roleJson["id"];
       camelCaseRole["name"] = roleJson["name"];
       camelCaseRole["description"] = roleJson["description"];
-      camelCaseRole["partnerId"] = roleJson["partner_id"];
+      //camelCaseRole["partnerId"] = roleJson["partner_id"];
 
       // Parse permissions JSON string into array
       Json::Value permissionsArray = Json::arrayValue;
@@ -177,6 +177,7 @@ drogon::Task<dto::BaseApiResponse> RoleService::update(const dto::RoleDto &roleD
 
 
 drogon::Task<dto::BaseApiResponse> RoleService::deleteRole(const std::string &roleId) {
+
   auto dbClient = drogon::app().getDbClient();
   auto mp = CoroMapper<Roles>(dbClient);
 

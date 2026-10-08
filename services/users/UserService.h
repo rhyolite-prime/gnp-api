@@ -12,6 +12,7 @@
 #include "dto/ChangePasswordDto.h"
 #include "dto/LoginUserPasskeyDto.h"
 #include "dto/RegisterUserPasskeysDto.h"
+#include "dto/UserGroupDto.h"
 #include "dto/VerifyPartnerUserOtpDto.h"
 
 namespace gnp::services {
@@ -80,6 +81,14 @@ public:
 
     drogon::Task<dto::BaseApiResponse> changeUserPassword(std::string userId, std::string accountType, const dto::ChangePasswordDto &dto);
 
+    // user groups
+    drogon::Task<dto::BaseApiResponse> getAllUserGroups(int pageNo, int pageSize, const std::string &query);
+
+    drogon::Task<dto::BaseApiResponse> createUserGroup(const dto::UserGroupDto &userGroupDto);
+
+    drogon::Task<dto::BaseApiResponse> updateUserGroup(const dto::UserGroupDto &userGroupDto, const std::string &userGroupId);
+
+    drogon::Task<dto::BaseApiResponse> deleteUserGroup(const std::string &userGroupId);
 
   void checkAccountStatus(
       const std::string &identifier, const std::string &identifierType,

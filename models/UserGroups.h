@@ -46,6 +46,7 @@ class UserGroups
     {
         static const std::string _id;
         static const std::string _title;
+        static const std::string _description;
         static const std::string _parent_id;
         static const std::string _roles;
         static const std::string _active_users;
@@ -123,6 +124,16 @@ class UserGroups
     void setTitle(const std::string &pTitle) noexcept;
     void setTitle(std::string &&pTitle) noexcept;
 
+    /**  For column description  */
+    ///Get the value of the column description, returns the default value if the column is null
+    const std::string &getValueOfDescription() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getDescription() const noexcept;
+    ///Set the value of the column description
+    void setDescription(const std::string &pDescription) noexcept;
+    void setDescription(std::string &&pDescription) noexcept;
+    void setDescriptionToNull() noexcept;
+
     /**  For column parent_id  */
     ///Get the value of the column parent_id, returns the default value if the column is null
     const std::string &getValueOfParentId() const noexcept;
@@ -198,7 +209,7 @@ class UserGroups
     void setModifiedAtToNull() noexcept;
 
 
-    static size_t getColumnNumber() noexcept {  return 10;  }
+    static size_t getColumnNumber() noexcept {  return 11;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
@@ -222,6 +233,7 @@ class UserGroups
     void updateId(const uint64_t id);
     std::shared_ptr<std::string> id_;
     std::shared_ptr<std::string> title_;
+    std::shared_ptr<std::string> description_;
     std::shared_ptr<std::string> parentId_;
     std::shared_ptr<std::string> roles_;
     std::shared_ptr<int32_t> activeUsers_;
@@ -241,7 +253,7 @@ class UserGroups
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[10]={ false };
+    bool dirtyFlag_[11]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
@@ -272,45 +284,50 @@ class UserGroups
         }
         if(dirtyFlag_[2])
         {
-            sql += "parent_id,";
+            sql += "description,";
             ++parametersCount;
         }
         if(dirtyFlag_[3])
+        {
+            sql += "parent_id,";
+            ++parametersCount;
+        }
+        if(dirtyFlag_[4])
         {
             sql += "roles,";
             ++parametersCount;
         }
         sql += "active_users,";
         ++parametersCount;
-        if(!dirtyFlag_[4])
+        if(!dirtyFlag_[5])
         {
             needSelection=true;
         }
         sql += "blocked_users,";
         ++parametersCount;
-        if(!dirtyFlag_[5])
+        if(!dirtyFlag_[6])
         {
             needSelection=true;
         }
-        if(dirtyFlag_[6])
+        if(dirtyFlag_[7])
         {
             sql += "created_by,";
             ++parametersCount;
         }
         sql += "created_at,";
         ++parametersCount;
-        if(!dirtyFlag_[7])
+        if(!dirtyFlag_[8])
         {
             needSelection=true;
         }
-        if(dirtyFlag_[8])
+        if(dirtyFlag_[9])
         {
             sql += "modified_by,";
             ++parametersCount;
         }
         sql += "modified_at,";
         ++parametersCount;
-        if(!dirtyFlag_[9])
+        if(!dirtyFlag_[10])
         {
             needSelection=true;
         }
@@ -354,10 +371,6 @@ class UserGroups
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
-        else
-        {
-            sql +="default,";
-        }
         if(dirtyFlag_[5])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
@@ -372,7 +385,16 @@ class UserGroups
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
+        else
+        {
+            sql +="default,";
+        }
         if(dirtyFlag_[7])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        if(dirtyFlag_[8])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
@@ -381,12 +403,12 @@ class UserGroups
         {
             sql +="default,";
         }
-        if(dirtyFlag_[8])
+        if(dirtyFlag_[9])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
-        if(dirtyFlag_[9])
+        if(dirtyFlag_[10])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
