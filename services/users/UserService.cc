@@ -1573,8 +1573,7 @@ UserService::validateAdminUserCredentials(const dto::SigninDto &signin_dto) {
       userToUpdate.setLastActive(trantor::Date::now());
       co_await mapper.update(userToUpdate);
 
-      std::unordered_set<std::string> allPermissions =
-          co_await PermissionService::getUserPermissions(user.getValueOfId());
+      std::unordered_set<std::string> allPermissions = co_await PermissionService::getUserPermissions(user.getValueOfId());
 
       Json::Value permissionsArray = Json::arrayValue;
       for (const auto &perm : allPermissions) {
@@ -1604,7 +1603,6 @@ UserService::validateAdminUserCredentials(const dto::SigninDto &signin_dto) {
               .set_payload_claim("username",
                                  jwt::claim(user.getValueOfUsername()))
               .set_payload_claim("email", jwt::claim(user.getValueOfEmail()))
-              .set_payload_claim("permissions", jwt::claim(permissionsStr))
               .sign(jwt::algorithm::hs256{jwtSecurityKey});
 
       response.success = true;
