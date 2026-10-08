@@ -5,7 +5,7 @@ int main() {
   printf("Starting GnpApi...\n");
   // Load config file
   //drogon::app().loadConfigFile("../config.json");
-  drogon::app().loadConfigFile("config.json");
+    drogon::app().loadConfigFile("config.json");
 
   drogon::app().registerPostHandlingAdvice(
       [](const drogon::HttpRequestPtr &req,

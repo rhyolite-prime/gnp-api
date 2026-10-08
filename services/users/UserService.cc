@@ -254,8 +254,12 @@ drogon::Task<dto::BaseApiResponse> UserService::getAllSubscribers(
   CoroMapper<drogon_model::Gnp::CommercialPartners> partnerMapper(dbClient);
 
   try {
-    // 1. Fetch UserSubscription summary
-    auto subscriptions = co_await subMapper.findBy(Criteria(UserSubscriptions::Cols::_user_id,  CompareOperator::EQ, userId) && Criteria(UserSubscriptions::Cols::_is_active, CompareOperator::EQ, true));
+    // 1. Fetch the user's active UserSubscription
+    auto subscriptions = co_await subMapper.findBy(
+        Criteria(UserSubscriptions::Cols::_user_id, CompareOperator::EQ,
+                 userId) &&
+        Criteria(UserSubscriptions::Cols::_is_active, CompareOperator::EQ,
+                 true));
 
     if (subscriptions.empty()) {
       dto::BaseApiResponse response;
@@ -267,31 +271,42 @@ drogon::Task<dto::BaseApiResponse> UserService::getAllSubscribers(
 
     auto subscription = subscriptions.front();
 
-    // 2. Fetch Partner for Name
-    auto partner = co_await partnerMapper.findOne(Criteria(
-      drogon_model::Gnp::CommercialPartners::Cols::_id, CompareOperator::EQ, partnerId));
+    // 2. Resolve the partner from the subscription itself (no partnerId
+    //    parameter needed). UserSubscriptions carries the partner linkage.
+    std::string partnerName = "Unknown Partner";
+    bool hasPartner =
+        subscription.getPartnerId() != nullptr; // column may be nullable
 
-    // 3. Fetch Renewal History
+    if (hasPartner) {
+      try {
+        auto partner = co_await partnerMapper.findByPrimaryKey(
+            subscription.getValueOfPartnerId());
+        partnerName = partner.getValueOfName();
+      } catch (const DrogonDbException &) {
+        // Partner row missing — fall back to a safe label instead of failing
+        // the whole request.
+        partnerName = "Unknown Partner";
+      }
+    }
+
+    // 3. Fetch renewal history for this user only (drop the partner filter).
+    //    Renewals are already scoped to the user by user_id.
     auto renewals =
         co_await renewalMapper
             .orderBy(drogon_model::Gnp::SubscriptionRenewalHistory::Cols::
                          _created_at,
                      SortOrder::DESC)
-            .findBy(Criteria(drogon_model::Gnp::SubscriptionRenewalHistory::
-                                 Cols::_user_id,
-                             CompareOperator::EQ, userId) &&
-                    Criteria(drogon_model::Gnp::SubscriptionRenewalHistory::
-                                 Cols::_partner_id,
-                             CompareOperator::EQ, partnerId));
+            .findBy(
+                Criteria(drogon_model::Gnp::SubscriptionRenewalHistory::Cols::
+                             _user_id,
+                         CompareOperator::EQ, userId));
 
     // 4. Build JSON Response
     Json::Value result;
 
     Json::Value summary;
-    summary["package"] =
-        subscription.getValueOfSubscriptionPlanDescription() + " (Assigned)";
-    summary["dueDate"] =
-        subscription.getValueOfEndDate().toCustomFormattedString("%b %d, %Y");
+    summary["package"] =  subscription.getValueOfSubscriptionPlanDescription() + " (Assigned)";
+    summary["dueDate"] = subscription.getValueOfEndDate().toCustomFormattedString("%b %d, %Y");
     summary["billingCycle"] = subscription.getValueOfBillingCycle();
     summary["subscriptionId"] = subscription.getValueOfId();
 
@@ -301,7 +316,6 @@ drogon::Task<dto::BaseApiResponse> UserService::getAllSubscribers(
     summary["validUntil"] = endDateObj.toCustomFormattedString("%Y-%m-%d");
 
     auto now = trantor::Date::now();
-
     int64_t diffDays =
         (endDateObj.microSecondsSinceEpoch() - now.microSecondsSinceEpoch()) /
         (1000000LL * 3600 * 24);
@@ -311,15 +325,13 @@ drogon::Task<dto::BaseApiResponse> UserService::getAllSubscribers(
 
     Json::Value historyArray = Json::arrayValue;
     for (const auto &renewal : renewals) {
-
       Json::Value historyItem;
       historyItem["date"] =
           renewal.getValueOfCreatedAt().toCustomFormattedString("%b %d, %Y");
       historyItem["package"] = renewal.getValueOfSubscriptionPlanName();
 
-      // Amount format: $0.00 (Covered by {Partner Name})
+      // Amount format: GHS 0.00 (Covered by {Partner Name})
       std::string amountStr = renewal.getValueOfAmountPaid();
-      std::string partnerName = partner.getValueOfName();
       historyItem["amount"] =
           "GHS " + amountStr + " (Covered by " + partnerName + ")";
 
