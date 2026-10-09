@@ -1999,13 +1999,13 @@ drogon::Task<HttpResponsePtr> AdminController::createSubscriber(HttpRequestPtr r
     co_return HttpResponse::newHttpJsonResponse(response.toJson());
   }
 
-  gnp::dto::UserDto dto;
+  gnp::dto::SubscriberDto dto;
   dto.fromJson(*json);
 
   auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
   auto &userService = plugin->getUserService();
 
-  auto result = co_await userService.create(dto);
+  auto result = co_await userService.createSubscriber(dto);
   co_return HttpResponse::newHttpJsonResponse(result.toJson());
 
 

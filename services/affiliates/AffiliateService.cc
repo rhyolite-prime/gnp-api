@@ -232,8 +232,7 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::getAllApplicants(int pageNo
     dto::BaseApiResponse errorResponse;
     errorResponse.success = false;
     errorResponse.error["code"] = constants::ERR_DB_QUERY;
-    errorResponse.error["message"] =
-        "Database error while fetching commercial partners.";
+    errorResponse.error["message"] = "Database error while fetching commercial partners.";
     errorResponse.error["detail"] = e.base().what();
     co_return errorResponse;
   }

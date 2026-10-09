@@ -144,6 +144,7 @@ class UserSubscriptions
     ///Set the value of the column partner_id
     void setPartnerId(const std::string &pPartnerId) noexcept;
     void setPartnerId(std::string &&pPartnerId) noexcept;
+    void setPartnerIdToNull() noexcept;
 
     /**  For column subscription_plan_id  */
     ///Get the value of the column subscription_plan_id, returns the default value if the column is null

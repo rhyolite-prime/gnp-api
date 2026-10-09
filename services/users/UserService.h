@@ -34,6 +34,8 @@ public:
 
   drogon::Task<dto::BaseApiResponse> create(const dto::UserDto &userDto);
 
+  drogon::Task<dto::BaseApiResponse> createSubscriber(const dto::SubscriberDto &dto);
+
   drogon::Task<dto::BaseApiResponse> createAdminUser(const dto::AdminUserDto &userDto);
 
   drogon::Task<dto::BaseApiResponse> updateAdminUser(const dto::AdminUserDto &userDto, const std::string &userId);
