@@ -23,6 +23,7 @@ public:
   ADD_METHOD_TO(SubscriptionsController::findNewsPaperByDateAndPublication, std::string(PREFIX) + "find-newspaper-by-date", Get, Options, "JwtAuthFilter");
   ADD_METHOD_TO(SubscriptionsController::buyCopy, std::string(PREFIX) + "buy-copy", Post, Options, "JwtAuthFilter");
   ADD_METHOD_TO(SubscriptionsController::fulfillBuyCopy, std::string(PREFIX) + "fulfill-buy-copy", Get, Options);
+  ADD_METHOD_TO(SubscriptionsController::fulfillSubscriptionPayment, std::string(PREFIX) + "fulfill-subscription-payment", Get, Options, "JwtAuthFilter");
   ADD_METHOD_TO(SubscriptionsController::manageUserSubscription, std::string(PREFIX) + "user", Post);
   ADD_METHOD_TO(SubscriptionsController::renew, std::string(PREFIX) + "renew", Post);
   ADD_METHOD_TO(SubscriptionsController::renewSubscriptionViaDirectDebit, std::string(PREFIX) + "renew-subscription-via-direct-debit", Get);
@@ -46,6 +47,8 @@ public:
   Task<HttpResponsePtr> buyCopy(HttpRequestPtr req);
 
   Task<HttpResponsePtr> fulfillBuyCopy(HttpRequestPtr req);
+
+  Task<HttpResponsePtr> fulfillSubscriptionPayment(HttpRequestPtr req);
 
   void manageUserSubscription(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 

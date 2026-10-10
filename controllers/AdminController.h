@@ -52,6 +52,7 @@ public:
   ADD_METHOD_TO(AdminController::renewUserSubscription, std::string(PREFIX) + "renew-user-subscription", Post, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::getPartnerSubscriberInfo, std::string(PREFIX) + "get-partner-subscriber-info/{1}/{2}", Get, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::getSubscriberInfo, std::string(PREFIX) + "get-subscriber-info/{1}", Get, Options, "JwtAuthFilter");
+  ADD_METHOD_TO(AdminController::assignSubscriptionPlanToSubscriber, std::string(PREFIX) + "assign-subscriber-plan", Post, Options, "JwtAuthFilter");
 
   // campaigns
   ADD_METHOD_TO(AdminController::getAllCampaigns, std::string(PREFIX) + "get-all-campaigns", Get, Options, "JwtAuthFilter");
@@ -112,6 +113,7 @@ public:
    ADD_METHOD_TO(AdminController::getAllSubscribers, std::string(PREFIX) + "get-subscribers", Get, Options, "JwtAuthFilter");
    ADD_METHOD_TO(AdminController::createSubscriber, std::string(PREFIX) + "create-subscriber", Post, Options, "JwtAuthFilter");
    ADD_METHOD_TO(AdminController::updateSubscriber, std::string(PREFIX) + "update-subscriber/{1}", Put, Options, "JwtAuthFilter");
+   ADD_METHOD_TO(AdminController::updateSubscriberStatus, std::string(PREFIX) + "update-subscriber-status", Put, Options, "JwtAuthFilter");
    ADD_METHOD_TO(AdminController::deleteSubscriber, std::string(PREFIX) + "delete-subscriber/{1}", Delete, Options, "JwtAuthFilter");
    ADD_METHOD_TO(AdminController::resetSubscriberPassword, std::string(PREFIX) + "reset-subscriber-password/{1}", Get, Options, "JwtAuthFilter");
 
@@ -281,8 +283,10 @@ public:
   drogon::Task<HttpResponsePtr> getAllSubscribers(HttpRequestPtr req);
   drogon::Task<HttpResponsePtr> createSubscriber(HttpRequestPtr req);
   drogon::Task<HttpResponsePtr> updateSubscriber(HttpRequestPtr req, std::string subscriberId);
+  drogon::Task<HttpResponsePtr> updateSubscriberStatus(HttpRequestPtr req);
   drogon::Task<HttpResponsePtr> deleteSubscriber(HttpRequestPtr req, std::string subscriberId);
   drogon::Task<HttpResponsePtr> resetSubscriberPassword(HttpRequestPtr req, std::string subscriberId);
+ Task<HttpResponsePtr> assignSubscriptionPlanToSubscriber(HttpRequestPtr req);
 
    // partner invoices
    drogon::Task<HttpResponsePtr> getAllPartnerInvoices(HttpRequestPtr req);

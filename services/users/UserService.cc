@@ -13,6 +13,8 @@
 #include "Users.h"
 #include "bcrypt.h"
 #include "constants/ErrorCodes.h"
+#include "dto/CreatePaymentDto.h"
+#include "dto/InitializePaymentRequest.h"
 #include "dto/SendEmailDto.h"
 #include "dto/SigninDto.h"
 #include "services/email/EmailService.h"
@@ -118,6 +120,7 @@ UserService::getAll(int pageNo, int pageSize, const std::string &query) {
   co_return response;
 }
 
+
 drogon::Task<dto::BaseApiResponse> UserService::getAllSubscribers(
     int pageNo, int pageSize, const std::string &query,
     const std::string &dateJoinedStartDate,
@@ -202,10 +205,12 @@ drogon::Task<dto::BaseApiResponse> UserService::getAllSubscribers(
 
     // 7. Paginated fetch (newest first is usually nice for subscribers)
     int offset = (pageNo - 1) * pageSize;
-    auto users = co_await mp.orderBy(Users::Cols::_created_at, SortOrder::DESC)
-                     .limit(pageSize)
-                     .offset(offset)
-                     .findBy(criteria);
+    auto users =
+        co_await mp
+            .orderBy(Users::Cols::_created_at, drogon::orm::SortOrder::DESC)
+            .limit(pageSize)
+            .offset(offset)
+            .findBy(criteria);
 
     auto totalPages = (totalCount + pageSize - 1) / pageSize;
 
@@ -219,6 +224,48 @@ drogon::Task<dto::BaseApiResponse> UserService::getAllSubscribers(
     response.result["upperBound"] = (int)totalPages == pageNo
                                         ? (Json::UInt64)totalCount
                                         : (Json::UInt64)(pageNo * pageSize);
+
+    // 9. Fetch subscription plan IDs and names for all users in this page
+    struct SubscriptionInfo {
+      std::string planId;
+      std::string planName;
+    };
+    std::map<std::string, SubscriptionInfo> subscriptionMap;
+
+    if (!users.empty()) {
+      std::string userIdsCondition = "(";
+      for (size_t i = 0; i < users.size(); ++i) {
+        userIdsCondition += "'" + users[i].getValueOfId() + "'";
+        if (i < users.size() - 1) {
+          userIdsCondition += ",";
+        }
+      }
+      userIdsCondition += ")";
+
+      std::string sql = "SELECT user_id, subscription_plan_id, "
+                        "subscription_plan_description "
+                        "FROM user_subscriptions "
+                        "WHERE is_active = true AND user_id IN " +
+                        userIdsCondition;
+
+      try {
+        auto res = co_await dbClient->execSqlCoro(sql);
+        for (const auto &row : res) {
+          SubscriptionInfo info;
+          info.planId = row["subscription_plan_id"].isNull()
+                            ? ""
+                            : row["subscription_plan_id"].as<std::string>();
+          info.planName = row["subscription_plan_description"].isNull()
+                              ? ""
+                              : row["subscription_plan_description"].as<std::string>();
+          subscriptionMap[row["user_id"].as<std::string>()] = info;
+        }
+      } catch (const DrogonDbException &e) {
+        LOG_WARN << "[getAllSubscribers] Failed to fetch subscription data: "
+                 << e.base().what();
+        // Continue without subscription data rather than failing the request
+      }
+    }
 
     Json::Value data = Json::arrayValue;
     for (const auto &user : users) {
@@ -237,6 +284,18 @@ drogon::Task<dto::BaseApiResponse> UserService::getAllSubscribers(
       camelCaseRole["lastActive"] = roleJson["last_active"];
       camelCaseRole["affiliateId"] = roleJson["affiliate_id"];
       camelCaseRole["partnerId"] = roleJson["partner_id"];
+
+      // Add subscriptionPlanId and subscriptionPlanName
+      std::string userId = roleJson["id"].asString();
+      auto it = subscriptionMap.find(userId);
+      if (it != subscriptionMap.end()) {
+        camelCaseRole["subscriptionPlanId"] = it->second.planId;
+        camelCaseRole["subscriptionPlanName"] = it->second.planName;
+      } else {
+        camelCaseRole["subscriptionPlanId"] = Json::nullValue;
+        camelCaseRole["subscriptionPlanName"] = Json::nullValue;
+      }
+
       data.append(camelCaseRole);
     }
     response.result["data"] = data;
@@ -250,7 +309,10 @@ drogon::Task<dto::BaseApiResponse> UserService::getAllSubscribers(
   co_return response;
 }
 
-  drogon::Task<::gnp::dto::BaseApiResponse> UserService::getSubscriberSubscriptionSummary(std::string userId) {
+
+
+
+drogon::Task<::gnp::dto::BaseApiResponse> UserService::getSubscriberSubscriptionSummary(std::string userId) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<UserSubscriptions> subMapper(dbClient);
   CoroMapper<drogon_model::Gnp::SubscriptionRenewalHistory> renewalMapper(dbClient);
@@ -258,11 +320,11 @@ drogon::Task<dto::BaseApiResponse> UserService::getAllSubscribers(
 
   try {
     // 1. Fetch the user's active UserSubscription
-    auto subscriptions = co_await subMapper.findBy(
-        Criteria(UserSubscriptions::Cols::_user_id, CompareOperator::EQ,
-                 userId) &&
-        Criteria(UserSubscriptions::Cols::_is_active, CompareOperator::EQ,
-                 true));
+    auto subscriptions =
+        co_await subMapper.findBy(Criteria(UserSubscriptions::Cols::_user_id,
+                                           CompareOperator::EQ, userId) &&
+                                  Criteria(UserSubscriptions::Cols::_is_active,
+                                           CompareOperator::EQ, true));
 
     if (subscriptions.empty()) {
       dto::BaseApiResponse response;
@@ -276,7 +338,7 @@ drogon::Task<dto::BaseApiResponse> UserService::getAllSubscribers(
 
     // 2. Resolve the partner from the subscription itself (no partnerId
     //    parameter needed). UserSubscriptions carries the partner linkage.
-    std::string partnerName = "Unknown Partner";
+    std::string partnerName = "";
     bool hasPartner =
         subscription.getPartnerId() != nullptr; // column may be nullable
 
@@ -288,7 +350,7 @@ drogon::Task<dto::BaseApiResponse> UserService::getAllSubscribers(
       } catch (const DrogonDbException &) {
         // Partner row missing — fall back to a safe label instead of failing
         // the whole request.
-        partnerName = "Unknown Partner";
+        partnerName = "";
       }
     }
 
@@ -296,20 +358,19 @@ drogon::Task<dto::BaseApiResponse> UserService::getAllSubscribers(
     //    Renewals are already scoped to the user by user_id.
     auto renewals =
         co_await renewalMapper
-            .orderBy(drogon_model::Gnp::SubscriptionRenewalHistory::Cols::
-                         _created_at,
-                     SortOrder::DESC)
-            .findBy(
-                Criteria(drogon_model::Gnp::SubscriptionRenewalHistory::Cols::
-                             _user_id,
-                         CompareOperator::EQ, userId));
+            .orderBy(drogon_model::Gnp::SubscriptionRenewalHistory::Cols::_created_at, SortOrder::DESC)
+            .findBy(Criteria(
+                drogon_model::Gnp::SubscriptionRenewalHistory::Cols::_user_id,
+                CompareOperator::EQ, userId));
 
     // 4. Build JSON Response
     Json::Value result;
 
     Json::Value summary;
-    summary["package"] =  subscription.getValueOfSubscriptionPlanDescription() + " (Assigned)";
-    summary["dueDate"] = subscription.getValueOfEndDate().toCustomFormattedString("%b %d, %Y");
+    summary["package"] =
+        subscription.getValueOfSubscriptionPlanDescription() + " (Assigned)";
+    summary["dueDate"] =
+        subscription.getValueOfEndDate().toCustomFormattedString("%b %d, %Y");
     summary["billingCycle"] = subscription.getValueOfBillingCycle();
     summary["subscriptionId"] = subscription.getValueOfId();
 
@@ -329,14 +390,12 @@ drogon::Task<dto::BaseApiResponse> UserService::getAllSubscribers(
     Json::Value historyArray = Json::arrayValue;
     for (const auto &renewal : renewals) {
       Json::Value historyItem;
-      historyItem["date"] =
-          renewal.getValueOfCreatedAt().toCustomFormattedString("%b %d, %Y");
+      historyItem["date"] = renewal.getValueOfCreatedAt().toCustomFormattedString("%b %d, %Y");
       historyItem["package"] = renewal.getValueOfSubscriptionPlanName();
 
       // Amount format: GHS 0.00 (Covered by {Partner Name})
       std::string amountStr = renewal.getValueOfAmountPaid();
-      historyItem["amount"] =
-          "GHS " + amountStr + " (Covered by " + partnerName + ")";
+      historyItem["amount"] = partnerName.empty() ? "GHS " + amountStr : "GHS " + amountStr + " (Covered by " + partnerName + ")";
 
       historyItem["status"] = renewal.getValueOfTransactionStatus();
 
@@ -363,6 +422,7 @@ drogon::Task<dto::BaseApiResponse> UserService::getAllSubscribers(
     co_return errorResponse;
   }
 }
+
 
 drogon::Task<dto::BaseApiResponse> UserService::getDetails(const std::string &userId) {
   auto dbClient = drogon::app().getDbClient();
@@ -412,10 +472,7 @@ drogon::Task<dto::BaseApiResponse> UserService::getDetails(const std::string &us
   co_return response;
 }
 
-
-
-
-  drogon::Task<dto::BaseApiResponse> UserService::getAdminUsers(int pageNo, int pageSize, const std::string &query,
+drogon::Task<dto::BaseApiResponse> UserService::getAdminUsers(int pageNo, int pageSize, const std::string &query,
                            const std::string &roleId,
                            const std::string &userGroupId) {
   auto dbClient = drogon::app().getDbClient();
@@ -433,11 +490,15 @@ drogon::Task<dto::BaseApiResponse> UserService::getDetails(const std::string &us
   }
 
   if (!roleId.empty()) {
-    criteria = criteria && Criteria(drogon::orm::CustomSql("\"roles\"::text LIKE $?"), "%\"" + roleId + "\"%");
+    criteria =
+        criteria && Criteria(drogon::orm::CustomSql("\"roles\"::text LIKE $?"),
+                             "%\"" + roleId + "\"%");
   }
 
   if (!userGroupId.empty()) {
-    criteria = criteria && Criteria(drogon::orm::CustomSql("\"user_groups\"::text LIKE $?"), "%\"" + userGroupId + "\"%");
+    criteria = criteria &&
+               Criteria(drogon::orm::CustomSql("\"user_groups\"::text LIKE $?"),
+                        "%\"" + userGroupId + "\"%");
   }
 
   dto::BaseApiResponse response;
@@ -456,7 +517,12 @@ drogon::Task<dto::BaseApiResponse> UserService::getDetails(const std::string &us
     }
 
     int offset = (pageNo - 1) * pageSize;
-    auto users = co_await mp.orderBy(Users::Cols::_created_at, drogon::orm::SortOrder::DESC).limit(pageSize).offset(offset).findBy(criteria);
+    auto users =
+        co_await mp
+            .orderBy(Users::Cols::_created_at, drogon::orm::SortOrder::DESC)
+            .limit(pageSize)
+            .offset(offset)
+            .findBy(criteria);
 
     auto totalPages = (totalCount + pageSize - 1) / pageSize;
 
@@ -520,8 +586,6 @@ drogon::Task<dto::BaseApiResponse> UserService::getDetails(const std::string &us
 }
 
 
-
-
 drogon::Task<dto::BaseApiResponse> UserService::getPartnerAdminUsers(const std::string &partnerId, int pageNo,
                                   int pageSize, const std::string &query) {
   auto dbClient = drogon::app().getDbClient();
@@ -554,7 +618,12 @@ drogon::Task<dto::BaseApiResponse> UserService::getPartnerAdminUsers(const std::
 
     // 3. Find the paginated data
     int offset = (pageNo - 1) * pageSize;
-    auto users = co_await mp.limit(pageSize).offset(offset).findBy(criteria);
+    auto users =
+        co_await mp
+            .orderBy(Users::Cols::_created_at, drogon::orm::SortOrder::DESC)
+            .limit(pageSize)
+            .offset(offset)
+            .findBy(criteria);
 
     // 4. Build the final response
     response.success = true;
@@ -622,7 +691,12 @@ drogon::Task<dto::BaseApiResponse> UserService::getPartnerSubscribers(const std:
 
     // 3. Find the paginated data
     int offset = (pageNo - 1) * pageSize;
-    auto users = co_await mp.limit(pageSize).offset(offset).findBy(criteria);
+    auto users =
+        co_await mp
+            .orderBy(Users::Cols::_created_at, drogon::orm::SortOrder::DESC)
+            .limit(pageSize)
+            .offset(offset)
+            .findBy(criteria);
 
     auto totalPages = (totalCount + pageSize - 1) / pageSize;
 
@@ -745,8 +819,6 @@ drogon::Task<dto::BaseApiResponse> UserService::create(const dto::UserDto &userD
   co_return response;
 }
 
-
-
 drogon::Task<dto::BaseApiResponse> UserService::createSubscriber(const dto::SubscriberDto &dto) {
 
   auto dbClient = drogon::app().getDbClient();
@@ -754,8 +826,7 @@ drogon::Task<dto::BaseApiResponse> UserService::createSubscriber(const dto::Subs
 
   // Trim and normalise inputs
   std::string email = utils::StringUtils::trim(dto.getEmail());
-  std::transform(email.begin(), email.end(), email.begin(),
-                 [](unsigned char c) { return std::tolower(c); });
+  std::transform(email.begin(), email.end(), email.begin(), [](unsigned char c) { return std::tolower(c); });
 
   std::string phoneNumber = dto.getPhoneNumber();
   if (phoneNumber.length() >= 3 && phoneNumber.substr(0, 3) == "233") {
@@ -766,8 +837,7 @@ drogon::Task<dto::BaseApiResponse> UserService::createSubscriber(const dto::Subs
 
   try {
     // 1. Check for duplicate email
-    auto existingByEmail = co_await mp.findBy(
-        Criteria(Users::Cols::_email, CompareOperator::EQ, email));
+    auto existingByEmail = co_await mp.findBy(Criteria(Users::Cols::_email, CompareOperator::EQ, email));
     if (!existingByEmail.empty()) {
       dto::BaseApiResponse errorResponse;
       errorResponse.success = false;
@@ -801,14 +871,17 @@ drogon::Task<dto::BaseApiResponse> UserService::createSubscriber(const dto::Subs
       errorResponse.success = false;
       errorResponse.message = "Subscription plan not found";
       errorResponse.error["code"] = constants::ERR_RESOURCE_NOT_FOUND;
-      errorResponse.error["detail"] = "The specified subscription plan does not exist";
+      errorResponse.error["detail"] =
+          "The specified subscription plan does not exist";
       co_return errorResponse;
     }
-    auto& plan = plans[0];
+    auto &plan = plans[0];
 
     // 4. Parse subscription dates from the DTO
-    trantor::Date startDateObj = trantor::Date::fromDbStringLocal(dto.getSubscriptionStartDate());
-    trantor::Date endDateObj   = trantor::Date::fromDbStringLocal(dto.getSubscriptionEndDate());
+    trantor::Date startDateObj =
+        trantor::Date::fromDbStringLocal(dto.getSubscriptionStartDate());
+    trantor::Date endDateObj =
+        trantor::Date::fromDbStringLocal(dto.getSubscriptionEndDate());
 
     // 5. Generate a random password and create the user
     std::string password = utils::PasswordUtils::generateRandomPassword(8);
@@ -827,8 +900,8 @@ drogon::Task<dto::BaseApiResponse> UserService::createSubscriber(const dto::Subs
 
     auto user = co_await mp.insert(newSubscriber);
 
-    LOG_INFO << "[createSubscriber] Created subscriber — email: " << user.getValueOfEmail()
-             << ", password: " << password;
+    LOG_INFO << "[createSubscriber] Created subscriber — email: "
+             << user.getValueOfEmail() << ", password: " << password;
 
     // 6. Fetch newspapers for subscription entitlements
     std::vector<std::string> pubIdsList;
@@ -842,8 +915,9 @@ drogon::Task<dto::BaseApiResponse> UserService::createSubscriber(const dto::Subs
         }
       }
     } catch (...) {
-      LOG_WARN << "[createSubscriber] Failed to parse target publications for plan: "
-               << plan.getValueOfId();
+      LOG_WARN
+          << "[createSubscriber] Failed to parse target publications for plan: "
+          << plan.getValueOfId();
     }
 
     CoroMapper<drogon_model::Gnp::Newspapers> newsMapper(dbClient);
@@ -868,7 +942,8 @@ drogon::Task<dto::BaseApiResponse> UserService::createSubscriber(const dto::Subs
     newSub.setBillingCycle(dto.getBillingCycle());
     newSub.setStartDate(startDateObj);
     newSub.setEndDate(endDateObj);
-    newSub.setIsActive(true);
+    newSub.setIsActive(dto.getByPassPayment()); // inactive until payment confirmed when
+                                 // byPassPayment_ is false
     newSub.setSubscriptionIdentifier(utils::IdGeneratorUtils::generateRandomSixDigit());
 
     Json::Value entArray = Json::arrayValue;
@@ -883,116 +958,331 @@ drogon::Task<dto::BaseApiResponse> UserService::createSubscriber(const dto::Subs
     newSub.setCreatedAt(trantor::Date::now());
     co_await subMapper.insert(newSub);
 
-    // 8. Create subscription_renewal_history record
-    CoroMapper<drogon_model::Gnp::SubscriptionRenewalHistory> renewalMapper(dbClient);
-    drogon_model::Gnp::SubscriptionRenewalHistory renewal;
-    renewal.setSubscriptionIdentifier(newSub.getValueOfSubscriptionIdentifier());
-    renewal.setUserId(user.getValueOfId());
-    renewal.setUserName(user.getValueOfFirstName() + " " + user.getValueOfLastName());
-    renewal.setEmail(user.getValueOfEmail());
-    renewal.setSubscriptionPlanId(plan.getValueOfId());
-    renewal.setSubscriptionPlanName(plan.getValueOfName());
-    renewal.setPastBillingCycle("N/A");
-    renewal.setCurrentBillingCycle(dto.getBillingCycle());
-    renewal.setTransactionStatus("Successful");
-    renewal.setPaidBy(user.getValueOfFirstName() + " " + user.getValueOfLastName());
-    renewal.setAmountPaid(dto.getSubscriptionBillAmount());
-    renewal.setCreatedAt(trantor::Date::now());
-    co_await renewalMapper.insert(renewal);
-
-    // 9. Send welcome email with credentials and subscription details
+    // 8. Diverge on byPassPayment_
     auto plugin = drogon::app().getPlugin<plugins::GnpServicePlugin>();
     auto &emailService = plugin->getEmailService();
 
     dto::SendEmailDto emailDto;
     emailDto.setTo(email);
-    emailDto.setSubject("Welcome to Graphic News Plus");
 
-    std::string emailBody = R"(
-    <!DOCTYPE html>
-    <html>
-    <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-      body { margin: 0; padding: 0; background-color: #f4f6f8; font-family: 'Segoe UI', Arial, sans-serif; }
-      .wrapper { width: 100%; padding: 30px 0; }
-      .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
-      .header { background: linear-gradient(135deg, #D32F2F, #9A0007); color: #ffffff; padding: 30px 20px; text-align: center; }
-      .header h1 { margin: 0; font-size: 24px; }
-      .content { padding: 30px; color: #333; line-height: 1.6; }
-      .credentials { background: #f9fafb; border: 1px solid #eee; padding: 20px; border-radius: 8px; margin: 25px 0; }
-      .credential-item { margin-bottom: 15px; }
-      .credential-label { font-size: 13px; color: #888; margin-bottom: 5px; }
-      .credential-value { font-size: 16px; font-weight: bold; color: #D32F2F; font-family: monospace; background: #fff; padding: 8px 10px; border-radius: 5px; border: 1px dashed #ddd; }
-      .btn { display: inline-block; padding: 12px 25px; background-color: #D32F2F; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px; }
-      .cta { text-align: center; margin: 30px 0 15px; }
-      .link { word-break: break-all; color: #D32F2F; }
-      .footer { background: #f4f6f8; color: #888; text-align: center; padding: 20px; font-size: 12px; }
-    </style>
-    </head>
-    <body>
-    <div class="wrapper">
-      <div class="container">
-        <div class="header"><h1>Graphic News Plus</h1><p>Your Premium News Experience</p></div>
-        <div class="content">
-          <p>Hello )" + dto.getFirstName() + R"(,</p>
-          <p>Welcome to <strong>Graphic News Plus</strong>! Your account has been successfully created.</p>
-          <p>You can now access the platform here:</p>
-          <p><a href="https://new.graphicnewsplus.com?al=t" class="link">https://new.graphicnewsplus.com?al=t</a></p>
-          <p>Here are your login credentials:</p>
-          <div class="credentials">
-            <div class="credential-item">
-              <div class="credential-label">Username (Email)</div>
-              <div class="credential-value">)" + email + R"(</div>
-            </div>
-            <div class="credential-item">
-              <div class="credential-label">Password</div>
-              <div class="credential-value">)" + password + R"(</div>
-            </div>
-          </div>
-          <p>Your subscription details:</p>
-          <div class="credentials">
-            <div class="credential-item">
-              <div class="credential-label">Package</div>
-              <div style="font-size:16px;font-weight:bold;color:#333;background:#fff;padding:8px 10px;border-radius:5px;border:1px solid #ddd;">)" + plan.getValueOfName() + R"(</div>
-            </div>
-            <div class="credential-item">
-              <div class="credential-label">Validity Period</div>
-              <div style="font-size:16px;font-weight:bold;color:#333;background:#fff;padding:8px 10px;border-radius:5px;border:1px solid #ddd;">)" +
-                  startDateObj.toCustomFormattedString("%d %b %Y") + " to " +
-                  endDateObj.toCustomFormattedString("%d %b %Y") + R"(</div>
-            </div>
-          </div>
-          <p>For security reasons, please change your password immediately after your first login.</p>
-          <div class="cta">
-            <a href="https://new.graphicnewsplus.com?al=t" style="color:#ffffff !important;text-decoration:none;" class="btn">Login to Your Account</a>
-          </div>
-          <p style="font-size:13px;color:#777;">If the button above doesn't work, copy and paste this link into your browser:<br>
-            <a href="https://new.graphicnewsplus.com?al=t" class="link">https://new.graphicnewsplus.com?al=t</a>
-          </p>
-          <p>Enjoy unlimited access to curated, high-quality news content tailored for you.</p>
-        </div>
-        <div class="footer">
-          <p>&copy; )" + trantor::Date::now().toCustomFormattedString("%Y") + R"( Graphic News Plus</p>
-          <p>All rights reserved.</p>
-        </div>
-      </div>
-    </div>
-    </body>
-    </html>
-    )";
+    if (!dto.getByPassPayment()) {
+      // ---------------------------------------------------------------
+      // Payment required path:
+      //   a. Create a pending Payments record
+      //   b. Initialize Paystack to get the payment authorization URL
+      //   c. Send welcome email with payment link
+      //   (Renewal history is written by the payment callback handler)
+      // ---------------------------------------------------------------
+      const std::string paymentRef = newSub.getValueOfSubscriptionIdentifier();
 
-    emailDto.setBody(emailBody);
-    co_await emailService.sendEmailAsync(emailDto);
+      // a. Persist a pending payment record
+      auto &paymentService = plugin->getPaymentService();
+      dto::CreatePaymentDto paymentDto;
+      paymentDto.setUserId(user.getValueOfId());
+      paymentDto.setUserName(user.getValueOfFirstName() + " " +
+                             user.getValueOfLastName());
+      paymentDto.setUserEmail(user.getValueOfEmail());
+      paymentDto.setPackageName(plan.getValueOfName());
+      paymentDto.setAmountPaid(dto.getSubscriptionBillAmount());
+      paymentDto.setReceiptNo(paymentRef);
+      paymentDto.setTransactionReference(paymentRef);
+      paymentDto.setStatus("Pending");
+      co_await paymentService.createPaymentAsync(paymentDto);
 
-    LOG_INFO << "[createSubscriber] Welcome email sent to: " << email;
+      LOG_INFO << "[createSubscriber] Pending payment created — ref: "
+               << paymentRef;
+
+      // b. Initialize Paystack to get authorization URL
+      std::string paymentLink;
+      try {
+        auto &paystackApi = plugin->getPaystackApi();
+
+        double amountDouble = 0.0;
+        try {
+          amountDouble = std::stod(dto.getSubscriptionBillAmount());
+        } catch (...) {
+        }
+        long long amountKobo = static_cast<long long>(amountDouble * 100);
+
+        dto::InitializePaymentRequest paystackReq;
+        paystackReq.setAmount(std::to_string(amountKobo));
+        paystackReq.setEmail(email);
+        paystackReq.setPhone(phoneNumber);
+        paystackReq.setClientReference(paymentRef);
+        paystackReq.setCallBackUrl(
+            "https://new.graphicnewsplus.com/payment-callback?ref=" +
+            paymentRef);
+
+        auto paystackResp = co_await paystackApi.initializeAsync(paystackReq);
+        if (paystackResp.getStatus()) {
+          paymentLink = paystackResp.getData().getAuthorizationUrl();
+        }
+      } catch (...) {
+        LOG_WARN
+            << "[createSubscriber] Paystack initialization failed for ref: "
+            << paymentRef;
+      }
+
+      // c. Build payment-required email body
+      emailDto.setSubject(
+          "Welcome to Graphic News Plus \u2014 Complete Your Payment");
+
+      std::string paymentSection;
+      if (!paymentLink.empty()) {
+        paymentSection =
+            "<div style=\"background:#fff8e1;border:1px solid "
+            "#ffe082;border-radius:8px;padding:20px;margin:25px 0;\">"
+            "<p style=\"margin:0 0 "
+            "12px;font-weight:bold;color:#f57c00;\">&#9888; Your subscription "
+            "is pending payment</p>"
+            "<p style=\"margin:0 0 16px;color:#555;\">Please complete your "
+            "payment to activate your subscription.</p>"
+            "<div style=\"text-align:center;\"><a href=\"" +
+            paymentLink +
+            "\" "
+            "style=\"display:inline-block;padding:12px "
+            "30px;background-color:#D32F2F;color:#ffffff !important;"
+            "text-decoration:none;border-radius:6px;font-weight:600;font-size:"
+            "15px;\">Complete Payment</a></div>"
+            "<p style=\"margin:16px 0 "
+            "0;font-size:12px;color:#888;text-align:center;\">Or copy this "
+            "link:<br>"
+            "<a href=\"" +
+            paymentLink + "\" style=\"color:#D32F2F;word-break:break-all;\">" +
+            paymentLink +
+            "</a></p>"
+            "</div>";
+      } else {
+        paymentSection =
+            "<div style=\"background:#fff8e1;border:1px solid "
+            "#ffe082;border-radius:8px;padding:20px;margin:25px 0;\">"
+            "<p style=\"margin:0;font-weight:bold;color:#f57c00;\">&#9888; "
+            "Your subscription is pending payment</p>"
+            "<p style=\"margin:8px 0 0;color:#555;\">Our team will contact you "
+            "shortly with a payment link.</p>"
+            "</div>";
+      }
+
+      // Build the payment-required email (paymentSection was set above)
+      std::string emailBody =
+          "<!DOCTYPE html><html><head><meta charset=\"UTF-8\">"
+          "<meta name=\"viewport\" content=\"width=device-width, "
+          "initial-scale=1.0\">"
+          "<style>"
+          "body{margin:0;padding:0;background-color:#f4f6f8;font-family:'Segoe "
+          "UI',Arial,sans-serif;}"
+          ".wrapper{width:100%;padding:30px 0;}"
+          ".container{max-width:600px;margin:0 "
+          "auto;background:#ffffff;border-radius:10px;overflow:hidden;box-"
+          "shadow:0 8px 20px rgba(0,0,0,0.08);}"
+          ".header{background:linear-gradient(135deg,#D32F2F,#9A0007);color:#"
+          "ffffff;padding:30px 20px;text-align:center;}"
+          ".header h1{margin:0;font-size:24px;}"
+          ".content{padding:30px;color:#333;line-height:1.6;}"
+          ".credentials{background:#f9fafb;border:1px solid "
+          "#eee;padding:20px;border-radius:8px;margin:25px 0;}"
+          ".credential-item{margin-bottom:15px;}"
+          ".credential-label{font-size:13px;color:#888;margin-bottom:5px;}"
+          ".credential-value{font-size:16px;font-weight:bold;color:#D32F2F;"
+          "font-family:monospace;background:#fff;padding:8px "
+          "10px;border-radius:5px;border:1px dashed #ddd;}"
+          ".footer{background:#f4f6f8;color:#888;text-align:center;padding:"
+          "20px;font-size:12px;}"
+          "</style></head><body>"
+          "<div class=\"wrapper\"><div class=\"container\">"
+          "<div class=\"header\"><h1>Graphic News Plus</h1><p>Your Premium "
+          "News Experience</p></div>"
+          "<div class=\"content\">"
+          "<p>Hello " +
+          dto.getFirstName() +
+          ",</p>"
+          "<p>Welcome to <strong>Graphic News Plus</strong>! Your account has "
+          "been successfully created.</p>"
+          "<p>Here are your login credentials:</p>"
+          "<div class=\"credentials\">"
+          "<div class=\"credential-item\"><div "
+          "class=\"credential-label\">Username (Email)</div>"
+          "<div class=\"credential-value\">" +
+          email +
+          "</div></div>"
+          "<div class=\"credential-item\"><div "
+          "class=\"credential-label\">Password</div>"
+          "<div class=\"credential-value\">" +
+          password +
+          "</div></div>"
+          "</div>"
+          "<p>Your subscription details:</p>"
+          "<div class=\"credentials\">"
+          "<div class=\"credential-item\"><div "
+          "class=\"credential-label\">Package</div>"
+          "<div "
+          "style=\"font-size:16px;font-weight:bold;color:#333;background:#fff;"
+          "padding:8px 10px;border-radius:5px;border:1px solid #ddd;\">" +
+          plan.getValueOfName() +
+          "</div></div>"
+          "<div class=\"credential-item\"><div "
+          "class=\"credential-label\">Validity Period</div>"
+          "<div "
+          "style=\"font-size:16px;font-weight:bold;color:#333;background:#fff;"
+          "padding:8px 10px;border-radius:5px;border:1px solid #ddd;\">" +
+          startDateObj.toCustomFormattedString("%d %b %Y") + " to " +
+          endDateObj.toCustomFormattedString("%d %b %Y") +
+          "</div></div>"
+          "</div>" +
+          paymentSection +
+          "<p style=\"font-size:13px;color:#777;\">For security reasons, "
+          "please change your password after your first login.</p>"
+          "</div>"
+          "<div class=\"footer\"><p>&copy; " +
+          trantor::Date::now().toCustomFormattedString("%Y") +
+          " Graphic News Plus</p>"
+          "<p>All rights reserved.</p></div>"
+          "</div></div></body></html>";
+
+      emailDto.setBody(emailBody);
+      co_await emailService.sendEmailAsync(emailDto);
+
+      LOG_INFO << "[createSubscriber] Payment-required welcome email sent to: "
+               << email;
+
+    } else {
+      // ---------------------------------------------------------------
+      // byPassPayment_ == true: subscription already active.
+      // Write renewal history and send the standard welcome email.
+      // ---------------------------------------------------------------
+
+      // Renewal history
+      CoroMapper<drogon_model::Gnp::SubscriptionRenewalHistory> renewalMapper(
+          dbClient);
+      drogon_model::Gnp::SubscriptionRenewalHistory renewal;
+      renewal.setSubscriptionIdentifier(
+          newSub.getValueOfSubscriptionIdentifier());
+      renewal.setUserId(user.getValueOfId());
+      renewal.setUserName(user.getValueOfFirstName() + " " +
+                          user.getValueOfLastName());
+      renewal.setEmail(user.getValueOfEmail());
+      renewal.setSubscriptionPlanId(plan.getValueOfId());
+      renewal.setSubscriptionPlanName(plan.getValueOfName());
+      renewal.setPastBillingCycle("N/A");
+      renewal.setCurrentBillingCycle(dto.getBillingCycle());
+      renewal.setTransactionStatus("Successful");
+      renewal.setPaidBy(user.getValueOfFirstName() + " " +
+                        user.getValueOfLastName());
+      renewal.setAmountPaid(dto.getSubscriptionBillAmount());
+      renewal.setCreatedAt(trantor::Date::now());
+      co_await renewalMapper.insert(renewal);
+
+      // Standard welcome email (no payment section)
+      emailDto.setSubject("Welcome to Graphic News Plus");
+
+      std::string bypassEmailBody =
+          "<!DOCTYPE html><html><head><meta charset=\"UTF-8\">"
+          "<meta name=\"viewport\" content=\"width=device-width, "
+          "initial-scale=1.0\">"
+          "<style>"
+          "body{margin:0;padding:0;background-color:#f4f6f8;font-family:'Segoe "
+          "UI',Arial,sans-serif;}"
+          ".wrapper{width:100%;padding:30px 0;}"
+          ".container{max-width:600px;margin:0 "
+          "auto;background:#ffffff;border-radius:10px;overflow:hidden;box-"
+          "shadow:0 8px 20px rgba(0,0,0,0.08);}"
+          ".header{background:linear-gradient(135deg,#D32F2F,#9A0007);color:#"
+          "ffffff;padding:30px 20px;text-align:center;}"
+          ".header h1{margin:0;font-size:24px;}"
+          ".content{padding:30px;color:#333;line-height:1.6;}"
+          ".credentials{background:#f9fafb;border:1px solid "
+          "#eee;padding:20px;border-radius:8px;margin:25px 0;}"
+          ".credential-item{margin-bottom:15px;}"
+          ".credential-label{font-size:13px;color:#888;margin-bottom:5px;}"
+          ".credential-value{font-size:16px;font-weight:bold;color:#D32F2F;"
+          "font-family:monospace;background:#fff;padding:8px "
+          "10px;border-radius:5px;border:1px dashed #ddd;}"
+          ".btn{display:inline-block;padding:12px "
+          "25px;background-color:#D32F2F;color:#ffffff;text-decoration:none;"
+          "border-radius:6px;font-weight:600;font-size:14px;}"
+          ".cta{text-align:center;margin:30px 0 15px;}"
+          ".link{word-break:break-all;color:#D32F2F;}"
+          ".footer{background:#f4f6f8;color:#888;text-align:center;padding:"
+          "20px;font-size:12px;}"
+          "</style></head><body>"
+          "<div class=\"wrapper\"><div class=\"container\">"
+          "<div class=\"header\"><h1>Graphic News Plus</h1><p>Your Premium "
+          "News Experience</p></div>"
+          "<div class=\"content\">"
+          "<p>Hello " +
+          dto.getFirstName() +
+          ",</p>"
+          "<p>Welcome to <strong>Graphic News Plus</strong>! Your account has "
+          "been successfully created.</p>"
+          "<p>You can now access the platform here:</p>"
+          "<p><a href=\"https://new.graphicnewsplus.com?al=t\" "
+          "class=\"link\">https://new.graphicnewsplus.com?al=t</a></p>"
+          "<p>Here are your login credentials:</p>"
+          "<div class=\"credentials\">"
+          "<div class=\"credential-item\"><div "
+          "class=\"credential-label\">Username (Email)</div>"
+          "<div class=\"credential-value\">" +
+          email +
+          "</div></div>"
+          "<div class=\"credential-item\"><div "
+          "class=\"credential-label\">Password</div>"
+          "<div class=\"credential-value\">" +
+          password +
+          "</div></div>"
+          "</div>"
+          "<p>Your subscription details:</p>"
+          "<div class=\"credentials\">"
+          "<div class=\"credential-item\"><div "
+          "class=\"credential-label\">Package</div>"
+          "<div "
+          "style=\"font-size:16px;font-weight:bold;color:#333;background:#fff;"
+          "padding:8px 10px;border-radius:5px;border:1px solid #ddd;\">" +
+          plan.getValueOfName() +
+          "</div></div>"
+          "<div class=\"credential-item\"><div "
+          "class=\"credential-label\">Validity Period</div>"
+          "<div "
+          "style=\"font-size:16px;font-weight:bold;color:#333;background:#fff;"
+          "padding:8px 10px;border-radius:5px;border:1px solid #ddd;\">" +
+          startDateObj.toCustomFormattedString("%d %b %Y") + " to " +
+          endDateObj.toCustomFormattedString("%d %b %Y") +
+          "</div></div>"
+          "</div>"
+          "<p>For security reasons, please change your password immediately "
+          "after your first login.</p>"
+          "<div class=\"cta\">"
+          "<a href=\"https://new.graphicnewsplus.com?al=t\" "
+          "style=\"color:#ffffff !important;text-decoration:none;\" "
+          "class=\"btn\">Login to Your Account</a>"
+          "</div>"
+          "<p style=\"font-size:13px;color:#777;\">If the button above doesn't "
+          "work, copy and paste this link into your browser:<br>"
+          "<a href=\"https://new.graphicnewsplus.com?al=t\" "
+          "class=\"link\">https://new.graphicnewsplus.com?al=t</a></p>"
+          "<p>Enjoy unlimited access to curated, high-quality news content "
+          "tailored for you.</p>"
+          "</div>"
+          "<div class=\"footer\"><p>&copy; " +
+          trantor::Date::now().toCustomFormattedString("%Y") +
+          " Graphic News Plus</p>"
+          "<p>All rights reserved.</p></div>"
+          "</div></div></body></html>";
+
+      emailDto.setBody(bypassEmailBody);
+      co_await emailService.sendEmailAsync(emailDto);
+
+      LOG_INFO << "[createSubscriber] Welcome email sent to: " << email;
+    }
 
     // 10. Build success response
     dto::BaseApiResponse successResponse;
     successResponse.success = true;
-    successResponse.message = "Subscriber created successfully";
+    successResponse.message = dto.getByPassPayment()
+                                  ? "Subscriber created successfully"
+                                  : "Subscriber created. A payment link has "
+                                    "been sent to their email.";
     successResponse.result["id"] = user.getValueOfId();
+    successResponse.result["subscriptionActive"] = dto.getByPassPayment();
     co_return successResponse;
 
   } catch (const drogon::orm::DrogonDbException &e) {
@@ -1004,9 +1294,6 @@ drogon::Task<dto::BaseApiResponse> UserService::createSubscriber(const dto::Subs
     co_return errorResponse;
   }
 }
-
-
-
 
 drogon::Task<dto::BaseApiResponse> UserService::createAdminUser(const dto::AdminUserDto &userDto) {
 
@@ -1133,6 +1420,9 @@ drogon::Task<dto::BaseApiResponse> UserService::update(const dto::UserDto &userD
 
   co_return response;
 }
+
+
+
 
 drogon::Task<dto::BaseApiResponse> UserService::updateAdminUser(const dto::AdminUserDto &userDto,
                              const std::string &userId) {
@@ -1403,7 +1693,8 @@ drogon::Task<dto::BaseApiResponse> UserService::invitePartnerAdminUser(const dto
   co_return response;
 }
 
-drogon::Task<dto::BaseApiResponse> UserService::updatePartnerAdminUser(const dto::AdminUserDto &userDto,
+drogon::Task<dto::BaseApiResponse>
+UserService::updatePartnerAdminUser(const dto::AdminUserDto &userDto,
                                     const std::string &adminUserId,
                                     const std::string &partnerId) {
 
@@ -1810,7 +2101,8 @@ UserService::validateUserCredentials(const dto::SigninDto &signin_dto) {
   co_return response;
 }
 
-drogon::Task<dto::BaseApiResponse> UserService::validateAdminUserCredentials(const dto::SigninDto &signin_dto) {
+drogon::Task<dto::BaseApiResponse>
+UserService::validateAdminUserCredentials(const dto::SigninDto &signin_dto) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Users> mapper(dbClient);
 
@@ -1838,7 +2130,8 @@ drogon::Task<dto::BaseApiResponse> UserService::validateAdminUserCredentials(con
       userToUpdate.setLastActive(trantor::Date::now());
       co_await mapper.update(userToUpdate);
 
-      std::unordered_set<std::string> allPermissions = co_await PermissionService::getUserPermissions(user.getValueOfId());
+      std::unordered_set<std::string> allPermissions =
+          co_await PermissionService::getUserPermissions(user.getValueOfId());
 
       Json::Value permissionsArray = Json::arrayValue;
       for (const auto &perm : allPermissions) {
@@ -1862,9 +2155,11 @@ drogon::Task<dto::BaseApiResponse> UserService::validateAdminUserCredentials(con
               .set_issuer(jwtIssuer)
               .set_type("JWT")
               .set_issued_at(std::chrono::system_clock::now())
-              .set_expires_at(std::chrono::system_clock::now() + std::chrono::hours(24 * 3660))
+              .set_expires_at(std::chrono::system_clock::now() +
+                              std::chrono::hours(24 * 3660))
               .set_payload_claim("userId", jwt::claim(user.getValueOfId()))
-              .set_payload_claim("username",jwt::claim(user.getValueOfUsername()))
+              .set_payload_claim("username",
+                                 jwt::claim(user.getValueOfUsername()))
               .set_payload_claim("email", jwt::claim(user.getValueOfEmail()))
               .sign(jwt::algorithm::hs256{jwtSecurityKey});
 
@@ -1873,7 +2168,8 @@ drogon::Task<dto::BaseApiResponse> UserService::validateAdminUserCredentials(con
       response.result["token"] = token;
       response.result["userId"] = user.getValueOfId();
       response.result["username"] = user.getValueOfUsername();
-      response.result["fullName"] = user.getValueOfFirstName() + " " + user.getValueOfLastName();
+      response.result["fullName"] =
+          user.getValueOfFirstName() + " " + user.getValueOfLastName();
       response.result["email"] = user.getValueOfEmail();
     } else {
       // Password is incorrect
@@ -3384,8 +3680,7 @@ void UserService::setPassword(
       "GET %s", sessionId.c_str());
 }
 
-drogon::Task<gnp::dto::BaseApiResponse>
-UserService::registerProspectiveUser(const dto::UserDto &userDto) {
+drogon::Task<gnp::dto::BaseApiResponse> UserService::registerProspectiveUser(const dto::UserDto &userDto) {
 
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Users> mp(dbClient);
@@ -3447,5 +3742,321 @@ UserService::registerProspectiveUser(const dto::UserDto &userDto) {
 
   co_return response;
 }
+
+
+drogon::Task<dto::BaseApiResponse> UserService::updateUserStatus(const dto::UserStatusDto &dto) {
+  auto dbClient = drogon::app().getDbClient();
+  CoroMapper<Users> mp(dbClient);
+
+  dto::BaseApiResponse response;
+
+  const std::string &userId = dto.getSubscriberId();
+  const std::string &status = dto.getStatus();
+
+  if (userId.empty()) {
+    response.success = false;
+    response.message = "subscriberId is required";
+    response.error["code"] = constants::ERR_VALIDATION;
+    co_return response;
+  }
+
+  // Validate the requested status value upfront
+  if (status != "active" && status != "inactive" &&
+      status != "locked" && status != "unlocked") {
+    response.success = false;
+    response.message =
+        "Invalid status value. Accepted values: active, inactive, locked, unlocked.";
+    response.error["code"] = constants::ERR_VALIDATION;
+    co_return response;
+  }
+
+  try {
+    // 1. Fetch the user to make sure they exist
+    Users user = co_await mp.findOne(
+        Criteria(Users::Cols::_id, CompareOperator::EQ, userId));
+
+    // 2. Apply the requested status change
+    if (status == "active") {
+      user.setIsActive(true);
+    } else if (status == "inactive") {
+      user.setIsActive(false);
+    } else if (status == "locked") {
+      user.setIsLockedOut(true);
+    } else if (status == "unlocked") {
+      user.setIsLockedOut(false);
+    }
+
+    // 3. Persist the update
+    co_await mp.update(user);
+
+    response.success = true;
+    response.message = "User status updated successfully";
+    response.result["userId"] = userId;
+    response.result["status"] = status;
+
+  } catch (const DrogonDbException &e) {
+    response.success = false;
+    if (e.base().what() == std::string("Unexpected row number")) {
+      response.message = "User not found";
+      response.error["code"] = constants::ERR_RESOURCE_NOT_FOUND;
+    } else {
+      response.message = "Database error while updating user status";
+      response.error["code"] = constants::ERR_DB_QUERY;
+      response.error["detail"] = e.base().what();
+    }
+  }
+
+  co_return response;
+}
+
+
+drogon::Task<dto::BaseApiResponse> UserService::assignSubscriptionPlanToSubscriber(const dto::AssignSubscriberPlanDto &dto) {
+
+  auto dbClient = drogon::app().getDbClient();
+  CoroMapper<Users> userMapper(dbClient);
+  CoroMapper<drogon_model::Gnp::SubscriptionPlans> planMapper(dbClient);
+  CoroMapper<UserSubscriptions> subMapper(dbClient);
+  CoroMapper<drogon_model::Gnp::SubscriptionRenewalHistory> renewalMapper(dbClient);
+
+  dto::BaseApiResponse response;
+
+  // ── 1. Input validation ─────────────────────────────────────────────────
+  const std::string &subscriberId = dto.getSubscriberId();
+  const std::string &planId       = dto.getPlanId();
+  const std::string &action       = dto.getAction(); // "", "replace", "extend"
+
+  if (subscriberId.empty()) {
+    response.success = false;
+    response.message = "subscriberId is required";
+    response.error["code"] = constants::ERR_VALIDATION;
+    co_return response;
+  }
+
+  if (planId.empty()) {
+    response.success = false;
+    response.message = "planId is required";
+    response.error["code"] = constants::ERR_VALIDATION;
+    co_return response;
+  }
+
+  if (!action.empty() && action != "replace" && action != "extend") {
+    response.success = false;
+    response.message = "Invalid action. Accepted values: '' (first assignment), 'replace', 'extend'";
+    response.error["code"] = constants::ERR_VALIDATION;
+    co_return response;
+  }
+
+  try {
+    // ── 2. Fetch subscriber ───────────────────────────────────────────────
+    Users user = co_await userMapper.findOne(
+        Criteria(Users::Cols::_id, CompareOperator::EQ, subscriberId));
+
+    // ── 3. Fetch the target subscription plan ─────────────────────────────
+    drogon_model::Gnp::SubscriptionPlans plan =
+        co_await planMapper.findByPrimaryKey(planId);
+
+    // ── 4. Fetch ANY existing subscription row for this user (active or not)
+    //       because the DB enforces one row per user_id.
+    auto existingSubs = co_await subMapper.findBy(
+        Criteria(UserSubscriptions::Cols::_user_id, CompareOperator::EQ, subscriberId));
+
+    UserSubscriptions *existingSub = existingSubs.empty() ? nullptr : &existingSubs[0];
+
+    // For the first-assignment path we require no active subscription
+    if (action.empty() && existingSub != nullptr && existingSub->getValueOfIsActive()) {
+      response.success = false;
+      response.message = "Subscriber already has an active subscription. Use 'replace' or 'extend'.";
+      response.error["code"] = constants::ERR_UNSUPPORTED_OPERATION;
+      co_return response;
+    }
+
+    // For replace/extend we require an existing active subscription
+    if (!action.empty() &&
+        (existingSub == nullptr || !existingSub->getValueOfIsActive())) {
+      response.success = false;
+      response.message = "No active subscription found for this subscriber.";
+      response.error["code"] = constants::ERR_RESOURCE_NOT_FOUND;
+      co_return response;
+    }
+
+    // ── 5. Determine new start / end dates ────────────────────────────────
+    const std::string &billingCycle = dto.getBillingCycle();
+
+    trantor::Date newStartDate = trantor::Date::now();
+    trantor::Date newEndDate   = newStartDate;
+
+    auto advanceByBillingCycle = [](trantor::Date base,
+                                    const std::string &cycle) -> trantor::Date {
+      time_t epoch = static_cast<time_t>(base.microSecondsSinceEpoch() / 1000000LL);
+      struct tm t{};
+#if defined(_WIN32)
+      gmtime_s(&t, &epoch);
+#else
+      gmtime_r(&epoch, &t);
+#endif
+      if (cycle == "monthly") {
+        t.tm_mon += 1;
+      } else if (cycle == "quarterly") {
+        t.tm_mon += 3;
+      } else if (cycle == "biannual" || cycle == "semi-annual") {
+        t.tm_mon += 6;
+      } else if (cycle == "annual" || cycle == "yearly") {
+        t.tm_year += 1;
+      } else {
+        t.tm_mon += 1;
+      }
+      time_t newEpoch = timegm(&t);
+      return trantor::Date(static_cast<int64_t>(newEpoch) * 1000000LL);
+    };
+
+    std::string pastBillingCycle = "N/A";
+
+    if (action == "extend") {
+      newStartDate     = existingSub->getValueOfEndDate();
+      newEndDate       = advanceByBillingCycle(newStartDate, billingCycle);
+      pastBillingCycle = existingSub->getValueOfBillingCycle();
+    } else {
+      newStartDate     = trantor::Date::now();
+      newEndDate       = advanceByBillingCycle(newStartDate, billingCycle);
+      pastBillingCycle = (existingSub != nullptr)
+                             ? existingSub->getValueOfBillingCycle()
+                             : "N/A";
+    }
+
+    // ── 6. Build newspaper entitlements for the new plan ──────────────────
+    std::vector<std::string> pubIdsList;
+    try {
+      Json::Reader reader;
+      Json::Value pubIdsJson;
+      if (reader.parse(plan.getValueOfTargetPublications(), pubIdsJson) &&
+          pubIdsJson.isArray()) {
+        for (const auto &id : pubIdsJson) {
+          pubIdsList.push_back(id.asString());
+        }
+      }
+    } catch (...) {
+      LOG_WARN << "[assignSubscriptionPlan] Failed to parse target publications for plan: "
+               << plan.getValueOfId();
+    }
+
+    CoroMapper<drogon_model::Gnp::Newspapers> newsMapper(dbClient);
+    std::vector<drogon_model::Gnp::Newspapers> newspapers;
+    if (!pubIdsList.empty()) {
+      newspapers = co_await newsMapper.findBy(
+          Criteria(drogon_model::Gnp::Newspapers::Cols::_publication_id,
+                   CompareOperator::In, pubIdsList) &&
+          Criteria(drogon_model::Gnp::Newspapers::Cols::_publication_date,
+                   CompareOperator::GE, newStartDate) &&
+          Criteria(drogon_model::Gnp::Newspapers::Cols::_publication_date,
+                   CompareOperator::LE, newEndDate));
+    }
+
+    Json::Value entArray = Json::arrayValue;
+    for (const auto &news : newspapers) {
+      Json::Value ent;
+      ent["id"]       = news.getValueOfId();
+      ent["uniqueId"] = utils::IdGeneratorUtils::generateAlphanumericId();
+      entArray.append(ent);
+    }
+    Json::StreamWriterBuilder writerBuilder;
+    std::string entitlementsJson = Json::writeString(writerBuilder, entArray);
+
+    // ── 7. Action-specific DB work ────────────────────────────────────────
+    std::string newSubIdentifier;
+
+    if (existingSub != nullptr) {
+      // There is already a row for this user — UPDATE it in place.
+      // This covers: extend, replace, and first-assign-over-a-previously-
+      // deactivated-row.
+      newSubIdentifier = (action == "extend")
+                             ? existingSub->getValueOfSubscriptionIdentifier()
+                             : utils::IdGeneratorUtils::generateRandomSixDigit();
+
+      existingSub->setSubscriptionPlanId(plan.getValueOfId());
+      existingSub->setSubscriptionPlanDescription(plan.getValueOfName());
+      existingSub->setEmail(user.getValueOfEmail());
+      existingSub->setBillingCycle(billingCycle);
+      existingSub->setStartDate(newStartDate);
+      existingSub->setEndDate(newEndDate);
+      existingSub->setIsActive(true);
+      existingSub->setSubscriptionIdentifier(newSubIdentifier);
+      existingSub->setNewspaperEntitlements(entitlementsJson);
+      existingSub->setUpdatedAt(trantor::Date::now());
+      co_await subMapper.update(*existingSub);
+
+      LOG_INFO << "[assignSubscriptionPlan] Updated existing subscription for subscriber: "
+               << subscriberId << ", action: " << (action.empty() ? "assign" : action);
+
+    } else {
+      // No row exists at all for this user — safe to INSERT.
+      newSubIdentifier = utils::IdGeneratorUtils::generateRandomSixDigit();
+
+      UserSubscriptions newSub;
+      newSub.setUserId(subscriberId);
+      newSub.setSubscriptionPlanId(plan.getValueOfId());
+      newSub.setSubscriptionPlanDescription(plan.getValueOfName());
+      newSub.setEmail(user.getValueOfEmail());
+      newSub.setBillingCycle(billingCycle);
+      newSub.setStartDate(newStartDate);
+      newSub.setEndDate(newEndDate);
+      newSub.setIsActive(true);
+      newSub.setSubscriptionIdentifier(newSubIdentifier);
+      newSub.setNewspaperEntitlements(entitlementsJson);
+      newSub.setCreatedAt(trantor::Date::now());
+
+      co_await subMapper.insert(newSub);
+
+      LOG_INFO << "[assignSubscriptionPlan] Created new subscription for subscriber: "
+               << subscriberId << ", plan: " << plan.getValueOfName();
+    }
+
+    // ── 8. Write renewal history ──────────────────────────────────────────
+    drogon_model::Gnp::SubscriptionRenewalHistory renewal;
+    renewal.setSubscriptionIdentifier(newSubIdentifier);
+    renewal.setUserId(subscriberId);
+    renewal.setUserName(user.getValueOfFirstName() + " " + user.getValueOfLastName());
+    renewal.setEmail(user.getValueOfEmail());
+    renewal.setSubscriptionPlanId(plan.getValueOfId());
+    renewal.setSubscriptionPlanName(plan.getValueOfName());
+    renewal.setPastBillingCycle(pastBillingCycle);
+    renewal.setCurrentBillingCycle(billingCycle);
+    renewal.setTransactionStatus("Successful");
+    renewal.setPaidBy(user.getValueOfFirstName() + " " + user.getValueOfLastName());
+    renewal.setAmountPaid(dto.getPrice());
+    renewal.setCreatedAt(trantor::Date::now());
+    co_await renewalMapper.insert(renewal);
+
+    // ── 9. Build success response ─────────────────────────────────────────
+    response.success = true;
+    if (action == "extend") {
+      response.message = "Subscription extended successfully";
+    } else if (action == "replace") {
+      response.message = "Subscription replaced successfully";
+    } else {
+      response.message = "Subscription plan assigned successfully";
+    }
+    response.result["subscriberId"]   = subscriberId;
+    response.result["planId"]         = plan.getValueOfId();
+    response.result["planName"]       = plan.getValueOfName();
+    response.result["billingCycle"]   = billingCycle;
+    response.result["startDate"]      = newStartDate.toDbStringLocal();
+    response.result["endDate"]        = newEndDate.toDbStringLocal();
+    response.result["action"]         = action.empty() ? "assign" : action;
+
+  } catch (const DrogonDbException &e) {
+    response.success = false;
+    if (e.base().what() == std::string("Unexpected row number")) {
+      response.message = "Subscriber or subscription plan not found";
+      response.error["code"] = constants::ERR_RESOURCE_NOT_FOUND;
+    } else {
+      response.message = "Database error while assigning subscription plan";
+      response.error["code"] = constants::ERR_DB_QUERY;
+      response.error["detail"] = e.base().what();
+    }
+  }
+
+  co_return response;
+}
+
 
 } // namespace gnp::services

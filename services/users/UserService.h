@@ -42,6 +42,10 @@ public:
 
   drogon::Task<dto::BaseApiResponse> update(const dto::UserDto &userDto, const std::string &userId);
 
+  drogon::Task<dto::BaseApiResponse> updateUserStatus(const dto::UserStatusDto &dto);
+
+  drogon::Task<dto::BaseApiResponse> assignSubscriptionPlanToSubscriber(const dto::AssignSubscriberPlanDto &dto);
+
   drogon::Task<dto::BaseApiResponse> invitePartnerAdminUser(const dto::AdminUserDto &adminUserDto, const std::string &partnerId);
 
   drogon::Task<dto::BaseApiResponse> updatePartnerAdminUser(const dto::AdminUserDto &adminUserDto, const std::string &adminUserId, const std::string &partnerId);

@@ -100,6 +100,7 @@ namespace gnp::dto {
         [[nodiscard]] const std::string& getSubscriptionEndDate() const { return subscriptionEndDate_; }
         [[nodiscard]] const std::string& getSubscriptionPlanId() const { return subscriptionPlanId_; }
         [[nodiscard]] const std::string& getSubscriptionPlanName() const { return subscriptionPlanName_; }
+        [[nodiscard]] bool getByPassPayment() const { return byPassPayment_; }
 
         // Setters
         void setFirstName(const std::string& value) { first_name_ = value; }
@@ -114,6 +115,7 @@ namespace gnp::dto {
         void setSubscriptionEndDate(const std::string& value) { subscriptionEndDate_ = value; }
         void setSubscriptionPlanId(const std::string& value) { subscriptionPlanId_ = value; }
         void setSubscriptionPlanName(const std::string& value) { subscriptionPlanName_ = value; }
+        void setByPassPayment(const bool value) { byPassPayment_ = value; }
 
 
     private:
@@ -130,6 +132,7 @@ namespace gnp::dto {
         std::string subscriptionEndDate_;
         std::string subscriptionPlanId_;
         std::string subscriptionPlanName_;
+        bool byPassPayment_ {false};
     };
 
     inline void SubscriberDto::fromJson(const Json::Value& json) {
@@ -176,6 +179,10 @@ namespace gnp::dto {
 
         if (json.isMember("subscriptionPlanName") && !json["subscriptionPlanName"].isNull()) {
             subscriptionPlanName_ = json["subscriptionPlanName"].asString();
+        }
+
+        if (json.isMember("byPassPayment") && !json["byPassPayment"].isNull()) {
+           setByPassPayment(json["byPassPayment"].asBool());
         }
 
     }
@@ -262,6 +269,113 @@ namespace gnp::dto {
                 roles_.push_back(ip.asString());
             }
         }
+
+
+    }
+
+    class UserStatusDto {
+
+    public:
+
+        UserStatusDto() = default;
+
+        void fromJson(const Json::Value& json);
+
+        // Getters
+        [[nodiscard]] const std::string& getSubscriberId() const { return subscriberId_; }
+        [[nodiscard]] const std::string& getStatus() const { return status_; }
+
+
+        // Setters
+        void setSubscriberId(const std::string& value) { subscriberId_ = value; }
+        void setStatus(const std::string& value) { status_ = value; }
+
+
+    private:
+
+        std::string subscriberId_;
+        std::string status_;
+
+    };
+
+    inline void UserStatusDto::fromJson(const Json::Value& json) {
+
+        if (json.isMember("subscriberId") && !json["subscriberId"].isNull()) {
+            subscriberId_ = json["subscriberId"].asString();
+        }
+
+        if (json.isMember("status") && !json["status"].isNull()) {
+            status_ = json["status"].asString();
+        }
+
+
+
+    }
+
+
+    class AssignSubscriberPlanDto {
+
+    public:
+
+        AssignSubscriberPlanDto() = default;
+
+        void fromJson(const Json::Value& json);
+
+        // Getters
+        [[nodiscard]] const std::string& getSubscriberId() const { return subscriberId_; }
+        [[nodiscard]] const std::string& getPlanId() const { return planId_; }
+        [[nodiscard]] const std::string& getBillingCycle() const { return billingCycle_; }
+        [[nodiscard]] const std::string& getPlanName() const { return planName_; }
+        [[nodiscard]] const std::string& getPrice() const { return price_; }
+        [[nodiscard]] const std::string& getAction() const { return action_; }
+
+
+        // Setters
+        void setSubscriberId(const std::string& value) { subscriberId_ = value; }
+        void setPlanId(const std::string& value) { planId_ = value; }
+        void setBillingCycle(const std::string& value) { billingCycle_ = value; }
+        void setPlanName(const std::string& value) { planName_ = value; }
+        void setPrice(const std::string& value) { price_ = value; }
+        void setAction(const std::string& value) { action_ = value; }
+
+
+    private:
+
+        std::string subscriberId_;
+        std::string planId_;
+        std::string billingCycle_;
+        std::string planName_;
+        std::string price_;
+        std::string action_; // 'replace', 'extend', '' -> if empty it means its the first time a subscription is being assigned
+
+    };
+
+    inline void AssignSubscriberPlanDto::fromJson(const Json::Value& json) {
+
+        if (json.isMember("subscriberId") && !json["subscriberId"].isNull()) {
+            subscriberId_ = json["subscriberId"].asString();
+        }
+
+        if (json.isMember("planId") && !json["planId"].isNull()) {
+            setPlanId(json["planId"].asString());
+        }
+
+        if (json.isMember("billingCycle") && !json["billingCycle"].isNull()) {
+            setBillingCycle(json["billingCycle"].asString());
+        }
+
+        if (json.isMember("planName") && !json["planName"].isNull()) {
+            setPlanName(json["planName"].asString());
+        }
+
+        if (json.isMember("price") && !json["price"].isNull()) {
+            setPrice(json["price"].asString());
+        }
+
+        if (json.isMember("action") && !json["action"].isNull()) {
+            setAction(json["action"].asString());
+        }
+
 
 
     }

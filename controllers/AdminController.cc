@@ -2036,6 +2036,56 @@ drogon::Task<HttpResponsePtr> AdminController::updateSubscriber(HttpRequestPtr r
 }
 
 
+drogon::Task<HttpResponsePtr> AdminController::updateSubscriberStatus(HttpRequestPtr req) {
+
+  auto json = req->getJsonObject();
+  if (!json) {
+    gnp::dto::BaseApiResponse response;
+    response.success = false;
+    response.error["message"] = "Invalid JSON body";
+    co_return HttpResponse::newHttpJsonResponse(response.toJson());
+  }
+
+  gnp::dto::UserStatusDto dto;
+  dto.fromJson(*json);
+
+  auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
+  auto &userService = plugin->getUserService();
+
+  auto apiResp = co_await userService.updateUserStatus(dto);
+  auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
+  resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
+  co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
+
+}
+
+
+
+drogon::Task<HttpResponsePtr> AdminController::assignSubscriptionPlanToSubscriber(HttpRequestPtr req) {
+
+  auto json = req->getJsonObject();
+  if (!json) {
+    gnp::dto::BaseApiResponse response;
+    response.success = false;
+    response.error["message"] = "Invalid JSON body";
+    co_return HttpResponse::newHttpJsonResponse(response.toJson());
+  }
+
+  gnp::dto::AssignSubscriberPlanDto dto;
+  dto.fromJson(*json);
+
+  auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
+  auto &userService = plugin->getUserService();
+
+  auto apiResp = co_await userService.assignSubscriptionPlanToSubscriber(dto);
+  auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
+  resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
+  co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
+
+}
+
+
+
 drogon::Task<HttpResponsePtr> AdminController::deleteSubscriber(HttpRequestPtr req, std::string subscriberId) {
 
   if (subscriberId.empty()) {
