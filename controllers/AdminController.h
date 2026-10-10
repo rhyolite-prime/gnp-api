@@ -28,17 +28,17 @@ public:
 
   ADD_METHOD_TO(AdminController::updateNewsPaper, std::string(PREFIX) + "update-newspaper/{1}", Put, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::deleteNewsPaper, std::string(PREFIX) + "delete-newspaper", Delete, Options, "JwtAuthFilter");
-  // users
-  ADD_METHOD_TO(AdminController::getAllUsers, std::string(PREFIX) + "get-all-users", Get, Options, "JwtAuthFilter");
+  // manage admin users
+  ADD_METHOD_TO(AdminController::getAllAdminUsers, std::string(PREFIX) + "get-all-admin-users", Get, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::getUserDetails, std::string(PREFIX) + "get-user-details", Get, Options, "JwtAuthFilter");
-  ADD_METHOD_TO(AdminController::lockUserAccount, std::string(PREFIX) + "lock-account", Get, Options, "JwtAuthFilter");
-  ADD_METHOD_TO(AdminController::unLockUserAccount, std::string(PREFIX) + "unlock-account", Get, Options, "JwtAuthFilter");
-  ADD_METHOD_TO(AdminController::activateUser, std::string(PREFIX) + "activate", Get, Options, "JwtAuthFilter");
-  ADD_METHOD_TO(AdminController::deactivateUser, std::string(PREFIX) + "deactivate", Get, Options, "JwtAuthFilter");
-  ADD_METHOD_TO(AdminController::createUser, std::string(PREFIX) + "create", Post, Options, "JwtAuthFilter");
-  ADD_METHOD_TO(AdminController::updateUser, std::string(PREFIX) + "update", Post, Options, "JwtAuthFilter");
-  ADD_METHOD_TO(AdminController::updateUser, std::string(PREFIX) + "update-profile-image", Post, Options, "JwtAuthFilter");
-  ADD_METHOD_TO(AdminController::deleteUser, std::string(PREFIX) + "delete", Delete, Options, "JwtAuthFilter");
+  ADD_METHOD_TO(AdminController::lockUserAccount, std::string(PREFIX) + "lock-admin-user-account", Get, Options, "JwtAuthFilter");
+  ADD_METHOD_TO(AdminController::unLockUserAccount, std::string(PREFIX) + "unlock-admin-user-account", Get, Options, "JwtAuthFilter");
+  ADD_METHOD_TO(AdminController::activateAdminUser, std::string(PREFIX) + "activate-admin-user/{1}", Get, Options, "JwtAuthFilter");
+  ADD_METHOD_TO(AdminController::deactivateAdminUser, std::string(PREFIX) + "deactivate-admin-user/{1}", Get, Options, "JwtAuthFilter");
+  ADD_METHOD_TO(AdminController::createAdminUser, std::string(PREFIX) + "create-admin-user", Post, Options, "JwtAuthFilter");
+  ADD_METHOD_TO(AdminController::updateAdminUser, std::string(PREFIX) + "update-admin-user/{1}", Post, Options, "JwtAuthFilter");
+  //ADD_METHOD_TO(AdminController::updateUserProfileImage, std::string(PREFIX) + "update-profile-image", Post, Options, "JwtAuthFilter");
+  ADD_METHOD_TO(AdminController::deleteAdminUser, std::string(PREFIX) + "delete-admin-user/{1}", Delete, Options, "JwtAuthFilter");
 
   // subscription plans
   ADD_METHOD_TO(AdminController::getAllSubscriptionPlans, std::string(PREFIX) + "get-all-subscription-plans", Get, Options, "JwtAuthFilter");
@@ -51,6 +51,8 @@ public:
   ADD_METHOD_TO(AdminController::getUserSubscriptionDetails, std::string(PREFIX) + "get-user-subscription-details", Get, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::renewUserSubscription, std::string(PREFIX) + "renew-user-subscription", Post, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::getPartnerSubscriberInfo, std::string(PREFIX) + "get-partner-subscriber-info/{1}/{2}", Get, Options, "JwtAuthFilter");
+  ADD_METHOD_TO(AdminController::getSubscriberInfo, std::string(PREFIX) + "get-subscriber-info/{1}", Get, Options, "JwtAuthFilter");
+  ADD_METHOD_TO(AdminController::assignSubscriptionPlanToSubscriber, std::string(PREFIX) + "assign-subscriber-plan", Post, Options, "JwtAuthFilter");
 
   // campaigns
   ADD_METHOD_TO(AdminController::getAllCampaigns, std::string(PREFIX) + "get-all-campaigns", Get, Options, "JwtAuthFilter");
@@ -111,6 +113,7 @@ public:
    ADD_METHOD_TO(AdminController::getAllSubscribers, std::string(PREFIX) + "get-subscribers", Get, Options, "JwtAuthFilter");
    ADD_METHOD_TO(AdminController::createSubscriber, std::string(PREFIX) + "create-subscriber", Post, Options, "JwtAuthFilter");
    ADD_METHOD_TO(AdminController::updateSubscriber, std::string(PREFIX) + "update-subscriber/{1}", Put, Options, "JwtAuthFilter");
+   ADD_METHOD_TO(AdminController::updateSubscriberStatus, std::string(PREFIX) + "update-subscriber-status", Put, Options, "JwtAuthFilter");
    ADD_METHOD_TO(AdminController::deleteSubscriber, std::string(PREFIX) + "delete-subscriber/{1}", Delete, Options, "JwtAuthFilter");
    ADD_METHOD_TO(AdminController::resetSubscriberPassword, std::string(PREFIX) + "reset-subscriber-password/{1}", Get, Options, "JwtAuthFilter");
 
@@ -127,6 +130,11 @@ public:
     ADD_METHOD_TO(AdminController::updateRole, std::string(PREFIX) + "update-role/{1}", Post, Options, "JwtAuthFilter");
     ADD_METHOD_TO(AdminController::deleteRole, std::string(PREFIX) + "delete-role/{1}", Delete, Options, "JwtAuthFilter");
 
+   // user groups
+   ADD_METHOD_TO(AdminController::getAllUserGroups, std::string(PREFIX) + "get-all-user-groups", Get, Options, "JwtAuthFilter");
+   ADD_METHOD_TO(AdminController::createUserGroup, std::string(PREFIX) + "create-user-group", Post, Options, "JwtAuthFilter");
+   ADD_METHOD_TO(AdminController::updateUserGroup, std::string(PREFIX) + "update-user-group/{1}", Post, Options, "JwtAuthFilter");
+   ADD_METHOD_TO(AdminController::deleteUserGroup, std::string(PREFIX) + "delete-user-group/{1}", Delete, Options, "JwtAuthFilter");
 
    // partner invoices
    ADD_METHOD_TO(AdminController::getAllPartnerInvoices, std::string(PREFIX) + "get-all-partner-invoices", Get, Options, "JwtAuthFilter");
@@ -137,6 +145,7 @@ public:
 
   //affiliates
   ADD_METHOD_TO(AdminController::getAllAffiliates, std::string(PREFIX) + "get-all-affiliates", Get, Options, "JwtAuthFilter");
+  ADD_METHOD_TO(AdminController::getAffiliateApplicants, std::string(PREFIX) + "get-affiliate-applicants", Get, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::getAffiliateCommissions, std::string(PREFIX) + "get-affiliate-commissions", Get, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::getAffiliatePayouts, std::string(PREFIX) + "get-affiliate-payouts", Get, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::getAffiliateProgramSettings, std::string(PREFIX) + "get-affiliate-program-settings", Get, Options, "JwtAuthFilter");
@@ -179,17 +188,18 @@ public:
   drogon::Task<HttpResponsePtr> updateNewsPaper(HttpRequestPtr req, const std::string &newspaperId);
   drogon::Task<HttpResponsePtr> deleteNewsPaper(HttpRequestPtr req);
 
-  // users...
-  drogon::Task<HttpResponsePtr> getAllUsers(HttpRequestPtr req);
-  void createUser(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
-  void getUserDetails(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
+  // manage administrative users
+  drogon::Task<HttpResponsePtr> getAllAdminUsers(HttpRequestPtr req);
+  drogon::Task<HttpResponsePtr> createAdminUser(HttpRequestPtr req);
+  drogon::Task<HttpResponsePtr> updateAdminUser(HttpRequestPtr req, const std::string &userId);
+  drogon::Task<HttpResponsePtr> activateAdminUser(HttpRequestPtr req, const std::string &userId);
+  drogon::Task<HttpResponsePtr> deactivateAdminUser(HttpRequestPtr req, const std::string &userId);
+  drogon::Task<HttpResponsePtr> getUserDetails(HttpRequestPtr req);
+  drogon::Task<HttpResponsePtr> deleteAdminUser(HttpRequestPtr req, const std::string &userId);
   drogon::Task<HttpResponsePtr> lockUserAccount(HttpRequestPtr req);
-
   drogon::Task<HttpResponsePtr> unLockUserAccount(HttpRequestPtr req);
-  void updateUser(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
-  void activateUser(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
-  void deactivateUser(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
-  void deleteUser(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
+
+
 
   // publications ...
 
@@ -251,9 +261,7 @@ public:
   void disablePartnerSubaccount(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 
   Task<HttpResponsePtr> getPartnerApiKeys(HttpRequestPtr req);
-
   Task<HttpResponsePtr> generatePartnerApiKey(HttpRequestPtr req);
-
   Task<HttpResponsePtr> revokePartnerApiKey(HttpRequestPtr req);
   Task<HttpResponsePtr> updatePartnerApiKey(HttpRequestPtr req);
 
@@ -272,12 +280,13 @@ public:
   drogon::Task<HttpResponsePtr> deleteCoupon(HttpRequestPtr req);
 
   // subscribers
- drogon::Task<HttpResponsePtr> getAllSubscribers(HttpRequestPtr req);
- drogon::Task<HttpResponsePtr> createSubscriber(HttpRequestPtr req);
- drogon::Task<HttpResponsePtr> updateSubscriber(HttpRequestPtr req, std::string subscriberId);
- drogon::Task<HttpResponsePtr> deleteSubscriber(HttpRequestPtr req, std::string subscriberId);
- drogon::Task<HttpResponsePtr> resetSubscriberPassword(HttpRequestPtr req, std::string subscriberId);
-
+  drogon::Task<HttpResponsePtr> getAllSubscribers(HttpRequestPtr req);
+  drogon::Task<HttpResponsePtr> createSubscriber(HttpRequestPtr req);
+  drogon::Task<HttpResponsePtr> updateSubscriber(HttpRequestPtr req, std::string subscriberId);
+  drogon::Task<HttpResponsePtr> updateSubscriberStatus(HttpRequestPtr req);
+  drogon::Task<HttpResponsePtr> deleteSubscriber(HttpRequestPtr req, std::string subscriberId);
+  drogon::Task<HttpResponsePtr> resetSubscriberPassword(HttpRequestPtr req, std::string subscriberId);
+ Task<HttpResponsePtr> assignSubscriptionPlanToSubscriber(HttpRequestPtr req);
 
    // partner invoices
    drogon::Task<HttpResponsePtr> getAllPartnerInvoices(HttpRequestPtr req);
@@ -293,7 +302,14 @@ public:
     Task<HttpResponsePtr> updateRole(HttpRequestPtr req, const std::string &roleId);
     Task<HttpResponsePtr> deleteRole(HttpRequestPtr req, const std::string &roleId);
 
+   // user groups
+   Task<HttpResponsePtr> getAllUserGroups(HttpRequestPtr req);
+   Task<HttpResponsePtr> createUserGroup(HttpRequestPtr req);
+   Task<HttpResponsePtr> updateUserGroup(HttpRequestPtr req, const std::string &roleId);
+   Task<HttpResponsePtr> deleteUserGroup(HttpRequestPtr req, const std::string &roleId);
+
     Task<HttpResponsePtr> getPartnerSubscriberInfo(HttpRequestPtr req, const std::string &partnerId, const std::string &userId);
+    Task<HttpResponsePtr> getSubscriberInfo(HttpRequestPtr req, const std::string &userId);
 
     // scheduled actions
     Task<HttpResponsePtr> regenerateNewspaperEntitlements(HttpRequestPtr req);

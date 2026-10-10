@@ -49,7 +49,7 @@ namespace gnp::dto {
         }
 
         if (json.isMember("lastName") && !json["lastName"].isNull()) {
-            setFirstName(json["lastName"].asString());
+            setLastName(json["lastName"].asString());
         }
 
          if (json.isMember("email") && !json["email"].isNull()) {

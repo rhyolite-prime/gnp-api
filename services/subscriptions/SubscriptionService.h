@@ -39,6 +39,8 @@ public:
 
   drogon::Task<dto::BaseApiResponse> completeUserOneTimeBuyAsync(const std::string &userId, const std::string &reference);
 
+  drogon::Task<dto::BaseApiResponse> fulfillSubscriptionPaymentAsync(const std::string &userId, const std::string &reference);
+
   drogon::Task<dto::BaseApiResponse> initializeUserOneTimeBuyAsync(const std::string &newsPaperId, const std::string &userId);
 
   drogon::Task<dto::BaseApiResponse> validateNewsPaperEntitlementAsync(const std::string &newsPaperId, const std::string &userId);

@@ -1462,8 +1462,19 @@ void NewspaperService::incrementViewCount(
 
  drogon::Task<gnp::dto::BaseApiResponse> NewspaperService::handleOcrIngestion(const dto::OcrIngestionDto &dto) {
 
+  LOG_INFO << "OCR Ingestion request received:"
+           << " id=" << dto.getId()
+           << ", publicationDate=" << dto.getPublicationDate().toDbStringLocal()
+           << ", pageNumber=" << dto.getPageNumber()
+           << ", editionNumber=" << dto.getEditionNumber()
+           << ", fileType=" << dto.getFileType()
+           << ", thumbnailId=" << dto.getThumbnailId()
+           << ", contentType=" << dto.getContentType()
+           << ", pageSummary=" << dto.getPageSummary()
+           << ", pageTextLength=" << dto.getPageText().size();
+
   auto dbClient = drogon::app().getDbClient();
-  auto mp_newspaper = drogon::orm::CoroMapper<drogon_model::Gnp::Newspapers>(dbClient);
+  auto mp_newspaper = drogon::orm::CoroMapper<Newspapers>(dbClient);
   auto mp_detail = drogon::orm::CoroMapper<drogon_model::Gnp::NewspaperDetails>(dbClient);
 
   try {
@@ -1506,11 +1517,10 @@ void NewspaperService::incrementViewCount(
       new_newspaper.setPublicationId("485ac7f9-022d-4a30-818e-41732d90da18");
       new_newspaper.setPublicationName("Daily Graphic");
       new_newspaper.setCreatorName("System");
-      new_newspaper.setThumbnailId("");
+      new_newspaper.setThumbnailId(dto.getThumbnailId());
       new_newspaper.setDocumentId("");
 
       new_newspaper.setFileType(dto.getFileType());
-
       new_newspaper.setCreatedAt(trantor::Date::now());
       new_newspaper.setIsPublished(false);
       new_newspaper.setIsFree(false);
@@ -1524,12 +1534,15 @@ void NewspaperService::incrementViewCount(
 
     drogon_model::Gnp::NewspaperDetails detail;
     detail.setNewspaperId(newspaper.getValueOfId());
+    detail.setId(dto.getId());
     detail.setPageText(dto.getPageText());
     detail.setPageNumber(dto.getPageNumber());
     detail.setFileType(dto.getFileType());
     detail.setPublicationId("485ac7f9-022d-4a30-818e-41732d90da18");
     detail.setPublicationName("Daily Graphic");
     detail.setCreatorName("System");
+    detail.setThumbnailId(dto.getThumbnailId());
+    detail.setDocumentId("");
 
     detail.setPublishedDate(trantor::Date::fromDbStringLocal("2023-02-02 00:00:00"));
 

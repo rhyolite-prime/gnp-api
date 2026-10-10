@@ -28,6 +28,7 @@ file(GLOB ADMIN_USER_INVITATION_SVC "../services/user_invitations/*.cc")
 file(GLOB ROLE_SVC "../services/roles/*.cc")
 file(GLOB G3_STORAGE_SVC "../services/g3_storage/*.cc")
 file(GLOB MEDIA_SVC "../services/media/*.cc")
+file(GLOB PERMISSION_SVC "../services/permissions/*.cc")
 file(GLOB UTILS_SVC "../utils/*.cc")
 file(GLOB JOOMLA_SVC "../services/joomla_api/*.cc")
 file(GLOB SETTING_SVC "../services/settings/*.cc")
@@ -64,6 +65,7 @@ add_executable(${PROJECT_NAME} test_main.cc
     ${ADMIN_USER_INVITATION_SVC}
     ${UTILS_SVC}
     ${JOOMLA_SVC}
+    ${PERMISSION_SVC}
     ${SETTING_SVC}
     ${GAMES_SVC}
 )

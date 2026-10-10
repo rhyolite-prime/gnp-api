@@ -16,6 +16,7 @@
 #include "UserNotificationSubscriptions.h"
 #include "UserSubscriptions.h"
 #include "Users.h"
+#include "Payments.h"
 #include "bcrypt.h"
 #include "constants/NotificationTypes.h"
 #include "dto/BuyNewspaperCopyDto.h" // Added missing include
@@ -34,6 +35,7 @@ using drogon_model::Gnp::SubscriptionRenewalHistory;
 using drogon_model::Gnp::UserNotificationSubscriptions;
 using drogon_model::Gnp::Users;
 using drogon_model::Gnp::UserSubscriptions;
+using drogon_model::Gnp::Payments;
 
 namespace gnp::services {
 
@@ -631,6 +633,103 @@ SubscriptionService::completeUserOneTimeBuyAsync(const std::string &userId,
 
   co_return response;
 }
+
+drogon::Task<gnp::dto::BaseApiResponse>
+SubscriptionService::fulfillSubscriptionPaymentAsync(const std::string &userId, const std::string &reference) {
+  auto dbClient = drogon::app().getDbClient();
+  dto::BaseApiResponse response;
+
+  try {
+    // 1. Verify Payment with Paystack
+    auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
+    auto &paystackApi = plugin->getPaystackApi();
+    auto verifyPayResponse = co_await paystackApi.verifyAsync(reference);
+
+    if (!verifyPayResponse.getStatus()) {
+      response.success = false;
+      response.message = !verifyPayResponse.getMessage().empty()
+                             ? verifyPayResponse.getMessage()
+                             : "Failed to verify payment";
+      co_return response;
+    }
+
+    const auto &verifyData = verifyPayResponse.getData();
+    auto paymentService = std::make_shared<gnp::services::PaymentService>();
+
+    if (verifyData.status_ == "success") {
+      // 2. Fetch UserSubscription
+      CoroMapper<UserSubscriptions> subMapper(dbClient);
+      Criteria subCriteria = Criteria(UserSubscriptions::Cols::_subscription_identifier, CompareOperator::EQ, reference) &&
+                             Criteria(UserSubscriptions::Cols::_user_id, CompareOperator::EQ, userId);
+      auto userSub = co_await subMapper.findOne(subCriteria);
+
+      if (userSub.getValueOfIsActive()) {
+         response.success = true;
+         response.message = "Subscription is already active.";
+         co_return response;
+      }
+
+      // 3. Update status to Success in Payments table
+      co_await paymentService->updateStatusAsync("Success", reference);
+
+      // 4. Activate Subscription
+      userSub.setIsActive(true);
+      co_await subMapper.update(userSub);
+
+      // 5. Fetch payment details for history
+      CoroMapper<Payments> paymentMapper(dbClient);
+      Criteria paymentCriteria(Payments::Cols::_transaction_reference, CompareOperator::EQ, reference);
+      auto paymentRecords = co_await paymentMapper.findBy(paymentCriteria);
+      std::string amountPaid = "0.0";
+      if (!paymentRecords.empty()) {
+          amountPaid = paymentRecords[0].getValueOfAmountPaid();
+      }
+
+      // 6. Fetch user to get names
+      CoroMapper<Users> userMapper(dbClient);
+      auto user = co_await userMapper.findByPrimaryKey(userId);
+      std::string fullName = user.getValueOfFirstName() + " " + user.getValueOfLastName();
+
+      // 7. Insert Subscription Renewal History
+      CoroMapper<drogon_model::Gnp::SubscriptionRenewalHistory> renewalMapper(dbClient);
+      drogon_model::Gnp::SubscriptionRenewalHistory renewal;
+      renewal.setSubscriptionIdentifier(reference);
+      renewal.setUserId(userId);
+      renewal.setUserName(fullName);
+      renewal.setEmail(user.getValueOfEmail());
+      renewal.setSubscriptionPlanId(userSub.getValueOfSubscriptionPlanId());
+      renewal.setSubscriptionPlanName(userSub.getValueOfSubscriptionPlanDescription());
+      renewal.setPastBillingCycle("N/A");
+      renewal.setCurrentBillingCycle(userSub.getValueOfBillingCycle());
+      renewal.setTransactionStatus("Successful");
+      renewal.setPaidBy(fullName);
+      renewal.setAmountPaid(amountPaid);
+      renewal.setCreatedAt(trantor::Date::now());
+      co_await renewalMapper.insert(renewal);
+
+      response.success = true;
+      response.message = "Subscription activated successfully.";
+
+    } else {
+      // Payment Failed
+      co_await paymentService->updateStatusAsync("Failed", reference);
+
+      response.success = false;
+      response.message = "Payment verification failed. Status: " + verifyData.status_;
+    }
+
+  } catch (const DrogonDbException &e) {
+    response.success = false;
+    response.message = "Database error: " + std::string(e.base().what());
+    response.error["code"] = constants::ERR_DB_QUERY;
+  } catch (const std::exception &e) {
+    response.success = false;
+    response.message = "An error occurred: " + std::string(e.what());
+  }
+
+  co_return response;
+}
+
 
 drogon::Task<gnp::dto::BaseApiResponse> SubscriptionService::validateNewsPaperEntitlementAsync(
     const std::string &newsPaperId, const std::string &userId) {

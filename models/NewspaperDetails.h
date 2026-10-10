@@ -67,6 +67,8 @@ class NewspaperDetails
         static const std::string _modified_by;
         static const std::string _modifier_name;
         static const std::string _modified_at;
+        static const std::string _thumbnail_id;
+        static const std::string _document_id;
     };
 
     static const int primaryKeyNumber;
@@ -333,8 +335,28 @@ class NewspaperDetails
     void setModifiedAt(const ::trantor::Date &pModifiedAt) noexcept;
     void setModifiedAtToNull() noexcept;
 
+    /**  For column thumbnail_id  */
+    ///Get the value of the column thumbnail_id, returns the default value if the column is null
+    const std::string &getValueOfThumbnailId() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getThumbnailId() const noexcept;
+    ///Set the value of the column thumbnail_id
+    void setThumbnailId(const std::string &pThumbnailId) noexcept;
+    void setThumbnailId(std::string &&pThumbnailId) noexcept;
+    void setThumbnailIdToNull() noexcept;
 
-    static size_t getColumnNumber() noexcept {  return 23;  }
+    /**  For column document_id  */
+    ///Get the value of the column document_id, returns the default value if the column is null
+    const std::string &getValueOfDocumentId() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getDocumentId() const noexcept;
+    ///Set the value of the column document_id
+    void setDocumentId(const std::string &pDocumentId) noexcept;
+    void setDocumentId(std::string &&pDocumentId) noexcept;
+    void setDocumentIdToNull() noexcept;
+
+
+    static size_t getColumnNumber() noexcept {  return 25;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
@@ -379,6 +401,8 @@ class NewspaperDetails
     std::shared_ptr<std::string> modifiedBy_;
     std::shared_ptr<std::string> modifierName_;
     std::shared_ptr<::trantor::Date> modifiedAt_;
+    std::shared_ptr<std::string> thumbnailId_;
+    std::shared_ptr<std::string> documentId_;
     struct MetaData
     {
         const std::string colName_;
@@ -390,7 +414,7 @@ class NewspaperDetails
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[23]={ false };
+    bool dirtyFlag_[25]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
@@ -527,6 +551,16 @@ class NewspaperDetails
         if(dirtyFlag_[22])
         {
             sql += "modified_at,";
+            ++parametersCount;
+        }
+        if(dirtyFlag_[23])
+        {
+            sql += "thumbnail_id,";
+            ++parametersCount;
+        }
+        if(dirtyFlag_[24])
+        {
+            sql += "document_id,";
             ++parametersCount;
         }
         if(parametersCount > 0)
@@ -675,6 +709,16 @@ class NewspaperDetails
             sql.append(placeholderStr, n);
         }
         if(dirtyFlag_[22])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        if(dirtyFlag_[23])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        if(dirtyFlag_[24])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);

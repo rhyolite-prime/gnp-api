@@ -28,6 +28,7 @@
 #include "services/partner_user_logs/PartnerUserLogService.h"
 #include "services/payments/PaymentService.h"
 #include "services/paystack/PaystackApi.h"
+#include "services/permissions/PermissionService.h"
 #include "services/publications/PublicationService.h"
 #include "services/quartz/QuartzApi.h"
 #include "services/redis/RedisCacheManager.h"
@@ -83,12 +84,14 @@ public:
   ::gnp::services::SettingService &getSettingService() { return settingService_; }
   ::gnp::services::ContentService &getContentService() { return contentService_; }
   ::gnp::services::TelegramService &getTelegramService() { return telegramService_; }
+  ::gnp::services::PermissionService &getPermissionService() { return permissionService_; }
   ::gnp::services::JoomlaApi &getJoomlaApi() { return joomlaApi_; }
   ::gnp::services::GameManager &getGameManager() { return gameManager_; }
 
 private:
   services::RedisCacheManager redisCacheService_;
   ::gnp::services::AffiliateService affiliate_service_;
+  ::gnp::services::PermissionService permissionService_;
   ::gnp::services::UserService userService_;
   ::gnp::services::EmailService emailService_;
   ::gnp::services::NewspaperService newspaperService_;

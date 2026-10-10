@@ -35,7 +35,7 @@ const std::vector<typename UserSubscriptions::MetaData> UserSubscriptions::metaD
 {"id","std::string","uuid",0,0,1,1},
 {"subscription_identifier","std::string","character varying",50,0,0,1},
 {"user_id","std::string","uuid",0,0,0,1},
-{"partner_id","std::string","uuid",0,0,0,1},
+{"partner_id","std::string","uuid",0,0,0,0},
 {"subscription_plan_id","std::string","uuid",0,0,0,1},
 {"billing_cycle","std::string","character varying",25,0,0,0},
 {"subscription_plan_description","std::string","character varying",255,0,0,1},
@@ -1193,6 +1193,11 @@ void UserSubscriptions::setPartnerId(std::string &&pPartnerId) noexcept
     partnerId_ = std::make_shared<std::string>(std::move(pPartnerId));
     dirtyFlag_[3] = true;
 }
+void UserSubscriptions::setPartnerIdToNull() noexcept
+{
+    partnerId_.reset();
+    dirtyFlag_[3] = true;
+}
 
 const std::string &UserSubscriptions::getValueOfSubscriptionPlanId() const noexcept
 {
@@ -2249,11 +2254,6 @@ bool UserSubscriptions::validateJsonForCreation(const Json::Value &pJson, std::s
         if(!validJsonOfField(3, "partner_id", pJson["partner_id"], err, true))
             return false;
     }
-    else
-    {
-        err="The partner_id column cannot be null";
-        return false;
-    }
     if(pJson.isMember("subscription_plan_id"))
     {
         if(!validJsonOfField(4, "subscription_plan_id", pJson["subscription_plan_id"], err, true))
@@ -2377,11 +2377,6 @@ bool UserSubscriptions::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
                   return false;
           }
-        else
-        {
-            err="The " + pMasqueradingVector[3] + " column cannot be null";
-            return false;
-        }
       }
       if(!pMasqueradingVector[4].empty())
       {
@@ -2718,8 +2713,7 @@ bool UserSubscriptions::validJsonOfField(size_t index,
         case 3:
             if(pJson.isNull())
             {
-                err="The " + fieldName + " column cannot be null";
-                return false;
+                return true;
             }
             if(!pJson.isString())
             {

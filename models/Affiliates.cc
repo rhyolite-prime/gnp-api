@@ -49,7 +49,7 @@ const std::vector<typename Affiliates::MetaData> Affiliates::metaData_={
 {"account_type","std::string","character varying",50,0,0,0},
 {"account_name","std::string","character varying",255,0,0,1},
 {"account_provider","std::string","character varying",50,0,0,1},
-{"bank_code","std::string","character varying",20,0,0,1},
+{"bank_code","std::string","character varying",20,0,0,0},
 {"affiliate_id","std::string","character varying",20,0,0,1},
 {"profile_image","std::vector<char>","bytea",0,0,0,0},
 {"user_id","std::string","uuid",0,0,0,0},
@@ -1527,6 +1527,11 @@ void Affiliates::setBankCode(std::string &&pBankCode) noexcept
     bankCode_ = std::make_shared<std::string>(std::move(pBankCode));
     dirtyFlag_[12] = true;
 }
+void Affiliates::setBankCodeToNull() noexcept
+{
+    bankCode_.reset();
+    dirtyFlag_[12] = true;
+}
 
 const std::string &Affiliates::getValueOfAffiliateId() const noexcept
 {
@@ -2817,11 +2822,6 @@ bool Affiliates::validateJsonForCreation(const Json::Value &pJson, std::string &
         if(!validJsonOfField(12, "bank_code", pJson["bank_code"], err, true))
             return false;
     }
-    else
-    {
-        err="The bank_code column cannot be null";
-        return false;
-    }
     if(pJson.isMember("affiliate_id"))
     {
         if(!validJsonOfField(13, "affiliate_id", pJson["affiliate_id"], err, true))
@@ -2972,11 +2972,6 @@ bool Affiliates::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(12, pMasqueradingVector[12], pJson[pMasqueradingVector[12]], err, true))
                   return false;
           }
-        else
-        {
-            err="The " + pMasqueradingVector[12] + " column cannot be null";
-            return false;
-        }
       }
       if(!pMasqueradingVector[13].empty())
       {
@@ -3462,8 +3457,7 @@ bool Affiliates::validJsonOfField(size_t index,
         case 12:
             if(pJson.isNull())
             {
-                err="The " + fieldName + " column cannot be null";
-                return false;
+                return true;
             }
             if(!pJson.isString())
             {

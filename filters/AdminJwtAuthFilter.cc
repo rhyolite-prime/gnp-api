@@ -87,6 +87,22 @@ void AdminJwtAuthFilter::doFilter(const HttpRequestPtr &req,
       req->attributes()->insert("adminUserName", adminUserName);
     }
 
+    if (decoded.has_payload_claim("permissions")) {
+      auto permissionsStr = decoded.get_payload_claim("permissions").as_string();
+      std::unordered_set<std::string> permissionsSet;
+      Json::Value permissionsJson;
+      Json::Reader reader;
+      if (!permissionsStr.empty() && reader.parse(permissionsStr, permissionsJson) && permissionsJson.isArray()) {
+        for (const auto& perm : permissionsJson) {
+          if (perm.isString()) {
+            permissionsSet.insert(perm.asString());
+          }
+        }
+      }
+      req->attributes()->insert("permissions", permissionsSet);
+      LOG_DEBUG << "Extracted " << permissionsSet.size() << " permissions";
+    }
+
     // Token is valid, continue to the next filter or handler
     LOG_DEBUG << "Calling next filter/handler";
     fccb();

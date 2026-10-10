@@ -97,7 +97,6 @@ add_executable(${PROJECT_NAME} main.cc
         dto/VerifyPartnerUserOtpDto.h
         services/partner_invoice/PartnerInvoiceService.h
         services/partner_invoice/PartnerInvoiceService.cc
-        dto/AdminUserDto.h
         services/user_invitations/AdminUserInvitationService.h
         dto/AdminUserInvitationDto.h
         services/user_invitations/AdminUserInvitationService.cc
@@ -169,6 +168,10 @@ add_executable(${PROJECT_NAME} main.cc
         services/joomla_api/JoomlaApi.h
         services/joomla_api/JoomlaApi.cc
         dto/JoomlaApiArticleResponse.h
+        services/permissions/PermissionService.h
+        services/permissions/PermissionService.cc
+        dto/PublicationSearchRequestDto.h
+        dto/UserGroupDto.h
 )
 
 # ##############################################################################

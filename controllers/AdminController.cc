@@ -451,7 +451,7 @@ Task<HttpResponsePtr> AdminController::deleteNewsPaper(const HttpRequestPtr req)
 
 // users
 
-drogon::Task<HttpResponsePtr> AdminController::getAllUsers(const HttpRequestPtr req) {
+drogon::Task<HttpResponsePtr> AdminController::getAllAdminUsers(const HttpRequestPtr req) {
 
   int pageSize = 10; // Default page size
   int pageNo = 1;    //  Default page number
@@ -479,24 +479,17 @@ drogon::Task<HttpResponsePtr> AdminController::getAllUsers(const HttpRequestPtr 
     query = "";
   }
 
+  std::string roleId = req->getParameter("roleId");
+  std::string userGroupId = req->getParameter("userGroupId");
+
   auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
   auto &userService = plugin->getUserService();
 
-  auto apiResp = co_await userService.getAll(pageNo, pageSize, query);
+  auto apiResp = co_await userService.getAdminUsers(pageNo, pageSize, query, roleId, userGroupId);
 
   auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
   resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
   co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
-}
-
-void AdminController::createUser(const HttpRequestPtr &req,
-    std::function<void(const HttpResponsePtr &)> &&callback) {
-  // write your application logic here
-}
-
-void AdminController::getUserDetails(const HttpRequestPtr &req,
-    std::function<void(const HttpResponsePtr &)> &&callback) {
-  // write your application logic here
 }
 
 drogon::Task<HttpResponsePtr> AdminController::lockUserAccount(const HttpRequestPtr req) {
@@ -547,28 +540,138 @@ drogon::Task<HttpResponsePtr> AdminController::unLockUserAccount(const HttpReque
 
 }
 
-void AdminController::updateUser(
-    const HttpRequestPtr &req,
-    std::function<void(const HttpResponsePtr &)> &&callback) {
-  // write your application logic here
+
+drogon::Task<HttpResponsePtr> AdminController::createAdminUser(const HttpRequestPtr req) {
+
+  auto jsonBody = req->getJsonObject();
+
+  if (!jsonBody) {
+    gnp::dto::BaseApiResponse response;
+    response.success = false;
+    response.error["message"] = "Invalid JSON body";
+    auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+    resp->setStatusCode(k400BadRequest);
+    co_return resp;
+  }
+
+  gnp::dto::AdminUserDto dto;
+  dto.fromJson(*jsonBody);
+
+  auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
+  auto &userService = plugin->getUserService();
+
+  auto apiResp = co_await userService.createAdminUser(dto);
+
+  auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
+  resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
+  co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
+
 }
 
-void AdminController::activateUser(
-    const HttpRequestPtr &req,
-    std::function<void(const HttpResponsePtr &)> &&callback) {
-  // write your application logic here
+drogon::Task<HttpResponsePtr> AdminController::updateAdminUser(const HttpRequestPtr req, const std::string &userId) {
+
+  auto jsonBody = req->getJsonObject();
+
+  if (!jsonBody) {
+    gnp::dto::BaseApiResponse response;
+    response.success = false;
+    response.error["message"] = "Invalid JSON body";
+    auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+    resp->setStatusCode(k400BadRequest);
+    co_return resp;
+  }
+
+  gnp::dto::AdminUserDto dto;
+  dto.fromJson(*jsonBody);
+
+  auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
+  auto &userService = plugin->getUserService();
+
+  auto apiResp = co_await userService.updateAdminUser(dto, userId);
+
+  auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
+  resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
+  co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
+
 }
 
-void AdminController::deactivateUser(
-    const HttpRequestPtr &req,
-    std::function<void(const HttpResponsePtr &)> &&callback) {
-  // write your application logic here
+
+drogon::Task<HttpResponsePtr> AdminController::activateAdminUser(const HttpRequestPtr req, const std::string &userId) {
+
+  if (userId.empty()) {
+    gnp::dto::BaseApiResponse response;
+    response.success = false;
+    response.error["message"] = "User ID is required";
+    auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+    resp->setStatusCode(k400BadRequest);
+    co_return resp;
+  }
+
+  // Get the user service from the plugin
+  auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
+  auto &userService = plugin->getUserService();
+
+  auto apiResp = co_await userService.activateUserAccount(userId);
+  auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
+  resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
+  co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
+
 }
 
-void AdminController::deleteUser(
-    const HttpRequestPtr &req,
-    std::function<void(const HttpResponsePtr &)> &&callback) {
-  // write your application logic here
+
+drogon::Task<HttpResponsePtr> AdminController::deactivateAdminUser(const HttpRequestPtr req, const std::string &userId) {
+
+  if (userId.empty()) {
+    gnp::dto::BaseApiResponse response;
+    response.success = false;
+    response.error["message"] = "User ID is required";
+    auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+    resp->setStatusCode(k400BadRequest);
+    co_return resp;
+  }
+
+  // Get the user service from the plugin
+  auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
+  auto &userService = plugin->getUserService();
+
+  auto apiResp = co_await userService.deactivateUserAccount(userId);
+  auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
+  resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
+  co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
+
+}
+
+
+drogon::Task<HttpResponsePtr> AdminController::getUserDetails(const HttpRequestPtr req) {
+
+  gnp::dto::BaseApiResponse apiResp;
+  auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
+  resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
+  co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
+
+}
+
+
+drogon::Task<HttpResponsePtr> AdminController::deleteAdminUser(const HttpRequestPtr req, const std::string &userId) {
+
+  if (userId.empty()) {
+    gnp::dto::BaseApiResponse response;
+    response.success = false;
+    response.error["message"] = "Missing required parameter: id";
+    auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+    resp->setStatusCode(k400BadRequest);
+    co_return resp;
+  }
+
+  auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
+  auto &userService = plugin->getUserService();
+
+  auto apiResp = co_await userService.deleteUser(userId);
+
+  auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
+  resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
+  co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
+
 }
 
 // subscription plans
@@ -840,6 +943,18 @@ Task<HttpResponsePtr> AdminController::getPartnerSubscriberInfo(HttpRequestPtr r
   auto &commercialPartnerService = plugin->getCommercialPartnerService();
 
   auto apiResp = co_await commercialPartnerService.getSubscriberSubscriptionSummary(partnerId, userId);
+  auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
+  resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
+  co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
+
+}
+
+Task<HttpResponsePtr> AdminController::getSubscriberInfo(HttpRequestPtr req, const std::string &userId) {
+
+  auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
+  auto &userService = plugin->getUserService();
+
+  auto apiResp = co_await userService.getSubscriberSubscriptionSummary(userId);
   auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
   resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
   co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
@@ -1858,11 +1973,16 @@ drogon::Task<HttpResponsePtr> AdminController::getAllSubscribers(HttpRequestPtr 
   }
 
   std::string query = req->getParameter("query");
+  std::string dateJoinedStartDate = req->getParameter("dateJoinedStartDate");
+  std::string dateJoinedEndDate = req->getParameter("dateJoinedEndDate");
+  std::string lastActiveStartDate = req->getParameter("lastActiveStartDate");
+  std::string lastActiveEndDate = req->getParameter("lastActiveEndDate");
+  std::string accountType = req->getParameter("accountType");
 
   auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
   auto &userService = plugin->getUserService();
 
-  auto result = co_await userService.getAllSubscribers(pageNo, pageSize, query);
+  auto result = co_await userService.getAllSubscribers(pageNo, pageSize, query, dateJoinedStartDate, dateJoinedEndDate, lastActiveStartDate, lastActiveEndDate, accountType);
   co_return HttpResponse::newHttpJsonResponse(result.toJson());
 
 
@@ -1879,13 +1999,13 @@ drogon::Task<HttpResponsePtr> AdminController::createSubscriber(HttpRequestPtr r
     co_return HttpResponse::newHttpJsonResponse(response.toJson());
   }
 
-  gnp::dto::UserDto dto;
+  gnp::dto::SubscriberDto dto;
   dto.fromJson(*json);
 
   auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
   auto &userService = plugin->getUserService();
 
-  auto result = co_await userService.create(dto);
+  auto result = co_await userService.createSubscriber(dto);
   co_return HttpResponse::newHttpJsonResponse(result.toJson());
 
 
@@ -1914,6 +2034,56 @@ drogon::Task<HttpResponsePtr> AdminController::updateSubscriber(HttpRequestPtr r
   co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
 
 }
+
+
+drogon::Task<HttpResponsePtr> AdminController::updateSubscriberStatus(HttpRequestPtr req) {
+
+  auto json = req->getJsonObject();
+  if (!json) {
+    gnp::dto::BaseApiResponse response;
+    response.success = false;
+    response.error["message"] = "Invalid JSON body";
+    co_return HttpResponse::newHttpJsonResponse(response.toJson());
+  }
+
+  gnp::dto::UserStatusDto dto;
+  dto.fromJson(*json);
+
+  auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
+  auto &userService = plugin->getUserService();
+
+  auto apiResp = co_await userService.updateUserStatus(dto);
+  auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
+  resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
+  co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
+
+}
+
+
+
+drogon::Task<HttpResponsePtr> AdminController::assignSubscriptionPlanToSubscriber(HttpRequestPtr req) {
+
+  auto json = req->getJsonObject();
+  if (!json) {
+    gnp::dto::BaseApiResponse response;
+    response.success = false;
+    response.error["message"] = "Invalid JSON body";
+    co_return HttpResponse::newHttpJsonResponse(response.toJson());
+  }
+
+  gnp::dto::AssignSubscriberPlanDto dto;
+  dto.fromJson(*json);
+
+  auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
+  auto &userService = plugin->getUserService();
+
+  auto apiResp = co_await userService.assignSubscriptionPlanToSubscriber(dto);
+  auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
+  resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
+  co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
+
+}
+
 
 
 drogon::Task<HttpResponsePtr> AdminController::deleteSubscriber(HttpRequestPtr req, std::string subscriberId) {
@@ -2226,7 +2396,6 @@ Task<HttpResponsePtr> AdminController::getAllPermissions(HttpRequestPtr req) {
 
 }
 
-
 Task<HttpResponsePtr> AdminController::createRole(HttpRequestPtr req) {
 
   auto jsonBody = req->getJsonObject();
@@ -2295,6 +2464,113 @@ Task<HttpResponsePtr> AdminController::deleteRole(HttpRequestPtr req, const std:
   auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
   co_return resp;
 }
+
+
+Task<HttpResponsePtr> AdminController::getAllUserGroups(HttpRequestPtr req) {
+
+  int pageSize = 10; // Default page size
+  int pageNo = 1;    //  Default page number
+
+  if (!req->getParameter("pageSize").empty()) {
+    try {
+      pageSize = std::stoi(req->getParameter("pageSize"));
+      pageSize = std::max(1, std::min(100, pageSize)); // Limit between 1-100
+    } catch (...) {
+      // Keep default if conversion fails
+    }
+  }
+
+  if (!req->getParameter("pageNo").empty()) {
+    try {
+      pageNo = std::stoi(req->getParameter("pageNo"));
+      pageNo = std::max(1, pageNo); // Ensure page number is at least 1
+    } catch (...) {
+      // Keep default if conversion fails
+    }
+  }
+
+  std::string query = req->getParameter("query");
+  if (query.empty()) {
+    query = "";
+  }
+
+  auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
+  auto &userService = plugin->getUserService();
+
+  auto result = co_await userService.getAllUserGroups(pageNo, pageSize, query);
+  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+  co_return resp;
+}
+
+Task<HttpResponsePtr> AdminController::createUserGroup(HttpRequestPtr req) {
+
+  auto jsonBody = req->getJsonObject();
+
+  if (!jsonBody) {
+    gnp::dto::BaseApiResponse response;
+    response.success = false;
+    response.error["message"] = "Invalid JSON body";
+    auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+    resp->setStatusCode(k400BadRequest);
+    co_return resp;
+  }
+
+  gnp::dto::UserGroupDto dto;
+
+  dto.fromJson(*jsonBody);
+
+  auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
+  auto &userService = plugin->getUserService();
+
+  auto result = co_await userService.createUserGroup(dto);
+  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+  co_return resp;
+}
+
+Task<HttpResponsePtr> AdminController::updateUserGroup(HttpRequestPtr req, const std::string &userGroupId) {
+
+  auto jsonBody = req->getJsonObject();
+
+  if (!jsonBody) {
+    gnp::dto::BaseApiResponse response;
+    response.success = false;
+    response.error["message"] = "Invalid JSON body";
+    auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+    resp->setStatusCode(k400BadRequest);
+    co_return resp;
+  }
+
+  gnp::dto::UserGroupDto dto;
+  dto.fromJson(*jsonBody);
+
+  auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
+  auto &userService = plugin->getUserService();
+
+  auto result = co_await userService.updateUserGroup(dto, userGroupId);
+  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+  co_return resp;
+}
+
+Task<HttpResponsePtr> AdminController::deleteUserGroup(HttpRequestPtr req, const std::string &userGroupId) {
+
+  if (userGroupId.empty()) {
+    gnp::dto::BaseApiResponse response;
+    response.success = false;
+    response.error["message"] = "Missing required parameter: id";
+    auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+    resp->setStatusCode(k400BadRequest);
+    co_return resp;
+  }
+
+  auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
+  auto &userService = plugin->getUserService();
+
+  auto result = co_await userService.deleteUserGroup(userGroupId);
+  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+  co_return resp;
+}
+
+
 
 Task<HttpResponsePtr> AdminController::regenerateNewspaperEntitlements(HttpRequestPtr req)
 {

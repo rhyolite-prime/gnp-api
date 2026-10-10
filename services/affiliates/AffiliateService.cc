@@ -232,14 +232,14 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::getAllApplicants(int pageNo
     dto::BaseApiResponse errorResponse;
     errorResponse.success = false;
     errorResponse.error["code"] = constants::ERR_DB_QUERY;
-    errorResponse.error["message"] =
-        "Database error while fetching commercial partners.";
+    errorResponse.error["message"] = "Database error while fetching commercial partners.";
     errorResponse.error["detail"] = e.base().what();
     co_return errorResponse;
   }
 
 
 }
+
 
  drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::submitApplication(const ::gnp::dto::AffiliateSignupDto &dto) {
 
@@ -250,7 +250,7 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::getAllApplicants(int pageNo
     // 1. Validate input - check if email already has a pending application
     auto existingApplications = co_await applicationMapper.findBy(
         Criteria(drogon_model::Gnp::Affiliates::Cols::_email, CompareOperator::EQ, dto.getEmail()) &&
-        Criteria(drogon_model::Gnp::Affiliates::Cols::_status, CompareOperator::EQ, static_cast<int>(constants::StatusTypes::PENDING)));
+        Criteria(drogon_model::Gnp::Affiliates::Cols::_status, CompareOperator::EQ, static_cast<int>(constants::StatusTypes::SUBMITTED)));
 
     if (!existingApplications.empty()) {
       dto::BaseApiResponse response;
@@ -263,8 +263,7 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::getAllApplicants(int pageNo
 
     // 2. Check if email already has an approved application (existing user)
     auto approvedApplications = co_await applicationMapper.findBy(
-        Criteria(drogon_model::Gnp::Affiliates::Cols::_email, CompareOperator::EQ, dto.getEmail()) &&
-        Criteria(drogon_model::Gnp::Affiliates::Cols::_status, CompareOperator::EQ, static_cast<int>(constants::StatusTypes::APPROVED)));
+        Criteria(drogon_model::Gnp::Affiliates::Cols::_email, CompareOperator::EQ, dto.getEmail()) && Criteria(drogon_model::Gnp::Affiliates::Cols::_status, CompareOperator::EQ, static_cast<int>(constants::StatusTypes::APPROVED)));
 
     if (!approvedApplications.empty()) {
       dto::BaseApiResponse response;
@@ -288,10 +287,12 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::getAllApplicants(int pageNo
     Affiliates application;
     application.setFirstName(dto.getFirstName());
     application.setLastName(dto.getLastName());
-    application.setEmail(dto.getEmail());
+    std::string standardEmail = dto.getEmail();
+    std::transform(standardEmail.begin(), standardEmail.end(), standardEmail.begin(), [](unsigned char c) { return std::tolower(c); });
+    application.setEmail(standardEmail);
     application.setPhone(dto.getPhoneNumber());
 
-    application.setStatus(constants::StatusTypes::PENDING);
+    application.setStatus(constants::StatusTypes::SUBMITTED);
     application.setDateJoined(trantor::Date::now());
     application.setUpdatedAt(trantor::Date::now());
 
@@ -302,6 +303,21 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::getAllApplicants(int pageNo
     dto::BaseApiResponse response;
     response.success = true;
     response.result["message"] = "Your application has been submitted successfully. We will review it and get back to you soon.";
+
+    // send admin to the affiliate informing them about their affiliate application submission request
+
+    auto plugin = drogon::app().getPlugin<plugins::GnpServicePlugin>();
+    auto &emailService = plugin->getEmailService();
+
+    dto::SendEmailDto emailDto;
+    emailDto.setTo(standardEmail);
+    std::string emailSubject = "New Affiliate Registration on GNP";
+    emailDto.setSubject(emailSubject);
+
+    std::string emailBody = "<p> </p>";
+
+    emailDto.setBody(emailBody);
+    //co_await emailService.sendEmailAsync(emailDto);
 
     co_return response;
 
@@ -324,8 +340,7 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::getAllApplicants(int pageNo
 }
 
 
-
-drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::createAsync(const ::gnp::dto::AffiliateDto &dto) {
+ drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::createAsync(const ::gnp::dto::AffiliateDto &dto) {
 
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Affiliates> mapper(dbClient);
@@ -1420,6 +1435,7 @@ drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::getAffiliateCommissi
   }
 }
 
+
 drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::getAffiliatePayouts(const std::string &affiliateId) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Affiliates> affiliateMapper(dbClient);
@@ -1476,6 +1492,7 @@ drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::getAffiliatePayouts(
     co_return errorResponse;
   }
 }
+
 
 drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::issueBulkPayout() {
 
@@ -1550,7 +1567,6 @@ drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::issueBulkPayout() {
     co_return errorResponse;
   }
 }
-
 
 
 drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::getAffiliateSettings() {

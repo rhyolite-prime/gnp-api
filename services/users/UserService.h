@@ -7,27 +7,26 @@
 #include "dto/UserDto.h"
 #include "dto/SigninDto.h"
 #include <drogon/drogon.h>
-
-#include "dto/AdminUserDto.h"
 #include "dto/ChangePasswordDto.h"
 #include "dto/LoginUserPasskeyDto.h"
 #include "dto/RegisterUserPasskeysDto.h"
+#include "dto/UserGroupDto.h"
 #include "dto/VerifyPartnerUserOtpDto.h"
 
 namespace gnp::services {
 
 class UserService {
-public:
+public: 
 
     // use redis to track the number of users who have logged in to a particular account
 
   drogon::Task<dto::BaseApiResponse> getAll(int pageNo, int pageSize, const std::string &query);
 
-  drogon::Task<dto::BaseApiResponse> getAllSubscribers(int pageNo, int pageSize, const std::string &query);
+  drogon::Task<dto::BaseApiResponse> getAllSubscribers(int pageNo, int pageSize, const std::string &query, const std::string &dateJoinedStartDate, const std::string &dateJoinedEndDate, const std::string &lastActiveStartDate, const std::string &lastActiveEndDate, const std::string &accountType);
 
   drogon::Task<dto::BaseApiResponse> getDetails(const std::string &userId);
 
-  drogon::Task<dto::BaseApiResponse> getAdminUsers(int pageNo, int pageSize, const std::string &query);
+  drogon::Task<dto::BaseApiResponse> getAdminUsers(int pageNo, int pageSize, const std::string &query, const std::string &roleId, const std::string &userGroupId);
 
   drogon::Task<dto::BaseApiResponse> getPartnerAdminUsers(const std::string &partnerId, int pageNo, int pageSize, const std::string &query);
 
@@ -35,7 +34,17 @@ public:
 
   drogon::Task<dto::BaseApiResponse> create(const dto::UserDto &userDto);
 
+  drogon::Task<dto::BaseApiResponse> createSubscriber(const dto::SubscriberDto &dto);
+
+  drogon::Task<dto::BaseApiResponse> createAdminUser(const dto::AdminUserDto &userDto);
+
+  drogon::Task<dto::BaseApiResponse> updateAdminUser(const dto::AdminUserDto &userDto, const std::string &userId);
+
   drogon::Task<dto::BaseApiResponse> update(const dto::UserDto &userDto, const std::string &userId);
+
+  drogon::Task<dto::BaseApiResponse> updateUserStatus(const dto::UserStatusDto &dto);
+
+  drogon::Task<dto::BaseApiResponse> assignSubscriptionPlanToSubscriber(const dto::AssignSubscriberPlanDto &dto);
 
   drogon::Task<dto::BaseApiResponse> invitePartnerAdminUser(const dto::AdminUserDto &adminUserDto, const std::string &partnerId);
 
@@ -59,8 +68,9 @@ public:
 
   drogon::Task<gnp::dto::BaseApiResponse> resetUserPassword(const std::string &userId);
 
-  drogon::Task<gnp::dto::BaseApiResponse> deletePartnerAdminUser(const std::string &userId, const std::string &partnerId);
+    drogon::Task<::gnp::dto::BaseApiResponse> getSubscriberSubscriptionSummary(std::string userId);
 
+  drogon::Task<gnp::dto::BaseApiResponse> deletePartnerAdminUser(const std::string &userId, const std::string &partnerId);
 
   // auth
   drogon::Task<dto::BaseApiResponse> validateUserCredentials(const dto::SigninDto &signin_dto);
@@ -80,6 +90,14 @@ public:
 
     drogon::Task<dto::BaseApiResponse> changeUserPassword(std::string userId, std::string accountType, const dto::ChangePasswordDto &dto);
 
+    // user groups
+    drogon::Task<dto::BaseApiResponse> getAllUserGroups(int pageNo, int pageSize, const std::string &query);
+
+    drogon::Task<dto::BaseApiResponse> createUserGroup(const dto::UserGroupDto &userGroupDto);
+
+    drogon::Task<dto::BaseApiResponse> updateUserGroup(const dto::UserGroupDto &userGroupDto, const std::string &userGroupId);
+
+    drogon::Task<dto::BaseApiResponse> deleteUserGroup(const std::string &userGroupId);
 
   void checkAccountStatus(
       const std::string &identifier, const std::string &identifierType,

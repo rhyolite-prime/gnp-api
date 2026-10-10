@@ -158,6 +158,29 @@ Task<HttpResponsePtr> SubscriptionsController::fulfillUserOneTimeBuy(const HttpR
   co_return resp;
 }
 
+Task<HttpResponsePtr> SubscriptionsController::fulfillSubscriptionPayment(const HttpRequestPtr req) {
+  auto reference = req->getParameter("reference");
+
+  if (reference.empty()) {
+    gnp::dto::BaseApiResponse response;
+    response.success = false;
+    response.error["message"] = "Reference is required";
+    auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+    resp->setStatusCode(k400BadRequest);
+    co_return resp;
+  }
+
+  auto userId = req->attributes()->get<std::string>("userId");
+
+  auto plugin = app().getPlugin<gnp::plugins::GnpServicePlugin>();
+  auto &subscriptionService = plugin->getSubscriptionService();
+
+  auto result = co_await subscriptionService.fulfillSubscriptionPaymentAsync(userId, reference);
+
+  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+  co_return resp;
+}
+
 Task<HttpResponsePtr> SubscriptionsController::validateNewsPaperEntitlement(
     const HttpRequestPtr req) {
 
