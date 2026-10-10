@@ -154,6 +154,12 @@ add_executable(${PROJECT_NAME} main.cc
         dto/AffiliateSettingsDto.h
         services/games/GameManager.h
         services/games/GameManager.cc
+        services/games/GameTypes.h
+        services/games/Corpus.h
+        services/games/PublicationLexicon.h
+        services/games/PublicationLexicon.cc
+        services/games/PuzzleGenerator.h
+        services/games/PuzzleGenerator.cc
         services/rag/RagManager.h
         services/rag/RagManager.cc
         services/telegram/TelegramService.cc
@@ -270,7 +276,7 @@ target_sources(${PROJECT_NAME}
 
 
 add_subdirectory(test)
-add_subdirectory(external_deps/Bcrypt)
+add_subdirectory(external_deps/Bcrypt.cpp)
 
 # Disable jwt-cpp examples and tests to avoid a duplicate target error:
 # jwt-cpp's example/traits/CMakeLists.txt calls find_package(jsoncpp),

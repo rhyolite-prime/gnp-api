@@ -13,3 +13,6 @@
 [submodule "external/Bcrypt.cpp"]
 	path = external/Bcrypt.cpp
 	url = https://github.com/kay-smith/Bcrypt.cpp.git
+[submodule "external_deps/Bcrypt.cpp"]
+	path = external_deps/Bcrypt.cpp
+	url = https://github.com/kay-smith/Bcrypt.cpp.git
