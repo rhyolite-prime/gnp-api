@@ -1029,6 +1029,14 @@ drogon::Task<gnp::dto::BaseApiResponse> NewspaperService::searchArchives(
   const int pageSize = std::min(dto.getPageSize() < 1 ? 10 : dto.getPageSize(), 100);
   const int offset = (pageNo - 1) * pageSize;
 
+  // LIMIT/OFFSET are bound as TEXT integers. Drogon binds C++ integers as raw
+  // binary values of sizeof(T) bytes, but PostgreSQL infers LIMIT/OFFSET
+  // parameters as bigint (8 bytes), so binding 32-bit ints corrupts the Bind
+  // message ("insufficient data left in message"). Text-format parameters are
+  // parsed correctly regardless of the inferred type.
+  const std::string limitArg = std::to_string(pageSize);
+  const std::string offsetArg = std::to_string(offset);
+
   // ---- parse the search string ----------------------------------------------
   const std::string rawQuery = gnp::utils::StringUtils::trim(dto.getQuery());
   const ArchiveSearchTerms terms = parseArchiveSearchQuery(rawQuery);
@@ -1151,7 +1159,7 @@ drogon::Task<gnp::dto::BaseApiResponse> NewspaperService::searchArchives(
     }
 
     const auto rows = co_await dbClient->execSqlCoro(
-        dataSql, phrasesArg, keywordsArg, dateFrom, dateTo, publicationDate, pageSize, offset);
+        dataSql, phrasesArg, keywordsArg, dateFrom, dateTo, publicationDate, limitArg, offsetArg);
 
     dto::BaseApiResponse response;
     response.success = true;

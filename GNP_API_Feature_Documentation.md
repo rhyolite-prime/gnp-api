@@ -95,8 +95,10 @@ Manages the lifecycle of newspaper editions — ingestion, publishing, and retri
 
 ### Archive Search (`/search-archives`)
 
-Authenticated (`JwtAuthFilter`) full-text search across the OCR page text
-(`newspaper_details.page_text` and `supporting_text`).
+Full-text search across the OCR page text (`newspaper_details.page_text` and
+`supporting_text`). The endpoint is public; when a JWT is present the `userId`
+claim is captured for the search audit log, otherwise searches are attributed
+to "GNP System User".
 
 **Request body (JSON):**
 
