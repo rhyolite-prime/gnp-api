@@ -368,7 +368,11 @@ drogon::Task<HttpResponsePtr> NewsPapersController::updateUserEngagement(HttpReq
 
 drogon::Task<HttpResponsePtr> NewsPapersController::searchArchives(HttpRequestPtr req) {
 
-  auto userId = req->attributes()->get<std::string>("userId");
+  std::string userId = req->attributes()->get<std::string>("userId");
+
+  if (userId.empty()) {
+    userId = "GNP System User";
+  }
 
   auto jsonBody = req->getJsonObject();
 

@@ -29,7 +29,7 @@ public:
 
   ADD_METHOD_TO(NewsPapersController::updateUserEngagement, std::string(PREFIX) + "update-user-engagement", Post, Options, "JwtAuthFilter");
 
-  ADD_METHOD_TO(NewsPapersController::searchArchives, std::string(PREFIX) + "search-archives", Post, Options, "JwtAuthFilter");
+  ADD_METHOD_TO(NewsPapersController::searchArchives, std::string(PREFIX) + "search-archives", Post, Options);
 
   ADD_METHOD_TO(NewsPapersController::unPublish, std::string(PREFIX) + "unpublish", Get);
   ADD_METHOD_TO(NewsPapersController::ingestPublication, std::string(PREFIX) + "ingest", Post);
