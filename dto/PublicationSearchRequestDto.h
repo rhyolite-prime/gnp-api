@@ -72,6 +72,14 @@ namespace gnp::dto {
             setPublicationDate(json["publicationDate"].asString());
         }
 
+        if (json.isMember("publicationYear") && !json["publicationYear"].isNull()) {
+            setPublicationYear(json["publicationYear"].asInt());
+        }
+
+        if (json.isMember("sortOrder") && !json["sortOrder"].isNull()) {
+            setSortOrder(json["sortOrder"].asString());
+        }
+
 
 
 
