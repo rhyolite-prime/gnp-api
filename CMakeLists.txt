@@ -166,6 +166,8 @@ add_executable(${PROJECT_NAME} main.cc
         services/permissions/PermissionService.cc
         dto/PublicationSearchRequestDto.h
         dto/UserGroupDto.h
+        services/sms_gateway/SmsGatewayApi.h
+        services/sms_gateway/SmsGatewayApi.cc
 )
 
 # ##############################################################################

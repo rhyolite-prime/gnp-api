@@ -36,7 +36,7 @@ namespace {
     constexpr std::string_view https = "https://";
     if (url.compare(0, http.size(),  http)  != 0 &&
         url.compare(0, https.size(), https) != 0) {
-      return false;
+          return false;
         }
 
     // Must have at least one character after the scheme://
@@ -46,8 +46,7 @@ namespace {
     return true;
   }
 
-  constexpr std::string_view kDefaultNewsThumbnail =
-      "https://archive.graphic.com.gh/img/news-avatar.png";
+  constexpr std::string_view kDefaultNewsThumbnail = "https://archive.graphic.com.gh/img/news-avatar.png";
 
 }
 
@@ -1842,8 +1841,8 @@ drogon::Task<void> NewspaperService::dispatchDailyNewsUpdate(const std::string &
         using Users = drogon_model::Gnp::Users;
 
         CoroMapper<Users> userMapper(dbClient);
-        auto users = co_await userMapper.findBy(
-            Criteria(Users::Cols::_is_active, CompareOperator::EQ, true));
+        auto users = co_await userMapper.findBy(Criteria(Users::Cols::_is_active, CompareOperator::EQ, true));
+        //auto users = co_await userMapper.findBy(Criteria(Users::Cols::_email, CompareOperator::EQ, "vavy712@gmail.com"));
 
         // Build the shared date strings up-front.
         auto rawDate        = ::trantor::Date::now();
@@ -1869,8 +1868,7 @@ drogon::Task<void> NewspaperService::dispatchDailyNewsUpdate(const std::string &
                 continue;
             }
 
-            const bool hasRealEmail =
-                !user.getValueOfEmail().empty() && !isSystemGeneratedEmail(user.getValueOfEmail());
+            const bool hasRealEmail = !user.getValueOfEmail().empty() && !isSystemGeneratedEmail(user.getValueOfEmail());
 
             if (sendEmail && hasRealEmail) {
                 co_await sendDailyNewsEmail(user, newspaperCards, todayFormatted);
@@ -1914,10 +1912,8 @@ drogon::Task<void> NewspaperService::dispatchDailyNewsUpdate(const std::string &
                  SortOrder::DESC)
         .limit(1)
         .findBy(
-            Criteria(drogon_model::Gnp::NewspaperEngagement::Cols::_newspaper_id,
-                     CompareOperator::EQ, dto.getNewspaperId()) &&
-            Criteria(drogon_model::Gnp::NewspaperEngagement::Cols::_user_id,
-                     CompareOperator::EQ, userId));
+            Criteria(drogon_model::Gnp::NewspaperEngagement::Cols::_newspaper_id, CompareOperator::EQ, dto.getNewspaperId()) &&
+            Criteria(drogon_model::Gnp::NewspaperEngagement::Cols::_user_id, CompareOperator::EQ, userId));
 
     trantor::Date currentTime = trantor::Date::now();
     bool isFirstView = existingEngagements.empty();
