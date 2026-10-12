@@ -150,6 +150,106 @@ namespace {
     return true;
   }
 
+  // ---------------------------------------------------------------------------
+  // Snippet builder: ~120 characters of context to the left and right of the
+  // first occurrence of any search term inside the page text.
+  // ---------------------------------------------------------------------------
+
+  constexpr size_t kSnippetRadius = 120;          // chars of context on each side of a match
+  constexpr size_t kSnippetFallbackLength = 300;  // head-of-text when no term appears literally
+
+  // Collapses all whitespace runs (newlines, tabs, spaces — OCR text is full
+  // of them) into single spaces.
+  std::string collapseWhitespace(const std::string &s) {
+    std::string out;
+    out.reserve(s.size());
+    bool pendingSpace = false;
+    for (char ch : s) {
+      if (std::isspace(static_cast<unsigned char>(ch))) {
+        pendingSpace = !out.empty();
+      } else {
+        if (pendingSpace) out.push_back(' ');
+        pendingSpace = false;
+        out.push_back(ch);
+      }
+    }
+    return out;
+  }
+
+  // Case-insensitive substring search; returns std::string::npos when absent.
+  size_t findCaseInsensitive(const std::string &haystack, const std::string &needle) {
+    if (needle.empty() || haystack.size() < needle.size()) return std::string::npos;
+    const size_t limit = haystack.size() - needle.size();
+    for (size_t i = 0; i <= limit; ++i) {
+      size_t j = 0;
+      while (j < needle.size() &&
+             std::tolower(static_cast<unsigned char>(haystack[i + j])) ==
+             std::tolower(static_cast<unsigned char>(needle[j]))) {
+        ++j;
+      }
+      if (j == needle.size()) return i;
+    }
+    return std::string::npos;
+  }
+
+  // Earliest literal occurrence of any phrase or keyword.
+  // Returns {std::string::npos, 0} when nothing appears literally.
+  std::pair<size_t, size_t> findFirstTermOccurrence(const std::string &text,
+                                                    const ArchiveSearchTerms &terms) {
+    size_t bestPos = std::string::npos;
+    size_t bestLen = 0;
+    auto consider = [&](const std::string &term) {
+      if (term.empty()) return;
+      const size_t pos = findCaseInsensitive(text, term);
+      if (pos != std::string::npos && pos < bestPos) {
+        bestPos = pos;
+        bestLen = term.size();
+      }
+    };
+    for (const auto &phrase : terms.phrases) consider(phrase);
+    for (const auto &keyword : terms.keywords) consider(keyword);
+    return {bestPos, bestLen};
+  }
+
+  // Builds the response snippet: kSnippetRadius characters to the left and
+  // right of the first term occurrence, with "..." markers when truncated.
+  // Falls back to the head of the text when no term appears literally (rows
+  // that matched only through stemming, e.g. "independent" -> "independence").
+  std::string buildArchiveSnippet(const std::string &rawPageText,
+                                  const std::string &rawSupportingText,
+                                  const ArchiveSearchTerms &terms) {
+    std::string text = collapseWhitespace(rawPageText);
+    if (text.empty()) text = collapseWhitespace(rawSupportingText);
+    if (text.empty()) return "";
+
+    auto [pos, len] = findFirstTermOccurrence(text, terms);
+
+    // The terms might only appear in supporting_text while page_text exists.
+    if (pos == std::string::npos && !rawSupportingText.empty() && !rawPageText.empty()) {
+      const std::string supporting = collapseWhitespace(rawSupportingText);
+      const auto alt = findFirstTermOccurrence(supporting, terms);
+      if (alt.first != std::string::npos) {
+        pos = alt.first;
+        len = alt.second;
+        text = supporting;
+      }
+    }
+
+    if (pos == std::string::npos) {
+      return text.substr(0, kSnippetFallbackLength);
+    }
+
+    const size_t start = pos > kSnippetRadius ? pos - kSnippetRadius : 0;
+    size_t end = pos + len + kSnippetRadius;
+    if (end > text.size()) end = text.size();
+
+    std::string snippet;
+    if (start > 0) snippet += "...";
+    snippet += text.substr(start, end - start);
+    if (end < text.size()) snippet += "...";
+    return snippet;
+  }
+
 }
 
 namespace gnp::services {
@@ -1123,17 +1223,14 @@ drogon::Task<gnp::dto::BaseApiResponse> NewspaperService::searchArchives(
       "nd.tags::text AS tags, "
       "nd.categories::text AS categories, "
       "nd.supporting_text, "
+      "nd.page_text, "
       "nd.views, "
       "nd.publication_date::text AS publication_date, "
       "nd.is_free, "
       "nd.thumbnail_id, "
       "nd.document_id, "
       "ts_rank(to_tsvector('english', COALESCE(nd.page_text, '') || ' ' || COALESCE(nd.supporting_text, '')), "
-      "plainto_tsquery('english', NULLIF($2, ''))) AS relevance, "
-      "CASE WHEN nd.page_text IS NOT NULL AND nd.page_text <> '' "
-      "THEN left(regexp_replace(nd.page_text, '\\s+', ' ', 'g'), 300) "
-      "ELSE left(regexp_replace(COALESCE(nd.supporting_text, ''), '\\s+', ' ', 'g'), 300) "
-      "END AS snippet "
+      "plainto_tsquery('english', NULLIF($2, ''))) AS relevance "
       "FROM newspaper_details nd " + whereClause +
       " ORDER BY relevance DESC NULLS LAST, nd.publication_date DESC NULLS LAST, nd.page_number ASC "
       "LIMIT $6 OFFSET $7";
@@ -1195,8 +1292,12 @@ drogon::Task<gnp::dto::BaseApiResponse> NewspaperService::searchArchives(
       item["views"] = row["views"].isNull() ? 0 : row["views"].as<int>();
       item["thumbnailId"] = row["thumbnail_id"].isNull() ? "" : row["thumbnail_id"].as<std::string>();
       item["documentId"] = row["document_id"].isNull() ? "" : row["document_id"].as<std::string>();
-      item["supportingText"] = row["supporting_text"].isNull() ? "" : row["supporting_text"].as<std::string>();
-      item["snippet"] = row["snippet"].isNull() ? "" : row["snippet"].as<std::string>();
+
+      const std::string pageText = row["page_text"].isNull() ? "" : row["page_text"].as<std::string>();
+      const std::string supportingText = row["supporting_text"].isNull() ? "" : row["supporting_text"].as<std::string>();
+      item["supportingText"] = supportingText;
+      // 120 chars of context to the left and right of the first term match.
+      item["snippet"] = buildArchiveSnippet(pageText, supportingText, terms);
       item["relevance"] = row["relevance"].isNull() ? 0.0 : row["relevance"].as<double>();
 
       const std::string tagsStr = row["tags"].isNull() ? "" : row["tags"].as<std::string>();

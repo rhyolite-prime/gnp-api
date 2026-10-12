@@ -116,6 +116,12 @@ pages ordered by relevance, each with `id`, `newspaperId`, `pageNumber`,
 `publicationDate`, `snippet`, `relevance`, `tags`, `categories`, etc., plus
 `totalCount` / `totalPages` pagination metadata.
 
+`snippet` is an excerpt of the page text centred on the match: ~120
+characters to the left and right of the first occurrence of any search term
+(case-insensitive), with `...` markers where the text is truncated. If a row
+matched only through stemming (no literal occurrence of a term), the snippet
+falls back to the first 300 characters of the page text.
+
 > Requires the indexes from `sql/newspaper_details_search_index.sql` to stay
 > fast on large archives.
 
