@@ -13,8 +13,12 @@
 #include "Users.h"
 #include "constants/NotificationTypes.h"
 #include "utils/IdGeneratorUtils.h"
+#include "utils/StringUtils.h"
 #include "plugins/GnpServicePlugin.h"
 #include <drogon/drogon.h>
+#include <algorithm>
+#include <cctype>
+#include <cstdio>
 #include <fstream>
 #include <vector>
 
@@ -47,6 +51,205 @@ namespace {
   }
 
   constexpr std::string_view kDefaultNewsThumbnail = "https://archive.graphic.com.gh/img/news-avatar.png";
+
+  // ---------------------------------------------------------------------------
+  // Archive search helpers (used by NewspaperService::searchArchives)
+  // ---------------------------------------------------------------------------
+
+  std::string trimArchiveWhitespace(const std::string &s) {
+    size_t begin = 0;
+    while (begin < s.size() && std::isspace(static_cast<unsigned char>(s[begin]))) ++begin;
+    size_t end = s.size();
+    while (end > begin && std::isspace(static_cast<unsigned char>(s[end - 1]))) --end;
+    return s.substr(begin, end - begin);
+  }
+
+  struct ArchiveSearchTerms {
+    std::vector<std::string> phrases;   // double-quoted segments -> exact, case-insensitive match
+    std::vector<std::string> keywords;  // bare words -> full-text keyword match (ANDed)
+  };
+
+  // Splits a raw user search string into quoted phrases and bare keywords.
+  // Double quotes mean "match this phrase exactly as typed (ignoring case)".
+  // Everything outside quotes becomes individual full-text keywords.
+  //
+  //   Input : "kwame nkrumah" independence 1957
+  //   phrases  -> ["kwame nkrumah"]
+  //   keywords -> ["independence", "1957"]
+  //
+  // Curly quotes (U+201C / U+201D) produced by mobile keyboards are treated
+  // the same as the ASCII double quote.
+  ArchiveSearchTerms parseArchiveSearchQuery(const std::string &query) {
+    ArchiveSearchTerms terms;
+    std::string bare;
+    std::string phrase;
+    bool inQuotes = false;
+
+    size_t i = 0;
+    while (i < query.size()) {
+      const unsigned char c = static_cast<unsigned char>(query[i]);
+
+      bool isQuote = (c == '"');
+      size_t quoteLen = 1;
+      if (!isQuote && c == 0xE2 && i + 3 <= query.size() &&
+          static_cast<unsigned char>(query[i + 1]) == 0x80 &&
+          (static_cast<unsigned char>(query[i + 2]) == 0x9C ||
+           static_cast<unsigned char>(query[i + 2]) == 0x9D)) {
+        isQuote = true;
+        quoteLen = 3;
+      }
+
+      if (isQuote) {
+        if (inQuotes) {
+          const std::string trimmed = trimArchiveWhitespace(phrase);
+          if (!trimmed.empty()) terms.phrases.push_back(trimmed);
+          phrase.clear();
+        }
+        inQuotes = !inQuotes;
+        i += quoteLen;
+        continue;
+      }
+
+      if (inQuotes) phrase.push_back(static_cast<char>(c));
+      else bare.push_back(static_cast<char>(c));
+      ++i;
+    }
+
+    // An unterminated opening quote still means "match exactly this".
+    if (inQuotes) {
+      const std::string trimmed = trimArchiveWhitespace(phrase);
+      if (!trimmed.empty()) terms.phrases.push_back(trimmed);
+    }
+
+    std::string word;
+    for (char ch : bare) {
+      if (std::isspace(static_cast<unsigned char>(ch))) {
+        if (!word.empty()) {
+          terms.keywords.push_back(word);
+          word.clear();
+        }
+      } else {
+        word.push_back(ch);
+      }
+    }
+    if (!word.empty()) terms.keywords.push_back(word);
+
+    return terms;
+  }
+
+  // Light shape check (YYYY-MM-DD); PostgreSQL still enforces real validity.
+  bool looksLikeIsoDate(const std::string &value) {
+    if (value.size() != 10) return false;
+    for (size_t i = 0; i < value.size(); ++i) {
+      const char c = value[i];
+      if (i == 4 || i == 7) {
+        if (c != '-') return false;
+      } else if (c < '0' || c > '9') {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Snippet builder: ~120 characters of context to the left and right of the
+  // first occurrence of any search term inside the page text.
+  // ---------------------------------------------------------------------------
+
+  constexpr size_t kSnippetRadius = 120;          // chars of context on each side of a match
+  constexpr size_t kSnippetFallbackLength = 300;  // head-of-text when no term appears literally
+
+  // Collapses all whitespace runs (newlines, tabs, spaces — OCR text is full
+  // of them) into single spaces.
+  std::string collapseWhitespace(const std::string &s) {
+    std::string out;
+    out.reserve(s.size());
+    bool pendingSpace = false;
+    for (char ch : s) {
+      if (std::isspace(static_cast<unsigned char>(ch))) {
+        pendingSpace = !out.empty();
+      } else {
+        if (pendingSpace) out.push_back(' ');
+        pendingSpace = false;
+        out.push_back(ch);
+      }
+    }
+    return out;
+  }
+
+  // Case-insensitive substring search; returns std::string::npos when absent.
+  size_t findCaseInsensitive(const std::string &haystack, const std::string &needle) {
+    if (needle.empty() || haystack.size() < needle.size()) return std::string::npos;
+    const size_t limit = haystack.size() - needle.size();
+    for (size_t i = 0; i <= limit; ++i) {
+      size_t j = 0;
+      while (j < needle.size() &&
+             std::tolower(static_cast<unsigned char>(haystack[i + j])) ==
+             std::tolower(static_cast<unsigned char>(needle[j]))) {
+        ++j;
+      }
+      if (j == needle.size()) return i;
+    }
+    return std::string::npos;
+  }
+
+  // Earliest literal occurrence of any phrase or keyword.
+  // Returns {std::string::npos, 0} when nothing appears literally.
+  std::pair<size_t, size_t> findFirstTermOccurrence(const std::string &text,
+                                                    const ArchiveSearchTerms &terms) {
+    size_t bestPos = std::string::npos;
+    size_t bestLen = 0;
+    auto consider = [&](const std::string &term) {
+      if (term.empty()) return;
+      const size_t pos = findCaseInsensitive(text, term);
+      if (pos != std::string::npos && pos < bestPos) {
+        bestPos = pos;
+        bestLen = term.size();
+      }
+    };
+    for (const auto &phrase : terms.phrases) consider(phrase);
+    for (const auto &keyword : terms.keywords) consider(keyword);
+    return {bestPos, bestLen};
+  }
+
+  // Builds the response snippet: kSnippetRadius characters to the left and
+  // right of the first term occurrence, with "..." markers when truncated.
+  // Falls back to the head of the text when no term appears literally (rows
+  // that matched only through stemming, e.g. "independent" -> "independence").
+  std::string buildArchiveSnippet(const std::string &rawPageText,
+                                  const std::string &rawSupportingText,
+                                  const ArchiveSearchTerms &terms) {
+    std::string text = collapseWhitespace(rawPageText);
+    if (text.empty()) text = collapseWhitespace(rawSupportingText);
+    if (text.empty()) return "";
+
+    auto [pos, len] = findFirstTermOccurrence(text, terms);
+
+    // The terms might only appear in supporting_text while page_text exists.
+    if (pos == std::string::npos && !rawSupportingText.empty() && !rawPageText.empty()) {
+      const std::string supporting = collapseWhitespace(rawSupportingText);
+      const auto alt = findFirstTermOccurrence(supporting, terms);
+      if (alt.first != std::string::npos) {
+        pos = alt.first;
+        len = alt.second;
+        text = supporting;
+      }
+    }
+
+    if (pos == std::string::npos) {
+      return text.substr(0, kSnippetFallbackLength);
+    }
+
+    const size_t start = pos > kSnippetRadius ? pos - kSnippetRadius : 0;
+    size_t end = pos + len + kSnippetRadius;
+    if (end > text.size()) end = text.size();
+
+    std::string snippet;
+    if (start > 0) snippet += "...";
+    snippet += text.substr(start, end - start);
+    if (end < text.size()) snippet += "...";
+    return snippet;
+  }
 
 }
 
@@ -895,6 +1098,297 @@ drogon::Task<dto::BaseApiResponse> NewspaperService::listAllArchivedAsync(int pa
     errorResponse.error["message"] =
         "Database error while fetching newspapers.";
     errorResponse.error["detail"] = e.base().what();
+    co_return errorResponse;
+  }
+}
+
+
+// ---------------------------------------------------------------------------
+// Graphic Archives — full-text search over newspaper_details.page_text and
+// newspaper_details.supporting_text.
+//
+// Query syntax (dto.getQuery()):
+//   * Bare words          -> PostgreSQL full-text search; every keyword must
+//                            match (AND semantics, stemmed, case-insensitive).
+//   * "quoted phrases"    -> matched exactly as typed, case-insensitively,
+//                            inside page_text or supporting_text.
+//
+// Example: "kwame nkrumah" independence 1957
+//   -> pages containing the exact phrase "kwame nkrumah" (any case) AND the
+//      keywords independence AND 1957.
+//
+// Requires the GIN index from sql/newspaper_details_search_index.sql to stay
+// fast on large archives (the index expression must match the one below).
+// ---------------------------------------------------------------------------
+drogon::Task<gnp::dto::BaseApiResponse> NewspaperService::searchArchives(
+    const dto::PublicationSearchRequestDto &dto, const std::string &userId) {
+
+  auto dbClient = drogon::app().getDbClient();
+
+  // ---- normalize pagination -------------------------------------------------
+  const int pageNo = dto.getPageNo() < 1 ? 1 : dto.getPageNo();
+  const int pageSize = std::min(dto.getPageSize() < 1 ? 10 : dto.getPageSize(), 100);
+  const int offset = (pageNo - 1) * pageSize;
+
+  // LIMIT/OFFSET are bound as TEXT integers. Drogon binds C++ integers as raw
+  // binary values of sizeof(T) bytes, but PostgreSQL infers LIMIT/OFFSET
+  // parameters as bigint (8 bytes), so binding 32-bit ints corrupts the Bind
+  // message ("insufficient data left in message"). Text-format parameters are
+  // parsed correctly regardless of the inferred type.
+  const std::string limitArg = std::to_string(pageSize);
+  const std::string offsetArg = std::to_string(offset);
+
+  // ---- parse the search string ----------------------------------------------
+  const std::string rawQuery = gnp::utils::StringUtils::trim(dto.getQuery());
+  const ArchiveSearchTerms terms = parseArchiveSearchQuery(rawQuery);
+
+  LOG_INFO << "Archive search requested by user " << (userId.empty() ? "anonymous" : userId)
+           << " | query=\"" << rawQuery << "\""
+           << " | phrases=" << terms.phrases.size()
+           << " | keywords=" << terms.keywords.size();
+
+  if (terms.phrases.empty() && terms.keywords.empty()) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.message = "Search query is required.";
+    errorResponse.error["code"] = constants::ERR_VALIDATION;
+    errorResponse.error["message"] =
+        "Provide at least one keyword. Wrap exact phrases in double quotes, e.g. \"kwame nkrumah\".";
+    co_return errorResponse;
+  }
+
+  // ---- validate optional date filters ----------------------------------------
+  const std::string dateFrom = gnp::utils::StringUtils::trim(dto.getDateFrom());
+  const std::string dateTo = gnp::utils::StringUtils::trim(dto.getDateTo());
+  const std::string publicationDate = gnp::utils::StringUtils::trim(dto.getPublicationDate());
+
+  if ((!dateFrom.empty() && !looksLikeIsoDate(dateFrom)) ||
+      (!dateTo.empty() && !looksLikeIsoDate(dateTo)) ||
+      (!publicationDate.empty() && !looksLikeIsoDate(publicationDate))) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.message = "Invalid date filter.";
+    errorResponse.error["code"] = constants::ERR_VALIDATION;
+    errorResponse.error["message"] = "dateFrom, dateTo and publicationDate must be in YYYY-MM-DD format.";
+    co_return errorResponse;
+  }
+
+  // ---- validate optional publication-year filter ------------------------------
+  // 0 (the default) means "no year filter".
+  const int publicationYear = dto.getPublicationYear();
+  if (publicationYear != 0 && (publicationYear < 1 || publicationYear > 9999)) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.message = "Invalid publication year.";
+    errorResponse.error["code"] = constants::ERR_VALIDATION;
+    errorResponse.error["message"] = "publicationYear must be between 1 and 9999, or 0 for no filter.";
+    co_return errorResponse;
+  }
+
+  // The year is converted to a date range so the publication_date index can
+  // still be used (an extract(year ...) predicate could not).
+  std::string yearStart;
+  std::string yearEnd;
+  if (publicationYear != 0) {
+    char buf[16];
+    snprintf(buf, sizeof(buf), "%04d-01-01", publicationYear);
+    yearStart = buf;
+    snprintf(buf, sizeof(buf), "%04d-12-31", publicationYear);
+    yearEnd = buf;
+  }
+
+  // ---- validate sort order -----------------------------------------------------
+  // "" (default) -> relevance-first ordering; "desc"/"asc" -> chronological.
+  std::string sortOrder = gnp::utils::StringUtils::trim(dto.getSortOrder());
+  for (auto &c : sortOrder) {
+    c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+  }
+  if (!sortOrder.empty() && sortOrder != "desc" && sortOrder != "asc") {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.message = "Invalid sort order.";
+    errorResponse.error["code"] = constants::ERR_VALIDATION;
+    errorResponse.error["message"] = "sortOrder must be \"desc\", \"asc\" or an empty string.";
+    co_return errorResponse;
+  }
+
+  // ---- build the bind parameters ---------------------------------------------
+  // All parameters are always bound; an empty string means "no filter".
+  //   $1 = quoted phrases, serialized as a JSON text array, e.g. ["kwame nkrumah"]
+  //   $2 = bare keywords joined by spaces (fed to plainto_tsquery)
+  //   $3 = dateFrom, $4 = dateTo, $5 = publicationDate (YYYY-MM-DD)
+  //   $6 = publicationYear range start (YYYY-01-01), $7 = range end (YYYY-12-31)
+  //   $8 = page size (LIMIT), $9 = OFFSET (data query only)
+  Json::Value phrasesJson(Json::arrayValue);
+  for (const auto &phrase : terms.phrases) phrasesJson.append(phrase);
+  Json::StreamWriterBuilder jsonWriter;
+  jsonWriter["indentation"] = "";
+  const std::string phrasesArg = Json::writeString(jsonWriter, phrasesJson);
+
+  std::string keywordsArg;
+  for (const auto &keyword : terms.keywords) {
+    if (!keywordsArg.empty()) keywordsArg.push_back(' ');
+    keywordsArg += keyword;
+  }
+
+  // Every quoted phrase must appear verbatim (case-insensitively) in either
+  // page_text or supporting_text. With an empty phrase array NOT EXISTS is true,
+  // so the clause is a no-op when the user typed no quoted phrases.
+  const std::string whereClause =
+      "WHERE NOT EXISTS ( "
+      "SELECT 1 FROM jsonb_array_elements_text($1::jsonb) AS required_phrases(phrase) "
+      "WHERE position(lower(required_phrases.phrase) IN lower(COALESCE(nd.page_text, ''))) = 0 "
+      "AND position(lower(required_phrases.phrase) IN lower(COALESCE(nd.supporting_text, ''))) = 0 "
+      ") "
+      // Bare keywords: full-text search across both text columns. When $2 is
+      // empty the condition folds to TRUE and no tsquery is evaluated.
+      "AND ($2 = '' OR to_tsvector('english', COALESCE(nd.page_text, '') || ' ' || COALESCE(nd.supporting_text, '')) "
+      "@@ plainto_tsquery('english', $2)) "
+      // Optional date filters
+      "AND ($3 = '' OR nd.publication_date >= NULLIF($3, '')::date) "
+      "AND ($4 = '' OR nd.publication_date <= NULLIF($4, '')::date) "
+      "AND ($5 = '' OR nd.publication_date = NULLIF($5, '')::date) "
+      // Optional publication-year filter (bound as a date range)
+      "AND ($6 = '' OR nd.publication_date >= NULLIF($6, '')::date) "
+      "AND ($7 = '' OR nd.publication_date <= NULLIF($7, '')::date)";
+
+  // sortOrder empty    -> best matches first, then newest edition
+  // sortOrder desc/asc -> chronological order first, relevance as tie-breaker
+  const std::string orderClause = sortOrder.empty()
+      ? " ORDER BY relevance DESC NULLS LAST, nd.publication_date DESC NULLS LAST, nd.page_number ASC "
+      : std::string(" ORDER BY nd.publication_date ") + (sortOrder == "asc" ? "ASC" : "DESC") +
+        " NULLS LAST, relevance DESC NULLS LAST, nd.page_number ASC ";
+
+  const std::string countSql =
+      "SELECT count(*) AS total FROM newspaper_details nd " + whereClause;
+
+  const std::string dataSql =
+      "SELECT nd.id::text AS id, "
+      "nd.newspaper_id::text AS newspaper_id, "
+      "nd.page_number, "
+      "nd.edition_number, "
+      "nd.file_type, "
+      "nd.content_type, "
+      "nd.publication_id::text AS publication_id, "
+      "nd.publication_name, "
+      "nd.tags::text AS tags, "
+      "nd.categories::text AS categories, "
+      "nd.supporting_text, "
+      "nd.page_text, "
+      "nd.views, "
+      "nd.publication_date::text AS publication_date, "
+      "nd.is_free, "
+      "nd.thumbnail_id, "
+      "nd.document_id, "
+      "ts_rank(to_tsvector('english', COALESCE(nd.page_text, '') || ' ' || COALESCE(nd.supporting_text, '')), "
+      "plainto_tsquery('english', NULLIF($2, ''))) AS relevance "
+      "FROM newspaper_details nd " + whereClause + orderClause +
+      "LIMIT $8 OFFSET $9";
+
+  try {
+    const auto countResult = co_await dbClient->execSqlCoro(
+        countSql, phrasesArg, keywordsArg, dateFrom, dateTo, publicationDate, yearStart, yearEnd);
+
+    const size_t totalCount =
+        static_cast<size_t>(countResult[0]["total"].as<long>());
+
+    if (totalCount == 0) {
+      dto::BaseApiResponse response;
+      response.success = true;
+      response.message = "No archive pages matched the search.";
+      response.result["data"] = Json::arrayValue;
+      response.result["totalCount"] = 0;
+      response.result["pageNo"] = pageNo;
+      response.result["pageSize"] = pageSize;
+      response.result["totalPages"] = 0;
+      response.result["query"] = rawQuery;
+      response.result["publicationYear"] = publicationYear;
+      response.result["sortOrder"] = sortOrder;
+      co_return response;
+    }
+
+    const auto rows = co_await dbClient->execSqlCoro(
+        dataSql, phrasesArg, keywordsArg, dateFrom, dateTo, publicationDate, yearStart, yearEnd, limitArg, offsetArg);
+
+    dto::BaseApiResponse response;
+    response.success = true;
+    response.message = "Archive search completed successfully.";
+
+    const size_t totalPages = (totalCount + pageSize - 1) / pageSize;
+    response.result["totalCount"] = (Json::UInt64)totalCount;
+    response.result["pageNo"] = pageNo;
+    response.result["pageSize"] = pageSize;
+    response.result["totalPages"] = (int)totalPages;
+    response.result["lowerBound"] = pageSize * (pageNo - 1) + 1;
+    response.result["upperBound"] = Json::Value(
+        (int)totalPages == pageNo ? (Json::UInt64)totalCount
+                                  : (Json::UInt64)(pageNo * pageSize));
+    response.result["query"] = rawQuery;
+    response.result["publicationYear"] = publicationYear;
+    response.result["sortOrder"] = sortOrder;
+
+    Json::Value data = Json::arrayValue;
+    Json::Reader reader;
+
+    for (const auto &row : rows) {
+      Json::Value item;
+
+      item["id"] = row["id"].isNull() ? "" : row["id"].as<std::string>();
+      item["newspaperId"] = row["newspaper_id"].isNull() ? "" : row["newspaper_id"].as<std::string>();
+      item["pageNumber"] = row["page_number"].isNull() ? 0 : row["page_number"].as<int>();
+      item["editionNumber"] = row["edition_number"].isNull() ? "" : row["edition_number"].as<std::string>();
+      item["fileType"] = row["file_type"].isNull() ? 0 : row["file_type"].as<int>();
+      item["contentType"] = row["content_type"].isNull() ? "" : row["content_type"].as<std::string>();
+      item["publicationId"] = row["publication_id"].isNull() ? "" : row["publication_id"].as<std::string>();
+      item["publicationName"] = row["publication_name"].isNull() ? "" : row["publication_name"].as<std::string>();
+      item["publicationDate"] = row["publication_date"].isNull() ? "" : row["publication_date"].as<std::string>();
+      item["isFree"] = !row["is_free"].isNull() && row["is_free"].as<bool>();
+      item["views"] = row["views"].isNull() ? 0 : row["views"].as<int>();
+      item["thumbnailId"] = row["thumbnail_id"].isNull() ? "" : row["thumbnail_id"].as<std::string>();
+      item["documentId"] = row["document_id"].isNull() ? "" : row["document_id"].as<std::string>();
+
+      const std::string pageText = row["page_text"].isNull() ? "" : row["page_text"].as<std::string>();
+      const std::string supportingText = row["supporting_text"].isNull() ? "" : row["supporting_text"].as<std::string>();
+      item["supportingText"] = supportingText;
+      // 120 chars of context to the left and right of the first term match.
+      item["snippet"] = buildArchiveSnippet(pageText, supportingText, terms);
+      item["relevance"] = row["relevance"].isNull() ? 0.0 : row["relevance"].as<double>();
+
+      const std::string tagsStr = row["tags"].isNull() ? "" : row["tags"].as<std::string>();
+      Json::Value tagsJson;
+      if (!tagsStr.empty() && reader.parse(tagsStr, tagsJson)) {
+        item["tags"] = tagsJson;
+      } else {
+        item["tags"] = Json::arrayValue;
+      }
+
+      const std::string categoriesStr = row["categories"].isNull() ? "" : row["categories"].as<std::string>();
+      Json::Value categoriesJson;
+      if (!categoriesStr.empty() && reader.parse(categoriesStr, categoriesJson)) {
+        item["categories"] = categoriesJson;
+      } else {
+        item["categories"] = Json::arrayValue;
+      }
+
+      data.append(item);
+    }
+
+    response.result["data"] = data;
+    co_return response;
+
+  } catch (const DrogonDbException &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.message = "Database error while searching the archives.";
+    errorResponse.error["code"] = constants::ERR_DB_QUERY;
+    errorResponse.error["detail"] = e.base().what();
+    co_return errorResponse;
+  } catch (const std::exception &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.message = "Failed to search the archives.";
+    errorResponse.error["code"] = constants::ERR_INTERNAL;
+    errorResponse.error["detail"] = e.what();
     co_return errorResponse;
   }
 }

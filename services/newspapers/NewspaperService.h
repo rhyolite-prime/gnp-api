@@ -69,7 +69,7 @@ public:
     drogon::Task<gnp::dto::BaseApiResponse> updateUserEngagement(const dto::UserEngagementDto &dto, const std::string &userId);
 
     //Graphic Archives
-    //drogon::Task<gnp::dto::BaseApiResponse> searchArchives(const dto::PublicationSearchRequestDto &dto, const std::string &userId);
+    drogon::Task<gnp::dto::BaseApiResponse> searchArchives(const dto::PublicationSearchRequestDto &dto, const std::string &userId);
 
     //reports
     drogon::Task<::gnp::dto::BaseApiResponse> getNewspaperEngagementReport(const gnp::dto::ReportDto &dto);
