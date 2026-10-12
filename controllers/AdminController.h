@@ -53,7 +53,7 @@ public:
   ADD_METHOD_TO(AdminController::getPartnerSubscriberInfo, std::string(PREFIX) + "get-partner-subscriber-info/{1}/{2}", Get, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::getSubscriberInfo, std::string(PREFIX) + "get-subscriber-info/{1}", Get, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::assignSubscriptionPlanToSubscriber, std::string(PREFIX) + "assign-subscriber-plan", Post, Options, "JwtAuthFilter");
-
+  
   // campaigns
   ADD_METHOD_TO(AdminController::getAllCampaigns, std::string(PREFIX) + "get-all-campaigns", Get, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::createCampaign, std::string(PREFIX) + "create-campaign", Post, Options, "JwtAuthFilter");
