@@ -88,9 +88,34 @@ Manages the lifecycle of newspaper editions — ingestion, publishing, and retri
 | `GET` | `/publish` | Mark a newspaper as published and visible to subscribers |
 | `GET` | `/unpublish` | Retract/unpublish a newspaper edition |
 | `GET` | `/increment-view-count` | Track/increment view analytics for a newspaper |
+| `POST` | `/search-archives` | Full-text search of archived page text (see below) |
 | `POST` | `/ingest` | Submit a new newspaper edition for ingestion into the system |
 | `POST` | `/update` | Update newspaper metadata/content |
 | `DELETE` | `/delete` | Remove a newspaper edition from the system |
+
+### Archive Search (`/search-archives`)
+
+Authenticated (`JwtAuthFilter`) full-text search across the OCR page text
+(`newspaper_details.page_text` and `supporting_text`).
+
+**Request body (JSON):**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `query` | string | **Required.** Search string. Bare words are full-text keywords (ANDed, stemmed, case-insensitive). Text wrapped in double quotes is matched exactly as typed, ignoring case — e.g. `"kwame nkrumah" independence 1957`. |
+| `pageNo` | int | Page number (default 1) |
+| `pageSize` | int | Results per page, capped at 100 (default 10) |
+| `dateFrom` | string | Optional, `YYYY-MM-DD` — restrict to `publication_date >= dateFrom` |
+| `dateTo` | string | Optional, `YYYY-MM-DD` — restrict to `publication_date <= dateTo` |
+| `publicationDate` | string | Optional, `YYYY-MM-DD` — restrict to an exact publication date |
+
+**Response:** standard `BaseApiResponse`; `result.data` contains matching
+pages ordered by relevance, each with `id`, `newspaperId`, `pageNumber`,
+`publicationDate`, `snippet`, `relevance`, `tags`, `categories`, etc., plus
+`totalCount` / `totalPages` pagination metadata.
+
+> Requires the indexes from `sql/newspaper_details_search_index.sql` to stay
+> fast on large archives.
 
 ---
 

@@ -21,7 +21,7 @@ namespace gnp::dto {
         [[nodiscard]] int32_t getPageSize() const { return pageSize_; }
         [[nodiscard]] const std::string& getQuery() const { return query_; }
         [[nodiscard]] const std::string& getDateFrom() const { return dateFrom_; }
-        [[nodiscard]] const std::string& getUserAgent() const { return dateTo_; }
+        [[nodiscard]] const std::string& getDateTo() const { return dateTo_; }
         [[nodiscard]] const std::string& getPublicationDate() const { return publicationDate_; }
 
         // Setters
@@ -33,14 +33,18 @@ namespace gnp::dto {
         void setPublicationDate(const std::string& value) { publicationDate_ = value; }
 
     private:
-        int32_t pageNo_;
-        int32_t pageSize_;
+        int32_t pageNo_ = 1;
+        int32_t pageSize_ = 10;
         std::string query_;
         std::string dateFrom_;
         std::string dateTo_;
         std::string publicationDate_;
 
     };
+
+    inline PublicationSearchRequestDto::PublicationSearchRequestDto(const Json::Value& json) {
+        fromJson(json);
+    }
 
     inline void PublicationSearchRequestDto::fromJson(const Json::Value& json) {
 

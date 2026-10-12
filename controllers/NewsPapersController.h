@@ -29,6 +29,8 @@ public:
 
   ADD_METHOD_TO(NewsPapersController::updateUserEngagement, std::string(PREFIX) + "update-user-engagement", Post, Options, "JwtAuthFilter");
 
+  ADD_METHOD_TO(NewsPapersController::searchArchives, std::string(PREFIX) + "search-archives", Post, Options, "JwtAuthFilter");
+
   ADD_METHOD_TO(NewsPapersController::unPublish, std::string(PREFIX) + "unpublish", Get);
   ADD_METHOD_TO(NewsPapersController::ingestPublication, std::string(PREFIX) + "ingest", Post);
   ADD_METHOD_TO(NewsPapersController::update, std::string(PREFIX) + "update", Post);
@@ -48,6 +50,7 @@ public:
   drogon::Task<HttpResponsePtr> ingestPublication(HttpRequestPtr req);
   drogon::Task<HttpResponsePtr> trackUserEngagement(HttpRequestPtr req);
   drogon::Task<HttpResponsePtr> updateUserEngagement(HttpRequestPtr req);
+  drogon::Task<HttpResponsePtr> searchArchives(HttpRequestPtr req);
   void  incrementViewCount(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
   void update(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
   drogon::Task<HttpResponsePtr> deleteNewsPaper(HttpRequestPtr req);
