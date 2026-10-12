@@ -110,6 +110,8 @@ to "GNP System User".
 | `dateFrom` | string | Optional, `YYYY-MM-DD` — restrict to `publication_date >= dateFrom` |
 | `dateTo` | string | Optional, `YYYY-MM-DD` — restrict to `publication_date <= dateTo` |
 | `publicationDate` | string | Optional, `YYYY-MM-DD` — restrict to an exact publication date |
+| `publicationYear` | int | Optional — restrict to one publication year (0 or omitted = no filter) |
+| `sortOrder` | string | `"desc"`, `"asc"` or `""` (default). Empty = relevance-first ordering; `desc`/`asc` = newest/oldest `publication_date` first with relevance as tie-breaker |
 
 **Response:** standard `BaseApiResponse`; `result.data` contains matching
 pages ordered by relevance, each with `id`, `newspaperId`, `pageNumber`,

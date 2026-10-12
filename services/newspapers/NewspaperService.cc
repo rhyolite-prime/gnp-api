@@ -18,6 +18,7 @@
 #include <drogon/drogon.h>
 #include <algorithm>
 #include <cctype>
+#include <cstdio>
 #include <fstream>
 #include <vector>
 
@@ -1172,12 +1173,52 @@ drogon::Task<gnp::dto::BaseApiResponse> NewspaperService::searchArchives(
     co_return errorResponse;
   }
 
+  // ---- validate optional publication-year filter ------------------------------
+  // 0 (the default) means "no year filter".
+  const int publicationYear = dto.getPublicationYear();
+  if (publicationYear != 0 && (publicationYear < 1 || publicationYear > 9999)) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.message = "Invalid publication year.";
+    errorResponse.error["code"] = constants::ERR_VALIDATION;
+    errorResponse.error["message"] = "publicationYear must be between 1 and 9999, or 0 for no filter.";
+    co_return errorResponse;
+  }
+
+  // The year is converted to a date range so the publication_date index can
+  // still be used (an extract(year ...) predicate could not).
+  std::string yearStart;
+  std::string yearEnd;
+  if (publicationYear != 0) {
+    char buf[16];
+    snprintf(buf, sizeof(buf), "%04d-01-01", publicationYear);
+    yearStart = buf;
+    snprintf(buf, sizeof(buf), "%04d-12-31", publicationYear);
+    yearEnd = buf;
+  }
+
+  // ---- validate sort order -----------------------------------------------------
+  // "" (default) -> relevance-first ordering; "desc"/"asc" -> chronological.
+  std::string sortOrder = gnp::utils::StringUtils::trim(dto.getSortOrder());
+  for (auto &c : sortOrder) {
+    c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+  }
+  if (!sortOrder.empty() && sortOrder != "desc" && sortOrder != "asc") {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.message = "Invalid sort order.";
+    errorResponse.error["code"] = constants::ERR_VALIDATION;
+    errorResponse.error["message"] = "sortOrder must be \"desc\", \"asc\" or an empty string.";
+    co_return errorResponse;
+  }
+
   // ---- build the bind parameters ---------------------------------------------
   // All parameters are always bound; an empty string means "no filter".
   //   $1 = quoted phrases, serialized as a JSON text array, e.g. ["kwame nkrumah"]
   //   $2 = bare keywords joined by spaces (fed to plainto_tsquery)
   //   $3 = dateFrom, $4 = dateTo, $5 = publicationDate (YYYY-MM-DD)
-  //   $6 = page size (LIMIT), $7 = OFFSET (data query only)
+  //   $6 = publicationYear range start (YYYY-01-01), $7 = range end (YYYY-12-31)
+  //   $8 = page size (LIMIT), $9 = OFFSET (data query only)
   Json::Value phrasesJson(Json::arrayValue);
   for (const auto &phrase : terms.phrases) phrasesJson.append(phrase);
   Json::StreamWriterBuilder jsonWriter;
@@ -1206,7 +1247,17 @@ drogon::Task<gnp::dto::BaseApiResponse> NewspaperService::searchArchives(
       // Optional date filters
       "AND ($3 = '' OR nd.publication_date >= NULLIF($3, '')::date) "
       "AND ($4 = '' OR nd.publication_date <= NULLIF($4, '')::date) "
-      "AND ($5 = '' OR nd.publication_date = NULLIF($5, '')::date)";
+      "AND ($5 = '' OR nd.publication_date = NULLIF($5, '')::date) "
+      // Optional publication-year filter (bound as a date range)
+      "AND ($6 = '' OR nd.publication_date >= NULLIF($6, '')::date) "
+      "AND ($7 = '' OR nd.publication_date <= NULLIF($7, '')::date)";
+
+  // sortOrder empty    -> best matches first, then newest edition
+  // sortOrder desc/asc -> chronological order first, relevance as tie-breaker
+  const std::string orderClause = sortOrder.empty()
+      ? " ORDER BY relevance DESC NULLS LAST, nd.publication_date DESC NULLS LAST, nd.page_number ASC "
+      : std::string(" ORDER BY nd.publication_date ") + (sortOrder == "asc" ? "ASC" : "DESC") +
+        " NULLS LAST, relevance DESC NULLS LAST, nd.page_number ASC ";
 
   const std::string countSql =
       "SELECT count(*) AS total FROM newspaper_details nd " + whereClause;
@@ -1231,13 +1282,12 @@ drogon::Task<gnp::dto::BaseApiResponse> NewspaperService::searchArchives(
       "nd.document_id, "
       "ts_rank(to_tsvector('english', COALESCE(nd.page_text, '') || ' ' || COALESCE(nd.supporting_text, '')), "
       "plainto_tsquery('english', NULLIF($2, ''))) AS relevance "
-      "FROM newspaper_details nd " + whereClause +
-      " ORDER BY relevance DESC NULLS LAST, nd.publication_date DESC NULLS LAST, nd.page_number ASC "
-      "LIMIT $6 OFFSET $7";
+      "FROM newspaper_details nd " + whereClause + orderClause +
+      "LIMIT $8 OFFSET $9";
 
   try {
     const auto countResult = co_await dbClient->execSqlCoro(
-        countSql, phrasesArg, keywordsArg, dateFrom, dateTo, publicationDate);
+        countSql, phrasesArg, keywordsArg, dateFrom, dateTo, publicationDate, yearStart, yearEnd);
 
     const size_t totalCount =
         static_cast<size_t>(countResult[0]["total"].as<long>());
@@ -1252,11 +1302,13 @@ drogon::Task<gnp::dto::BaseApiResponse> NewspaperService::searchArchives(
       response.result["pageSize"] = pageSize;
       response.result["totalPages"] = 0;
       response.result["query"] = rawQuery;
+      response.result["publicationYear"] = publicationYear;
+      response.result["sortOrder"] = sortOrder;
       co_return response;
     }
 
     const auto rows = co_await dbClient->execSqlCoro(
-        dataSql, phrasesArg, keywordsArg, dateFrom, dateTo, publicationDate, limitArg, offsetArg);
+        dataSql, phrasesArg, keywordsArg, dateFrom, dateTo, publicationDate, yearStart, yearEnd, limitArg, offsetArg);
 
     dto::BaseApiResponse response;
     response.success = true;
@@ -1272,6 +1324,8 @@ drogon::Task<gnp::dto::BaseApiResponse> NewspaperService::searchArchives(
         (int)totalPages == pageNo ? (Json::UInt64)totalCount
                                   : (Json::UInt64)(pageNo * pageSize));
     response.result["query"] = rawQuery;
+    response.result["publicationYear"] = publicationYear;
+    response.result["sortOrder"] = sortOrder;
 
     Json::Value data = Json::arrayValue;
     Json::Reader reader;
