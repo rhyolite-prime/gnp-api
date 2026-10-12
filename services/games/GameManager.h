@@ -8,6 +8,7 @@
 #include <drogon/drogon.h>
 
 #include "dto/BaseApiResponse.h"
+#include "services/games/GameTypes.h"
 
 namespace gnp::services {
 
@@ -287,11 +288,46 @@ namespace gnp::services {
             const std::string& achievementId
         );
 
+        // ============= HTTP-facing operations =============
+        // Controllers should use these. They redact solutions and return BaseApiResponse.
+
+        drogon::Task<dto::BaseApiResponse> startGame(const StartOptions &options);
+        drogon::Task<dto::BaseApiResponse> getSessionView(const std::string &userId, const std::string &sessionId);
+        drogon::Task<dto::BaseApiResponse> getCurrentSessionView(const std::string &userId);
+        drogon::Task<dto::BaseApiResponse> saveSessionProgress(const std::string &userId, const std::string &sessionId, const Json::Value &playerState);
+        drogon::Task<dto::BaseApiResponse> submitSession(const std::string &userId, const std::string &sessionId, const Json::Value &submission);
+        drogon::Task<dto::BaseApiResponse> takeHint(const std::string &userId, const std::string &sessionId);
+        drogon::Task<dto::BaseApiResponse> removeSession(const std::string &userId, const std::string &sessionId);
+        drogon::Task<dto::BaseApiResponse> historyView(const std::string &userId, int pageNo, int pageSize);
+        drogon::Task<dto::BaseApiResponse> statsView(const std::string &userId);
+        drogon::Task<dto::BaseApiResponse> pointsView(const std::string &userId);
+        drogon::Task<dto::BaseApiResponse> achievementsView(const std::string &userId, bool mineOnly);
+        drogon::Task<dto::BaseApiResponse> leaderboardView(const std::string &gameType, const std::string &period, int pageNo, int pageSize, const std::string &focusUserId);
+        drogon::Task<dto::BaseApiResponse> rivalsView(const std::string &userId, int limit);
+        drogon::Task<dto::BaseApiResponse> createChallenge(const std::string &userId, const std::string &opponentId, const std::string &gameType, const std::string &difficulty);
+        drogon::Task<dto::BaseApiResponse> acceptChallengeView(const std::string &userId, const std::string &challengeId);
+        drogon::Task<dto::BaseApiResponse> declineChallengeView(const std::string &userId, const std::string &challengeId);
+        drogon::Task<dto::BaseApiResponse> listChallengesView(const std::string &userId);
+        drogon::Task<dto::BaseApiResponse> finishMultiplayer(const std::string &userId, const std::string &sessionId);
+        drogon::Task<dto::BaseApiResponse> dailyBoard(const std::string &userId);
+        drogon::Task<dto::BaseApiResponse> startDaily(const std::string &userId, const std::string &challengeId, const std::string &gameType);
+        drogon::Task<dto::BaseApiResponse> completeDailyView(const std::string &userId, const std::string &sessionId);
+        drogon::Task<dto::BaseApiResponse> dailyLeaderboardView(int pageNo, int pageSize);
+        drogon::Task<dto::BaseApiResponse> publicationSourcesView(const std::string &publicationId);
+        drogon::Task<dto::BaseApiResponse> statisticsView(const std::string &gameType);
+        drogon::Task<dto::BaseApiResponse> resetProgressView(const std::string &userId);
+        drogon::Task<dto::BaseApiResponse> seedAchievementsView();
+        drogon::Task<dto::BaseApiResponse> refreshLexiconView();
+
     private:
         // ============= Private Helper Methods =============
 
         // Generate unique ID
         std::string generateSessionId();
+
+        drogon::Task<void> ensureAchievementCatalog();
+        drogon::Task<GameSession> openSession(const StartOptions& options);
+        drogon::Task<std::string> ensureDailyChallenges();
 
         // Calculate points based on difficulty
         int getDifficultyMultiplier(const std::string& difficulty);
