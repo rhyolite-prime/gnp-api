@@ -23,6 +23,8 @@ namespace gnp::dto {
         [[nodiscard]] const std::string& getDateFrom() const { return dateFrom_; }
         [[nodiscard]] const std::string& getDateTo() const { return dateTo_; }
         [[nodiscard]] const std::string& getPublicationDate() const { return publicationDate_; }
+        [[nodiscard]] int32_t getPublicationYear() const { return publicationYear_; }
+        [[nodiscard]] const std::string& getSortOrder() const { return sortOrder_; }
 
         // Setters
         void setPageNo(const int32_t value) { pageNo_ = value; }
@@ -31,6 +33,8 @@ namespace gnp::dto {
         void setDateFrom(const std::string& value) { dateFrom_ = value; }
         void setDateTo(const std::string& value) { dateTo_ = value; }
         void setPublicationDate(const std::string& value) { publicationDate_ = value; }
+        void setPublicationYear(const int32_t value) { publicationYear_ = value; }
+        void setSortOrder(const std::string& value) { sortOrder_ = value; }
 
     private:
         int32_t pageNo_ = 1;
@@ -39,6 +43,8 @@ namespace gnp::dto {
         std::string dateFrom_;
         std::string dateTo_;
         std::string publicationDate_;
+        int32_t publicationYear_ = 0;   // 0 = no year filter
+        std::string sortOrder_;         // "desc", "asc" or "" (relevance-first default)
 
     };
 
