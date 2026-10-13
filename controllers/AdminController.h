@@ -101,6 +101,9 @@ public:
 
   ADD_METHOD_TO(AdminController::revokePartnerApiKey, std::string(PREFIX) + "revoke-partner-api-key", Delete, Options, "JwtAuthFilter");
 
+  // partner api request logs
+  ADD_METHOD_TO(AdminController::getPartnerApiRequestLogs, std::string(PREFIX) + "get-partner-api-request-logs", Get, Options, "JwtAuthFilter");
+
   // payments
   ADD_METHOD_TO(AdminController::getAllPayments, std::string(PREFIX) + "get-all-payments", Get, Options, "JwtAuthFilter");
 
@@ -264,6 +267,7 @@ public:
   Task<HttpResponsePtr> generatePartnerApiKey(HttpRequestPtr req);
   Task<HttpResponsePtr> revokePartnerApiKey(HttpRequestPtr req);
   Task<HttpResponsePtr> updatePartnerApiKey(HttpRequestPtr req);
+  Task<HttpResponsePtr> getPartnerApiRequestLogs(HttpRequestPtr req);
 
   //payments
   void getAllPayments(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
