@@ -226,8 +226,8 @@ namespace gnp::services {
             for (const auto &log : logs) {
                 Json::Value logJson = log.toJson();
 
-                // snake_case -> camelCase; the heavy request/response body and
-                // header payloads are omitted from list results.
+                // snake_case -> camelCase; header payloads and the error stack
+                // are omitted from list results.
                 Json::Value item;
                 item["id"] = logJson["id"];
                 item["partnerId"] = logJson["partner_id"];
@@ -235,10 +235,12 @@ namespace gnp::services {
                 item["clientId"] = logJson["client_id"];
                 item["endpoint"] = logJson["endpoint"];
                 item["method"] = logJson["method"];
+                item["requestParams"] = logJson["request_params"];
+                item["requestBody"] = logJson["request_body"];
                 item["requestIp"] = logJson["request_ip"];
                 item["userAgent"] = logJson["user_agent"];
-                item["requestParams"] = logJson["request_params"];
                 item["responseStatusCode"] = logJson["response_status_code"];
+                item["responseBody"] = logJson["response_body"];
                 item["responseTimeMs"] = logJson["response_time_ms"];
                 item["errorMessage"] = logJson["error_message"];
                 item["isSuccessful"] = logJson["is_successful"];
