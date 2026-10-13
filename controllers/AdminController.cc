@@ -5,6 +5,7 @@
 #include "dto/AssignPartnerSubscriberPlanDto.h"
 #include "dto/CreateCampaignDto.h"
 #include "dto/GeneratePartnerApiKeyDto.h"
+#include "dto/PartnerApiLogSearchRequestDto.h"
 #include "plugins/GnpServicePlugin.h"
 #include "services/campaigns/CampaignService.h"
 #include "services/ingestion_jobs/IngestionJobService.h"
@@ -2168,6 +2169,60 @@ drogon::Task<HttpResponsePtr> AdminController::getPartnerApiKeys(HttpRequestPtr 
   auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
   resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
   co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
+}
+
+drogon::Task<HttpResponsePtr> AdminController::getPartnerApiRequestLogs(HttpRequestPtr req) {
+  gnp::dto::PartnerApiLogSearchRequestDto dto;
+
+  if (!req->getParameter("pageNo").empty()) {
+    try {
+      dto.setPageNo(std::stoi(req->getParameter("pageNo")));
+    } catch (...) {}
+  }
+
+  if (!req->getParameter("pageSize").empty()) {
+    try {
+      dto.setPageSize(std::stoi(req->getParameter("pageSize")));
+    } catch (...) {}
+  }
+
+  if (!req->getParameter("statusCode").empty()) {
+    try {
+      dto.setStatusCode(std::stoi(req->getParameter("statusCode")));
+    } catch (...) {}
+  }
+
+  const std::string isSuccessfulParam = req->getParameter("isSuccessful");
+  if (!isSuccessfulParam.empty()) {
+    if (isSuccessfulParam == "true" || isSuccessfulParam == "1") {
+      dto.setIsSuccessful(true);
+    } else if (isSuccessfulParam == "false" || isSuccessfulParam == "0") {
+      dto.setIsSuccessful(false);
+    } else {
+      gnp::dto::BaseApiResponse response;
+      response.success = false;
+      response.error["message"] = "Invalid isSuccessful filter; expected true or false.";
+      auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+      resp->setStatusCode(k400BadRequest);
+      co_return resp;
+    }
+  }
+
+  dto.setQuery(req->getParameter("query"));
+  dto.setPartnerId(req->getParameter("partnerId"));
+  dto.setApiKeyId(req->getParameter("apiKeyId"));
+  dto.setClientId(req->getParameter("clientId"));
+  dto.setMethod(req->getParameter("method"));
+  dto.setEndpoint(req->getParameter("endpoint"));
+  dto.setDateFrom(req->getParameter("dateFrom"));
+  dto.setDateTo(req->getParameter("dateTo"));
+  dto.setSortOrder(req->getParameter("sortOrder"));
+
+  auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
+  auto &logService = plugin->getPartnerApiLogService();
+
+  auto result = co_await logService.searchLogsAsync(dto);
+  co_return HttpResponse::newHttpJsonResponse(result.toJson());
 }
 
 drogon::Task<HttpResponsePtr> AdminController::generatePartnerApiKey(HttpRequestPtr req) {
