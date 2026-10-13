@@ -51,7 +51,7 @@ namespace gnp::dto {
     private:
         int32_t pageNo_ = 1;
         int32_t pageSize_ = 10;
-        std::string query_;                 // free-text: endpoint, request id, client id, ip, user agent, error
+        std::string query_;                 // free-text: endpoint, request id, client id, ip, user agent, request/response bodies, error
         std::string partnerId_;
         std::string apiKeyId_;
         std::string clientId_;

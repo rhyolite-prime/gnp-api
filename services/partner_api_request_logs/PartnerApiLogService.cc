@@ -187,6 +187,8 @@ namespace gnp::services {
                  Criteria(Cols::_client_id, CompareOperator::Like, likeQuery) ||
                  Criteria(Cols::_request_ip, CompareOperator::Like, likeQuery) ||
                  Criteria(Cols::_user_agent, CompareOperator::Like, likeQuery) ||
+                 Criteria(Cols::_request_body, CompareOperator::Like, likeQuery) ||
+                 Criteria(Cols::_response_body, CompareOperator::Like, likeQuery) ||
                  Criteria(Cols::_error_message, CompareOperator::Like, likeQuery));
         }
 
