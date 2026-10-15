@@ -12,10 +12,9 @@ namespace gnp::services {
 
 class RagManager {
 public:
-  // Retrieves OCR page evidence from newspaper_details and, when configured,
-  // asks an OpenAI-compatible chat-completions endpoint for a grounded answer.
-  // Retrieval and citations remain available if the generation provider is
-  // not configured or temporarily unavailable.
+  // Retrieves OCR page evidence from newspaper_details, optionally expands the
+  // question with a local Ollama model, then asks that model for a grounded,
+  // cited answer. Retrieval and citations remain available when Ollama is down.
   drogon::Task<dto::BaseApiResponse> answerArchiveQuestion(
       const dto::RagQueryDto &request,
       const std::string &userId = "");

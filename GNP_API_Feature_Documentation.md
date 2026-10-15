@@ -136,15 +136,15 @@ optional `dateFrom`, `dateTo`, `publicationDate`, `publicationYear`,
 `publicationId` or `publicationName` filters. It retrieves ranked page excerpts
 from `newspaper_details.page_text` and `supporting_text`, then returns
 `result.answer` with citation labels (for example `[S1]`) and matching source
-metadata/excerpts in `result.citations`. If a model provider is unavailable or
-not configured, retrieved excerpts are still returned as an extractive answer.
+metadata/excerpts in `result.citations`. If Ollama is unavailable or disabled,
+retrieved excerpts are still returned as an extractive answer.
 
-Generation uses an optional OpenAI-compatible chat-completions provider
-configured through `GNP_RAG_API_KEY`, `GNP_RAG_BASE_URL`,
-`GNP_RAG_CHAT_COMPLETIONS_PATH`, `GNP_RAG_MODEL` and `GNP_RAG_ENABLED`.
-Without a provider key, the endpoint only retrieves evidence. See
-[`docs/archive-rag.md`](docs/archive-rag.md) for request/response examples,
-provider setup, and retrieval limitations. Apply
+Generation and query expansion use a local Ollama model configured through
+`GNP_RAG_BASE_URL`, `GNP_RAG_CHAT_PATH`, `GNP_RAG_MODEL`, and
+`GNP_RAG_ENABLED`. PostgreSQL full-text search retrieves the source OCR pages;
+Ollama expands question terms and writes a cited Markdown narrative from the
+retrieved evidence. See [`docs/archive-rag.md`](docs/archive-rag.md) for setup,
+request/response examples, and retrieval limitations. Apply
 `sql/newspaper_details_search_index.sql` for the PostgreSQL full-text GIN index.
 
 ---
