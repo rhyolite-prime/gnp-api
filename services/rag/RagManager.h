@@ -1,18 +1,24 @@
-//
-// Created by Emmanuel Addo-Odame on 28/08/2026.
-//
+// Retrieval-augmented question answering for the Graphic Archives.
+#pragma once
 
-#ifndef GNPAPI_RAGMANAGER_H
-#define GNPAPI_RAGMANAGER_H
+#include <drogon/drogon.h>
+
+#include "dto/BaseApiResponse.h"
+#include "dto/RagQueryDto.h"
+
+#include <string>
 
 namespace gnp::services {
 
-    class RagManager {
+class RagManager {
+public:
+  // Retrieves OCR page evidence from newspaper_details and, when configured,
+  // asks an OpenAI-compatible chat-completions endpoint for a grounded answer.
+  // Retrieval and citations remain available if the generation provider is
+  // not configured or temporarily unavailable.
+  drogon::Task<dto::BaseApiResponse> answerArchiveQuestion(
+      const dto::RagQueryDto &request,
+      const std::string &userId = "");
+};
 
-        public:
-
-
-    };
-
-}
-#endif //GNPAPI_RAGMANAGER_H
+} // namespace gnp::services

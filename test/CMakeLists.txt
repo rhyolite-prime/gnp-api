@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
 project(GnpApi_test CXX)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 file(GLOB CTL_SRC "../controllers/*.cc")
 file(GLOB FILTER_SRC "../filters/*.cc")
@@ -33,6 +36,7 @@ file(GLOB UTILS_SVC "../utils/*.cc")
 file(GLOB JOOMLA_SVC "../services/joomla_api/*.cc")
 file(GLOB SETTING_SVC "../services/settings/*.cc")
 file(GLOB GAMES_SVC "../services/games/*.cc")
+file(GLOB RAG_SVC "../services/rag/*.cc")
 
 
 add_executable(${PROJECT_NAME} test_main.cc
@@ -68,6 +72,7 @@ add_executable(${PROJECT_NAME} test_main.cc
     ${PERMISSION_SVC}
     ${SETTING_SVC}
     ${GAMES_SVC}
+    ${RAG_SVC}
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
