@@ -57,7 +57,7 @@ namespace gnp::services {
 
             auto result = dto::JoomlaApiArticleResponse::fromJson(jsonResponse);
 
-            LOG_INFO << "[GetJoomlaArticles] response => " << responseStr;
+            //LOG_INFO << "[GetJoomlaArticles] response => " << responseStr;
 
             response.result["data"] = result.toJson()["data"];
             response.success = true;

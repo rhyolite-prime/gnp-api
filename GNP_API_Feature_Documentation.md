@@ -88,9 +88,44 @@ Manages the lifecycle of newspaper editions — ingestion, publishing, and retri
 | `GET` | `/publish` | Mark a newspaper as published and visible to subscribers |
 | `GET` | `/unpublish` | Retract/unpublish a newspaper edition |
 | `GET` | `/increment-view-count` | Track/increment view analytics for a newspaper |
+| `POST` | `/search-archives` | Full-text search of archived page text (see below) |
 | `POST` | `/ingest` | Submit a new newspaper edition for ingestion into the system |
 | `POST` | `/update` | Update newspaper metadata/content |
 | `DELETE` | `/delete` | Remove a newspaper edition from the system |
+
+### Archive Search (`/search-archives`)
+
+Full-text search across the OCR page text (`newspaper_details.page_text` and
+`supporting_text`). The endpoint is public; when a JWT is present the `userId`
+claim is captured for the search audit log, otherwise searches are attributed
+to "GNP System User".
+
+**Request body (JSON):**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `query` | string | **Required.** Search string. Bare words are full-text keywords (ANDed, stemmed, case-insensitive). Text wrapped in double quotes is matched exactly as typed, ignoring case — e.g. `"kwame nkrumah" independence 1957`. |
+| `pageNo` | int | Page number (default 1) |
+| `pageSize` | int | Results per page, capped at 100 (default 10) |
+| `dateFrom` | string | Optional, `YYYY-MM-DD` — restrict to `publication_date >= dateFrom` |
+| `dateTo` | string | Optional, `YYYY-MM-DD` — restrict to `publication_date <= dateTo` |
+| `publicationDate` | string | Optional, `YYYY-MM-DD` — restrict to an exact publication date |
+| `publicationYear` | int | Optional — restrict to one publication year (0 or omitted = no filter) |
+| `sortOrder` | string | `"desc"`, `"asc"` or `""` (default). Empty = relevance-first ordering; `desc`/`asc` = newest/oldest `publication_date` first with relevance as tie-breaker |
+
+**Response:** standard `BaseApiResponse`; `result.data` contains matching
+pages ordered by relevance, each with `id`, `newspaperId`, `pageNumber`,
+`publicationDate`, `snippet`, `relevance`, `tags`, `categories`, etc., plus
+`totalCount` / `totalPages` pagination metadata.
+
+`snippet` is an excerpt of the page text centred on the match: ~120
+characters to the left and right of the first occurrence of any search term
+(case-insensitive), with `...` markers where the text is truncated. If a row
+matched only through stemming (no literal occurrence of a term), the snippet
+falls back to the first 300 characters of the page text.
+
+> Requires the indexes from `sql/newspaper_details_search_index.sql` to stay
+> fast on large archives.
 
 ---
 
