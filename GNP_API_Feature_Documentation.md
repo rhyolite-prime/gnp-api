@@ -139,13 +139,16 @@ from `newspaper_details.page_text` and `supporting_text`, then returns
 metadata/excerpts in `result.citations`. If Ollama is unavailable or disabled,
 retrieved excerpts are still returned as an extractive answer.
 
-Generation and query expansion use a local Ollama model configured through
-`GNP_RAG_BASE_URL`, `GNP_RAG_CHAT_PATH`, `GNP_RAG_MODEL`, and
-`GNP_RAG_ENABLED`. PostgreSQL full-text search retrieves the source OCR pages;
-Ollama expands question terms and writes a cited Markdown narrative from the
-retrieved evidence. See [`docs/archive-rag.md`](docs/archive-rag.md) for setup,
-request/response examples, and retrieval limitations. Apply
-`sql/newspaper_details_search_index.sql` for the PostgreSQL full-text GIN index.
+Generation and structured query planning use a local Ollama model configured
+through `GNP_RAG_BASE_URL`, `GNP_RAG_CHAT_PATH`, `GNP_RAG_MODEL`, and
+`GNP_RAG_ENABLED`. PostgreSQL full-text search uses entity/event query stages;
+optional passage embeddings use Ollama `/api/embed` and pgvector behind
+`GNP_RAG_VECTOR_ENABLED`. The optional authenticated
+`POST /api/v1/admin/rag/index-pending` route processes a bounded OCR embedding
+queue. See [`docs/archive-rag.md`](docs/archive-rag.md) for setup, pgvector
+requirements, rollout flags, and the evaluation utility. Apply
+`sql/newspaper_details_search_index.sql` for page-level FTS; apply
+`sql/archive_rag_chunks.sql` only when pgvector is available.
 
 ---
 

@@ -18,6 +18,8 @@
 #include "dto/PartnerInvoiceDto.h"
 #include "dto/PartnerQuotaDto.h"
 
+#include <cstdlib>
+
 drogon::Task<HttpResponsePtr> AdminController::getDashboardData(HttpRequestPtr req) {
 
   gnp::dto::BaseApiResponse response;
@@ -2712,6 +2714,51 @@ Task<HttpResponsePtr> AdminController::dispatchSubscriptionRenewalReminder(HttpR
   response.success = true;
   response.message = "Subscription renewal reminder job started in background.";
   co_return HttpResponse::newHttpJsonResponse(response.toJson());
+}
+
+
+Task<HttpResponsePtr> AdminController::indexArchiveRag(HttpRequestPtr req) {
+  const char *expectedIndexKey = std::getenv("GNP_RAG_INDEXING_KEY");
+  const std::string suppliedIndexKey = req->getHeader("X-GNP-RAG-Index-Key");
+  if (!expectedIndexKey || !*expectedIndexKey ||
+      suppliedIndexKey != expectedIndexKey) {
+    gnp::dto::BaseApiResponse response;
+    response.success = false;
+    response.message = "Archive RAG indexing is not authorized.";
+    response.error["code"] = gnp::constants::ERR_UNAUTHORIZED;
+    response.error["message"] =
+        "Configure the operator key and send X-GNP-RAG-Index-Key.";
+    auto httpResponse = HttpResponse::newHttpJsonResponse(response.toJson());
+    httpResponse->setStatusCode(k401Unauthorized);
+    co_return httpResponse;
+  }
+
+  int batchSize = 10;
+  const auto jsonBody = req->getJsonObject();
+  if (jsonBody && jsonBody->isMember("batchSize")) {
+    if (!(*jsonBody)["batchSize"].isInt()) {
+      gnp::dto::BaseApiResponse response;
+      response.success = false;
+      response.message = "batchSize must be an integer between 1 and 20.";
+      response.error["code"] = gnp::constants::ERR_VALIDATION;
+      response.error["message"] = response.message;
+      auto httpResponse = HttpResponse::newHttpJsonResponse(response.toJson());
+      httpResponse->setStatusCode(k400BadRequest);
+      co_return httpResponse;
+    }
+    batchSize = (*jsonBody)["batchSize"].asInt();
+  }
+
+  auto plugin = app().getPlugin<gnp::plugins::GnpServicePlugin>();
+  auto result = co_await plugin->getRagManager().indexPendingArchiveBatch(batchSize);
+  auto httpResponse = HttpResponse::newHttpJsonResponse(result.toJson());
+  if (!result.success) {
+    const int code = result.error["code"].isInt()
+        ? result.error["code"].asInt() : gnp::constants::ERR_DB_QUERY;
+    httpResponse->setStatusCode(code == gnp::constants::ERR_VALIDATION
+        ? k400BadRequest : k500InternalServerError);
+  }
+  co_return httpResponse;
 }
 
 

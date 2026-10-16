@@ -18,6 +18,11 @@ public:
   drogon::Task<dto::BaseApiResponse> answerArchiveQuestion(
       const dto::RagQueryDto &request,
       const std::string &userId = "");
+
+  // Processes a bounded number of queued OCR pages. The database migration
+  // creates the queue/chunk tables; indexing is deliberately kept out of the
+  // question request path.
+  drogon::Task<dto::BaseApiResponse> indexPendingArchiveBatch(int batchSize);
 };
 
 } // namespace gnp::services
