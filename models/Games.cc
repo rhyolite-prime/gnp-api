@@ -1,3 +1,4 @@
+
 /**
  *
  *  Games.cc
@@ -6,20 +7,34 @@
  */
 
 #include "Games.h"
+
 #include <drogon/utils/Utilities.h>
+
 #include <string>
+
 
 using namespace drogon;
 using namespace drogon::orm;
 using namespace drogon_model::Gnp;
 
+
+
 const std::string Games::Cols::_id = "\"id\"";
+
 const std::string Games::Cols::_title = "\"title\"";
+
 const std::string Games::Cols::_description = "\"description\"";
+
 const std::string Games::Cols::_is_active = "\"is_active\"";
+
 const std::string Games::Cols::_game_logo = "\"game_logo\"";
+
+
 const std::string Games::primaryKeyName = "id";
+
+
 const bool Games::hasPrimaryKey = true;
+
 const std::string Games::tableName = "\"games\"";
 
 const std::vector<typename Games::MetaData> Games::metaData_={
@@ -28,6 +43,7 @@ const std::vector<typename Games::MetaData> Games::metaData_={
 {"description","std::string","character varying",250,0,0,1},
 {"is_active","bool","boolean",1,0,0,1},
 {"game_logo","std::vector<char>","bytea",0,0,0,0}
+
 };
 const std::string &Games::getColumnName(size_t index) noexcept(false)
 {
@@ -38,22 +54,35 @@ Games::Games(const Row &r, const ssize_t indexOffset) noexcept
 {
     if(indexOffset < 0)
     {
+
         if(!r["id"].isNull())
         {
+
             id_=std::make_shared<std::string>(r["id"].as<std::string>());
+
         }
+
         if(!r["title"].isNull())
         {
+
             title_=std::make_shared<std::string>(r["title"].as<std::string>());
+
         }
+
         if(!r["description"].isNull())
         {
+
             description_=std::make_shared<std::string>(r["description"].as<std::string>());
+
         }
+
         if(!r["is_active"].isNull())
         {
+
             isActive_=std::make_shared<bool>(r["is_active"].as<bool>());
+
         }
+
         if(!r["game_logo"].isNull())
         {
             auto str = r["game_logo"].as<std::string_view>();
@@ -63,6 +92,7 @@ Games::Games(const Row &r, const ssize_t indexOffset) noexcept
                 gameLogo_=std::make_shared<std::vector<char>>(drogon::utils::hexToBinaryVector(str.data()+2,str.length()-2));
             }
         }
+
     }
     else
     {
@@ -73,26 +103,39 @@ Games::Games(const Row &r, const ssize_t indexOffset) noexcept
             return;
         }
         size_t index;
+
         index = offset + 0;
         if(!r[index].isNull())
         {
+
             id_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 1;
         if(!r[index].isNull())
         {
+
             title_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 2;
         if(!r[index].isNull())
         {
+
             description_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 3;
         if(!r[index].isNull())
         {
+
             isActive_=std::make_shared<bool>(r[index].as<bool>());
+
         }
+
         index = offset + 4;
         if(!r[index].isNull())
         {
@@ -103,6 +146,7 @@ Games::Games(const Row &r, const ssize_t indexOffset) noexcept
                 gameLogo_=std::make_shared<std::vector<char>>(drogon::utils::hexToBinaryVector(str.data()+2,str.length()-2));
             }
         }
+
     }
 
 }
@@ -114,6 +158,7 @@ Games::Games(const Json::Value &pJson, const std::vector<std::string> &pMasquera
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         dirtyFlag_[0] = true;
@@ -122,6 +167,7 @@ Games::Games(const Json::Value &pJson, const std::vector<std::string> &pMasquera
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -130,6 +176,7 @@ Games::Games(const Json::Value &pJson, const std::vector<std::string> &pMasquera
             title_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -138,6 +185,7 @@ Games::Games(const Json::Value &pJson, const std::vector<std::string> &pMasquera
             description_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -146,6 +194,7 @@ Games::Games(const Json::Value &pJson, const std::vector<std::string> &pMasquera
             isActive_=std::make_shared<bool>(pJson[pMasqueradingVector[3]].asBool());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -155,10 +204,12 @@ Games::Games(const Json::Value &pJson, const std::vector<std::string> &pMasquera
             gameLogo_=std::make_shared<std::vector<char>>(drogon::utils::base64DecodeToVector(str));
         }
     }
+
 }
 
 Games::Games(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         dirtyFlag_[0]=true;
@@ -167,6 +218,7 @@ Games::Games(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("title"))
     {
         dirtyFlag_[1]=true;
@@ -175,6 +227,7 @@ Games::Games(const Json::Value &pJson) noexcept(false)
             title_=std::make_shared<std::string>(pJson["title"].asString());
         }
     }
+
     if(pJson.isMember("description"))
     {
         dirtyFlag_[2]=true;
@@ -183,6 +236,7 @@ Games::Games(const Json::Value &pJson) noexcept(false)
             description_=std::make_shared<std::string>(pJson["description"].asString());
         }
     }
+
     if(pJson.isMember("is_active"))
     {
         dirtyFlag_[3]=true;
@@ -191,6 +245,7 @@ Games::Games(const Json::Value &pJson) noexcept(false)
             isActive_=std::make_shared<bool>(pJson["is_active"].asBool());
         }
     }
+
     if(pJson.isMember("game_logo"))
     {
         dirtyFlag_[4]=true;
@@ -200,6 +255,7 @@ Games::Games(const Json::Value &pJson) noexcept(false)
             gameLogo_=std::make_shared<std::vector<char>>(drogon::utils::base64DecodeToVector(str));
         }
     }
+
 }
 
 void Games::updateByMasqueradedJson(const Json::Value &pJson,
@@ -210,6 +266,7 @@ void Games::updateByMasqueradedJson(const Json::Value &pJson,
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         if(!pJson[pMasqueradingVector[0]].isNull())
@@ -217,6 +274,7 @@ void Games::updateByMasqueradedJson(const Json::Value &pJson,
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -225,6 +283,7 @@ void Games::updateByMasqueradedJson(const Json::Value &pJson,
             title_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -233,6 +292,7 @@ void Games::updateByMasqueradedJson(const Json::Value &pJson,
             description_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -241,6 +301,7 @@ void Games::updateByMasqueradedJson(const Json::Value &pJson,
             isActive_=std::make_shared<bool>(pJson[pMasqueradingVector[3]].asBool());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -250,10 +311,12 @@ void Games::updateByMasqueradedJson(const Json::Value &pJson,
             gameLogo_=std::make_shared<std::vector<char>>(drogon::utils::base64DecodeToVector(str));
         }
     }
+
 }
 
 void Games::updateByJson(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         if(!pJson["id"].isNull())
@@ -261,6 +324,7 @@ void Games::updateByJson(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("title"))
     {
         dirtyFlag_[1] = true;
@@ -269,6 +333,7 @@ void Games::updateByJson(const Json::Value &pJson) noexcept(false)
             title_=std::make_shared<std::string>(pJson["title"].asString());
         }
     }
+
     if(pJson.isMember("description"))
     {
         dirtyFlag_[2] = true;
@@ -277,6 +342,7 @@ void Games::updateByJson(const Json::Value &pJson) noexcept(false)
             description_=std::make_shared<std::string>(pJson["description"].asString());
         }
     }
+
     if(pJson.isMember("is_active"))
     {
         dirtyFlag_[3] = true;
@@ -285,6 +351,7 @@ void Games::updateByJson(const Json::Value &pJson) noexcept(false)
             isActive_=std::make_shared<bool>(pJson["is_active"].asBool());
         }
     }
+
     if(pJson.isMember("game_logo"))
     {
         dirtyFlag_[4] = true;
@@ -294,6 +361,7 @@ void Games::updateByJson(const Json::Value &pJson) noexcept(false)
             gameLogo_=std::make_shared<std::vector<char>>(drogon::utils::base64DecodeToVector(str));
         }
     }
+
 }
 
 const std::string &Games::getValueOfId() const noexcept
@@ -422,6 +490,7 @@ void Games::updateId(const uint64_t id)
 {
 }
 
+
 const std::vector<std::string> &Games::insertColumns() noexcept
 {
     static const std::vector<std::string> inCols={
@@ -430,12 +499,14 @@ const std::vector<std::string> &Games::insertColumns() noexcept
         "description",
         "is_active",
         "game_logo"
+
     };
     return inCols;
 }
 
 void Games::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -447,6 +518,7 @@ void Games::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getTitle())
@@ -458,6 +530,7 @@ void Games::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getDescription())
@@ -469,6 +542,7 @@ void Games::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getIsActive())
@@ -480,6 +554,7 @@ void Games::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getGameLogo())
@@ -491,36 +566,44 @@ void Games::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
 }
 
 const std::vector<std::string> Games::updateColumns() const
 {
     std::vector<std::string> ret;
+
     if(dirtyFlag_[0])
     {
         ret.push_back(getColumnName(0));
     }
+
     if(dirtyFlag_[1])
     {
         ret.push_back(getColumnName(1));
     }
+
     if(dirtyFlag_[2])
     {
         ret.push_back(getColumnName(2));
     }
+
     if(dirtyFlag_[3])
     {
         ret.push_back(getColumnName(3));
     }
+
     if(dirtyFlag_[4])
     {
         ret.push_back(getColumnName(4));
     }
+
     return ret;
 }
 
 void Games::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -532,6 +615,7 @@ void Games::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getTitle())
@@ -543,6 +627,7 @@ void Games::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getDescription())
@@ -554,6 +639,7 @@ void Games::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getIsActive())
@@ -565,6 +651,7 @@ void Games::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getGameLogo())
@@ -576,50 +663,67 @@ void Games::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
 }
 Json::Value Games::toJson() const
 {
     Json::Value ret;
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getTitle())
     {
+
         ret["title"]=getValueOfTitle();
+
     }
     else
     {
         ret["title"]=Json::Value();
     }
+
     if(getDescription())
     {
+
         ret["description"]=getValueOfDescription();
+
     }
     else
     {
         ret["description"]=Json::Value();
     }
+
     if(getIsActive())
     {
+
         ret["is_active"]=getValueOfIsActive();
+
     }
     else
     {
         ret["is_active"]=Json::Value();
     }
+
     if(getGameLogo())
     {
+
         ret["game_logo"]=drogon::utils::base64Encode((const unsigned char *)getGameLogo()->data(),getGameLogo()->size());
+
     }
     else
     {
         ret["game_logo"]=Json::Value();
     }
+
     return ret;
 }
 
@@ -634,144 +738,184 @@ Json::Value Games::toMasqueradedJson(
     Json::Value ret;
     if(pMasqueradingVector.size() == 5)
     {
+
         if(!pMasqueradingVector[0].empty())
         {
             if(getId())
             {
+
                 ret[pMasqueradingVector[0]]=getValueOfId();
+
             }
             else
             {
                 ret[pMasqueradingVector[0]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[1].empty())
         {
             if(getTitle())
             {
+
                 ret[pMasqueradingVector[1]]=getValueOfTitle();
+
             }
             else
             {
                 ret[pMasqueradingVector[1]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[2].empty())
         {
             if(getDescription())
             {
+
                 ret[pMasqueradingVector[2]]=getValueOfDescription();
+
             }
             else
             {
                 ret[pMasqueradingVector[2]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[3].empty())
         {
             if(getIsActive())
             {
+
                 ret[pMasqueradingVector[3]]=getValueOfIsActive();
+
             }
             else
             {
                 ret[pMasqueradingVector[3]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[4].empty())
         {
             if(getGameLogo())
             {
+
                 ret[pMasqueradingVector[4]]=drogon::utils::base64Encode((const unsigned char *)getGameLogo()->data(),getGameLogo()->size());
+
             }
             else
             {
                 ret[pMasqueradingVector[4]]=Json::Value();
             }
         }
+
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getTitle())
     {
+
         ret["title"]=getValueOfTitle();
+
     }
     else
     {
         ret["title"]=Json::Value();
     }
+
     if(getDescription())
     {
+
         ret["description"]=getValueOfDescription();
+
     }
     else
     {
         ret["description"]=Json::Value();
     }
+
     if(getIsActive())
     {
+
         ret["is_active"]=getValueOfIsActive();
+
     }
     else
     {
         ret["is_active"]=Json::Value();
     }
+
     if(getGameLogo())
     {
+
         ret["game_logo"]=drogon::utils::base64Encode((const unsigned char *)getGameLogo()->data(),getGameLogo()->size());
+
     }
     else
     {
         ret["game_logo"]=Json::Value();
     }
+
     return ret;
 }
 
 bool Games::validateJsonForCreation(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, true))
             return false;
     }
+
     if(pJson.isMember("title"))
     {
         if(!validJsonOfField(1, "title", pJson["title"], err, true))
             return false;
     }
+
     else
     {
         err="The title column cannot be null";
         return false;
     }
+
     if(pJson.isMember("description"))
     {
         if(!validJsonOfField(2, "description", pJson["description"], err, true))
             return false;
     }
+
     else
     {
         err="The description column cannot be null";
         return false;
     }
+
     if(pJson.isMember("is_active"))
     {
         if(!validJsonOfField(3, "is_active", pJson["is_active"], err, true))
             return false;
     }
+
     if(pJson.isMember("game_logo"))
     {
         if(!validJsonOfField(4, "game_logo", pJson["game_logo"], err, true))
             return false;
     }
+
     return true;
 }
 bool Games::validateMasqueradedJsonForCreation(const Json::Value &pJson,
@@ -784,6 +928,7 @@ bool Games::validateMasqueradedJsonForCreation(const Json::Value &pJson,
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty())
       {
           if(pJson.isMember(pMasqueradingVector[0]))
@@ -791,7 +936,9 @@ bool Games::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[1].empty())
       {
           if(pJson.isMember(pMasqueradingVector[1]))
@@ -799,12 +946,15 @@ bool Games::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[1] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[2].empty())
       {
           if(pJson.isMember(pMasqueradingVector[2]))
@@ -812,12 +962,15 @@ bool Games::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[2] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[3].empty())
       {
           if(pJson.isMember(pMasqueradingVector[3]))
@@ -825,7 +978,9 @@ bool Games::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[4].empty())
       {
           if(pJson.isMember(pMasqueradingVector[4]))
@@ -833,7 +988,9 @@ bool Games::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
                   return false;
           }
+
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -844,36 +1001,43 @@ bool Games::validateMasqueradedJsonForCreation(const Json::Value &pJson,
 }
 bool Games::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, false))
             return false;
     }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
     if(pJson.isMember("title"))
     {
         if(!validJsonOfField(1, "title", pJson["title"], err, false))
             return false;
     }
+
     if(pJson.isMember("description"))
     {
         if(!validJsonOfField(2, "description", pJson["description"], err, false))
             return false;
     }
+
     if(pJson.isMember("is_active"))
     {
         if(!validJsonOfField(3, "is_active", pJson["is_active"], err, false))
             return false;
     }
+
     if(pJson.isMember("game_logo"))
     {
         if(!validJsonOfField(4, "game_logo", pJson["game_logo"], err, false))
             return false;
     }
+
     return true;
 }
 bool Games::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
@@ -886,36 +1050,43 @@ bool Games::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
       {
           if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
               return false;
       }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
       if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
       {
           if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
       {
           if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
       {
           if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
       {
           if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, false))
               return false;
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -932,84 +1103,106 @@ bool Games::validJsonOfField(size_t index,
 {
     switch(index)
     {
+
         case 0:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 1:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 50)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 50)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 50)";
                 return false;
             }
+
             break;
+
         case 2:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 250)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 250)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 250)";
                 return false;
             }
+
             break;
+
         case 3:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isBool())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 4:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         default:
             err="Internal error in the server";
             return false;
     }
     return true;
 }
+

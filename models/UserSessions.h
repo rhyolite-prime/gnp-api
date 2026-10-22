@@ -1,3 +1,4 @@
+
 /**
  *
  *  UserSessions.h
@@ -39,6 +40,8 @@ namespace drogon_model
 namespace Gnp
 {
 
+
+
 class UserSessions
 {
   public:
@@ -51,14 +54,19 @@ class UserSessions
         static const std::string _session_end;
         static const std::string _duration_seconds;
         static const std::string _is_active;
+
     };
 
     static const int primaryKeyNumber;
     static const std::string tableName;
     static const bool hasPrimaryKey;
+
     static const std::string primaryKeyName;
+
     using PrimaryKeyType = std::string;
     const PrimaryKeyType &getPrimaryKey() const;
+
+
 
     /**
      * @brief constructor
@@ -167,6 +175,7 @@ class UserSessions
     void setIsActiveToNull() noexcept;
 
 
+
     static size_t getColumnNumber() noexcept {  return 7;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
@@ -174,6 +183,7 @@ class UserSessions
     std::string toString() const;
     Json::Value toMasqueradedJson(const std::vector<std::string> &pMasqueradingVector) const;
     /// Relationship interfaces
+
   private:
     friend drogon::orm::Mapper<UserSessions>;
     friend drogon::orm::BaseBuilder<UserSessions, true, true>;
@@ -196,6 +206,7 @@ class UserSessions
     std::shared_ptr<::trantor::Date> sessionEnd_;
     std::shared_ptr<int32_t> durationSeconds_;
     std::shared_ptr<bool> isActive_;
+
     struct MetaData
     {
         const std::string colName_;
@@ -211,13 +222,19 @@ class UserSessions
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
+
         static const std::string sql="select * from " + tableName + " where id = $1";
+
+
         return sql;
     }
 
     static const std::string &sqlForDeletingByPrimaryKey()
     {
+
         static const std::string sql="delete from " + tableName + " where id = $1";
+
+
         return sql;
     }
     std::string sqlForInserting(bool &needSelection) const
@@ -227,15 +244,18 @@ class UserSessions
         needSelection = false;
         sql += "id,";
         ++parametersCount;
+
         if(!dirtyFlag_[0])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[1])
         {
             sql += "user_id,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[2])
         {
             sql += "partner_id,";
@@ -243,10 +263,12 @@ class UserSessions
         }
         sql += "session_start,";
         ++parametersCount;
+
         if(!dirtyFlag_[3])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[4])
         {
             sql += "session_end,";
@@ -254,16 +276,19 @@ class UserSessions
         }
         sql += "duration_seconds,";
         ++parametersCount;
+
         if(!dirtyFlag_[5])
         {
             needSelection=true;
         }
         sql += "is_active,";
         ++parametersCount;
+
         if(!dirtyFlag_[6])
         {
             needSelection=true;
         }
+
         if(parametersCount > 0)
         {
             sql[sql.length()-1]=')';
@@ -272,64 +297,92 @@ class UserSessions
         else
             sql += ") values (";
 
+
         int placeholder=1;
         char placeholderStr[64];
         size_t n=0;
+
         if(dirtyFlag_[0])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[1])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[2])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[3])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[4])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[5])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[6])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(parametersCount > 0)
         {
             sql.resize(sql.length() - 1);
         }
+
         if(needSelection)
         {
             sql.append(") returning *");
@@ -338,9 +391,11 @@ class UserSessions
         {
             sql.append(1, ')');
         }
+
         LOG_TRACE << sql;
         return sql;
     }
 };
 } // namespace Gnp
+
 } // namespace drogon_model

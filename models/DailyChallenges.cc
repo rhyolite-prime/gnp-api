@@ -1,3 +1,4 @@
+
 /**
  *
  *  DailyChallenges.cc
@@ -6,21 +7,36 @@
  */
 
 #include "DailyChallenges.h"
+
 #include <drogon/utils/Utilities.h>
+
 #include <string>
+
 
 using namespace drogon;
 using namespace drogon::orm;
 using namespace drogon_model::Gnp;
 
+
+
 const std::string DailyChallenges::Cols::_id = "\"id\"";
+
 const std::string DailyChallenges::Cols::_game_type = "\"game_type\"";
+
 const std::string DailyChallenges::Cols::_puzzle_data = "\"puzzle_data\"";
+
 const std::string DailyChallenges::Cols::_difficulty = "\"difficulty\"";
+
 const std::string DailyChallenges::Cols::_created_at = "\"created_at\"";
+
 const std::string DailyChallenges::Cols::_expires_at = "\"expires_at\"";
+
+
 const std::string DailyChallenges::primaryKeyName = "id";
+
+
 const bool DailyChallenges::hasPrimaryKey = true;
+
 const std::string DailyChallenges::tableName = "\"daily_challenges\"";
 
 const std::vector<typename DailyChallenges::MetaData> DailyChallenges::metaData_={
@@ -30,6 +46,7 @@ const std::vector<typename DailyChallenges::MetaData> DailyChallenges::metaData_
 {"difficulty","int32_t","integer",4,0,0,0},
 {"created_at","::trantor::Date","date",0,0,0,0},
 {"expires_at","::trantor::Date","date",0,0,0,0}
+
 };
 const std::string &DailyChallenges::getColumnName(size_t index) noexcept(false)
 {
@@ -40,40 +57,57 @@ DailyChallenges::DailyChallenges(const Row &r, const ssize_t indexOffset) noexce
 {
     if(indexOffset < 0)
     {
+
         if(!r["id"].isNull())
         {
+
             id_=std::make_shared<std::string>(r["id"].as<std::string>());
+
         }
+
         if(!r["game_type"].isNull())
         {
+
             gameType_=std::make_shared<int32_t>(r["game_type"].as<int32_t>());
+
         }
+
         if(!r["puzzle_data"].isNull())
         {
+
             puzzleData_=std::make_shared<std::string>(r["puzzle_data"].as<std::string>());
+
         }
+
         if(!r["difficulty"].isNull())
         {
+
             difficulty_=std::make_shared<int32_t>(r["difficulty"].as<int32_t>());
+
         }
+
         if(!r["created_at"].isNull())
         {
             auto daysStr = r["created_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
             time_t t = mktime(&stm);
             createdAt_=std::make_shared<::trantor::Date>(t*1000000);
         }
+
         if(!r["expires_at"].isNull())
         {
             auto daysStr = r["expires_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
             time_t t = mktime(&stm);
             expiresAt_=std::make_shared<::trantor::Date>(t*1000000);
         }
+
     }
     else
     {
@@ -84,46 +118,63 @@ DailyChallenges::DailyChallenges(const Row &r, const ssize_t indexOffset) noexce
             return;
         }
         size_t index;
+
         index = offset + 0;
         if(!r[index].isNull())
         {
+
             id_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 1;
         if(!r[index].isNull())
         {
+
             gameType_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 2;
         if(!r[index].isNull())
         {
+
             puzzleData_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 3;
         if(!r[index].isNull())
         {
+
             difficulty_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 4;
         if(!r[index].isNull())
         {
             auto daysStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
             time_t t = mktime(&stm);
             createdAt_=std::make_shared<::trantor::Date>(t*1000000);
         }
+
         index = offset + 5;
         if(!r[index].isNull())
         {
             auto daysStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
             time_t t = mktime(&stm);
             expiresAt_=std::make_shared<::trantor::Date>(t*1000000);
         }
+
     }
 
 }
@@ -135,6 +186,7 @@ DailyChallenges::DailyChallenges(const Json::Value &pJson, const std::vector<std
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         dirtyFlag_[0] = true;
@@ -143,6 +195,7 @@ DailyChallenges::DailyChallenges(const Json::Value &pJson, const std::vector<std
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -151,6 +204,7 @@ DailyChallenges::DailyChallenges(const Json::Value &pJson, const std::vector<std
             gameType_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[1]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -159,6 +213,7 @@ DailyChallenges::DailyChallenges(const Json::Value &pJson, const std::vector<std
             puzzleData_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -167,6 +222,7 @@ DailyChallenges::DailyChallenges(const Json::Value &pJson, const std::vector<std
             difficulty_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[3]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -175,11 +231,13 @@ DailyChallenges::DailyChallenges(const Json::Value &pJson, const std::vector<std
             auto daysStr = pJson[pMasqueradingVector[4]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
             time_t t = mktime(&stm);
             createdAt_=std::make_shared<::trantor::Date>(t*1000000);
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -188,15 +246,18 @@ DailyChallenges::DailyChallenges(const Json::Value &pJson, const std::vector<std
             auto daysStr = pJson[pMasqueradingVector[5]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
             time_t t = mktime(&stm);
             expiresAt_=std::make_shared<::trantor::Date>(t*1000000);
         }
     }
+
 }
 
 DailyChallenges::DailyChallenges(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         dirtyFlag_[0]=true;
@@ -205,6 +266,7 @@ DailyChallenges::DailyChallenges(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("game_type"))
     {
         dirtyFlag_[1]=true;
@@ -213,6 +275,7 @@ DailyChallenges::DailyChallenges(const Json::Value &pJson) noexcept(false)
             gameType_=std::make_shared<int32_t>((int32_t)pJson["game_type"].asInt64());
         }
     }
+
     if(pJson.isMember("puzzle_data"))
     {
         dirtyFlag_[2]=true;
@@ -221,6 +284,7 @@ DailyChallenges::DailyChallenges(const Json::Value &pJson) noexcept(false)
             puzzleData_=std::make_shared<std::string>(pJson["puzzle_data"].asString());
         }
     }
+
     if(pJson.isMember("difficulty"))
     {
         dirtyFlag_[3]=true;
@@ -229,6 +293,7 @@ DailyChallenges::DailyChallenges(const Json::Value &pJson) noexcept(false)
             difficulty_=std::make_shared<int32_t>((int32_t)pJson["difficulty"].asInt64());
         }
     }
+
     if(pJson.isMember("created_at"))
     {
         dirtyFlag_[4]=true;
@@ -237,11 +302,13 @@ DailyChallenges::DailyChallenges(const Json::Value &pJson) noexcept(false)
             auto daysStr = pJson["created_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
             time_t t = mktime(&stm);
             createdAt_=std::make_shared<::trantor::Date>(t*1000000);
         }
     }
+
     if(pJson.isMember("expires_at"))
     {
         dirtyFlag_[5]=true;
@@ -250,11 +317,13 @@ DailyChallenges::DailyChallenges(const Json::Value &pJson) noexcept(false)
             auto daysStr = pJson["expires_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
             time_t t = mktime(&stm);
             expiresAt_=std::make_shared<::trantor::Date>(t*1000000);
         }
     }
+
 }
 
 void DailyChallenges::updateByMasqueradedJson(const Json::Value &pJson,
@@ -265,6 +334,7 @@ void DailyChallenges::updateByMasqueradedJson(const Json::Value &pJson,
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         if(!pJson[pMasqueradingVector[0]].isNull())
@@ -272,6 +342,7 @@ void DailyChallenges::updateByMasqueradedJson(const Json::Value &pJson,
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -280,6 +351,7 @@ void DailyChallenges::updateByMasqueradedJson(const Json::Value &pJson,
             gameType_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[1]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -288,6 +360,7 @@ void DailyChallenges::updateByMasqueradedJson(const Json::Value &pJson,
             puzzleData_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -296,6 +369,7 @@ void DailyChallenges::updateByMasqueradedJson(const Json::Value &pJson,
             difficulty_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[3]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -304,11 +378,13 @@ void DailyChallenges::updateByMasqueradedJson(const Json::Value &pJson,
             auto daysStr = pJson[pMasqueradingVector[4]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
             time_t t = mktime(&stm);
             createdAt_=std::make_shared<::trantor::Date>(t*1000000);
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -317,15 +393,18 @@ void DailyChallenges::updateByMasqueradedJson(const Json::Value &pJson,
             auto daysStr = pJson[pMasqueradingVector[5]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
             time_t t = mktime(&stm);
             expiresAt_=std::make_shared<::trantor::Date>(t*1000000);
         }
     }
+
 }
 
 void DailyChallenges::updateByJson(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         if(!pJson["id"].isNull())
@@ -333,6 +412,7 @@ void DailyChallenges::updateByJson(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("game_type"))
     {
         dirtyFlag_[1] = true;
@@ -341,6 +421,7 @@ void DailyChallenges::updateByJson(const Json::Value &pJson) noexcept(false)
             gameType_=std::make_shared<int32_t>((int32_t)pJson["game_type"].asInt64());
         }
     }
+
     if(pJson.isMember("puzzle_data"))
     {
         dirtyFlag_[2] = true;
@@ -349,6 +430,7 @@ void DailyChallenges::updateByJson(const Json::Value &pJson) noexcept(false)
             puzzleData_=std::make_shared<std::string>(pJson["puzzle_data"].asString());
         }
     }
+
     if(pJson.isMember("difficulty"))
     {
         dirtyFlag_[3] = true;
@@ -357,6 +439,7 @@ void DailyChallenges::updateByJson(const Json::Value &pJson) noexcept(false)
             difficulty_=std::make_shared<int32_t>((int32_t)pJson["difficulty"].asInt64());
         }
     }
+
     if(pJson.isMember("created_at"))
     {
         dirtyFlag_[4] = true;
@@ -365,11 +448,13 @@ void DailyChallenges::updateByJson(const Json::Value &pJson) noexcept(false)
             auto daysStr = pJson["created_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
             time_t t = mktime(&stm);
             createdAt_=std::make_shared<::trantor::Date>(t*1000000);
         }
     }
+
     if(pJson.isMember("expires_at"))
     {
         dirtyFlag_[5] = true;
@@ -378,11 +463,13 @@ void DailyChallenges::updateByJson(const Json::Value &pJson) noexcept(false)
             auto daysStr = pJson["expires_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
             time_t t = mktime(&stm);
             expiresAt_=std::make_shared<::trantor::Date>(t*1000000);
         }
     }
+
 }
 
 const std::string &DailyChallenges::getValueOfId() const noexcept
@@ -526,6 +613,7 @@ void DailyChallenges::updateId(const uint64_t id)
 {
 }
 
+
 const std::vector<std::string> &DailyChallenges::insertColumns() noexcept
 {
     static const std::vector<std::string> inCols={
@@ -535,12 +623,14 @@ const std::vector<std::string> &DailyChallenges::insertColumns() noexcept
         "difficulty",
         "created_at",
         "expires_at"
+
     };
     return inCols;
 }
 
 void DailyChallenges::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -552,6 +642,7 @@ void DailyChallenges::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getGameType())
@@ -563,6 +654,7 @@ void DailyChallenges::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getPuzzleData())
@@ -574,6 +666,7 @@ void DailyChallenges::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getDifficulty())
@@ -585,6 +678,7 @@ void DailyChallenges::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getCreatedAt())
@@ -596,6 +690,7 @@ void DailyChallenges::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getExpiresAt())
@@ -607,40 +702,49 @@ void DailyChallenges::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
 }
 
 const std::vector<std::string> DailyChallenges::updateColumns() const
 {
     std::vector<std::string> ret;
+
     if(dirtyFlag_[0])
     {
         ret.push_back(getColumnName(0));
     }
+
     if(dirtyFlag_[1])
     {
         ret.push_back(getColumnName(1));
     }
+
     if(dirtyFlag_[2])
     {
         ret.push_back(getColumnName(2));
     }
+
     if(dirtyFlag_[3])
     {
         ret.push_back(getColumnName(3));
     }
+
     if(dirtyFlag_[4])
     {
         ret.push_back(getColumnName(4));
     }
+
     if(dirtyFlag_[5])
     {
         ret.push_back(getColumnName(5));
     }
+
     return ret;
 }
 
 void DailyChallenges::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -652,6 +756,7 @@ void DailyChallenges::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getGameType())
@@ -663,6 +768,7 @@ void DailyChallenges::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getPuzzleData())
@@ -674,6 +780,7 @@ void DailyChallenges::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getDifficulty())
@@ -685,6 +792,7 @@ void DailyChallenges::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getCreatedAt())
@@ -696,6 +804,7 @@ void DailyChallenges::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getExpiresAt())
@@ -707,58 +816,78 @@ void DailyChallenges::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
 }
 Json::Value DailyChallenges::toJson() const
 {
     Json::Value ret;
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getGameType())
     {
+
         ret["game_type"]=getValueOfGameType();
+
     }
     else
     {
         ret["game_type"]=Json::Value();
     }
+
     if(getPuzzleData())
     {
+
         ret["puzzle_data"]=getValueOfPuzzleData();
+
     }
     else
     {
         ret["puzzle_data"]=Json::Value();
     }
+
     if(getDifficulty())
     {
+
         ret["difficulty"]=getValueOfDifficulty();
+
     }
     else
     {
         ret["difficulty"]=Json::Value();
     }
+
     if(getCreatedAt())
     {
+
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["created_at"]=Json::Value();
     }
+
     if(getExpiresAt())
     {
+
         ret["expires_at"]=getExpiresAt()->toDbStringLocal();
+
     }
     else
     {
         ret["expires_at"]=Json::Value();
     }
+
     return ret;
 }
 
@@ -773,163 +902,209 @@ Json::Value DailyChallenges::toMasqueradedJson(
     Json::Value ret;
     if(pMasqueradingVector.size() == 6)
     {
+
         if(!pMasqueradingVector[0].empty())
         {
             if(getId())
             {
+
                 ret[pMasqueradingVector[0]]=getValueOfId();
+
             }
             else
             {
                 ret[pMasqueradingVector[0]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[1].empty())
         {
             if(getGameType())
             {
+
                 ret[pMasqueradingVector[1]]=getValueOfGameType();
+
             }
             else
             {
                 ret[pMasqueradingVector[1]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[2].empty())
         {
             if(getPuzzleData())
             {
+
                 ret[pMasqueradingVector[2]]=getValueOfPuzzleData();
+
             }
             else
             {
                 ret[pMasqueradingVector[2]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[3].empty())
         {
             if(getDifficulty())
             {
+
                 ret[pMasqueradingVector[3]]=getValueOfDifficulty();
+
             }
             else
             {
                 ret[pMasqueradingVector[3]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[4].empty())
         {
             if(getCreatedAt())
             {
+
                 ret[pMasqueradingVector[4]]=getCreatedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[4]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[5].empty())
         {
             if(getExpiresAt())
             {
+
                 ret[pMasqueradingVector[5]]=getExpiresAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[5]]=Json::Value();
             }
         }
+
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getGameType())
     {
+
         ret["game_type"]=getValueOfGameType();
+
     }
     else
     {
         ret["game_type"]=Json::Value();
     }
+
     if(getPuzzleData())
     {
+
         ret["puzzle_data"]=getValueOfPuzzleData();
+
     }
     else
     {
         ret["puzzle_data"]=Json::Value();
     }
+
     if(getDifficulty())
     {
+
         ret["difficulty"]=getValueOfDifficulty();
+
     }
     else
     {
         ret["difficulty"]=Json::Value();
     }
+
     if(getCreatedAt())
     {
+
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["created_at"]=Json::Value();
     }
+
     if(getExpiresAt())
     {
+
         ret["expires_at"]=getExpiresAt()->toDbStringLocal();
+
     }
     else
     {
         ret["expires_at"]=Json::Value();
     }
+
     return ret;
 }
 
 bool DailyChallenges::validateJsonForCreation(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, true))
             return false;
     }
+
     if(pJson.isMember("game_type"))
     {
         if(!validJsonOfField(1, "game_type", pJson["game_type"], err, true))
             return false;
     }
+
     if(pJson.isMember("puzzle_data"))
     {
         if(!validJsonOfField(2, "puzzle_data", pJson["puzzle_data"], err, true))
             return false;
     }
+
     else
     {
         err="The puzzle_data column cannot be null";
         return false;
     }
+
     if(pJson.isMember("difficulty"))
     {
         if(!validJsonOfField(3, "difficulty", pJson["difficulty"], err, true))
             return false;
     }
+
     if(pJson.isMember("created_at"))
     {
         if(!validJsonOfField(4, "created_at", pJson["created_at"], err, true))
             return false;
     }
+
     if(pJson.isMember("expires_at"))
     {
         if(!validJsonOfField(5, "expires_at", pJson["expires_at"], err, true))
             return false;
     }
+
     return true;
 }
 bool DailyChallenges::validateMasqueradedJsonForCreation(const Json::Value &pJson,
@@ -942,6 +1117,7 @@ bool DailyChallenges::validateMasqueradedJsonForCreation(const Json::Value &pJso
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty())
       {
           if(pJson.isMember(pMasqueradingVector[0]))
@@ -949,7 +1125,9 @@ bool DailyChallenges::validateMasqueradedJsonForCreation(const Json::Value &pJso
               if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[1].empty())
       {
           if(pJson.isMember(pMasqueradingVector[1]))
@@ -957,7 +1135,9 @@ bool DailyChallenges::validateMasqueradedJsonForCreation(const Json::Value &pJso
               if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[2].empty())
       {
           if(pJson.isMember(pMasqueradingVector[2]))
@@ -965,12 +1145,15 @@ bool DailyChallenges::validateMasqueradedJsonForCreation(const Json::Value &pJso
               if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[2] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[3].empty())
       {
           if(pJson.isMember(pMasqueradingVector[3]))
@@ -978,7 +1161,9 @@ bool DailyChallenges::validateMasqueradedJsonForCreation(const Json::Value &pJso
               if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[4].empty())
       {
           if(pJson.isMember(pMasqueradingVector[4]))
@@ -986,7 +1171,9 @@ bool DailyChallenges::validateMasqueradedJsonForCreation(const Json::Value &pJso
               if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[5].empty())
       {
           if(pJson.isMember(pMasqueradingVector[5]))
@@ -994,7 +1181,9 @@ bool DailyChallenges::validateMasqueradedJsonForCreation(const Json::Value &pJso
               if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, true))
                   return false;
           }
+
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -1005,41 +1194,49 @@ bool DailyChallenges::validateMasqueradedJsonForCreation(const Json::Value &pJso
 }
 bool DailyChallenges::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, false))
             return false;
     }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
     if(pJson.isMember("game_type"))
     {
         if(!validJsonOfField(1, "game_type", pJson["game_type"], err, false))
             return false;
     }
+
     if(pJson.isMember("puzzle_data"))
     {
         if(!validJsonOfField(2, "puzzle_data", pJson["puzzle_data"], err, false))
             return false;
     }
+
     if(pJson.isMember("difficulty"))
     {
         if(!validJsonOfField(3, "difficulty", pJson["difficulty"], err, false))
             return false;
     }
+
     if(pJson.isMember("created_at"))
     {
         if(!validJsonOfField(4, "created_at", pJson["created_at"], err, false))
             return false;
     }
+
     if(pJson.isMember("expires_at"))
     {
         if(!validJsonOfField(5, "expires_at", pJson["expires_at"], err, false))
             return false;
     }
+
     return true;
 }
 bool DailyChallenges::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
@@ -1052,41 +1249,49 @@ bool DailyChallenges::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
       {
           if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
               return false;
       }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
       if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
       {
           if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
       {
           if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
       {
           if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
       {
           if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
       {
           if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, false))
               return false;
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -1103,77 +1308,103 @@ bool DailyChallenges::validJsonOfField(size_t index,
 {
     switch(index)
     {
+
         case 0:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 1:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 2:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 3:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 4:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 5:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         default:
             err="Internal error in the server";
             return false;
     }
     return true;
 }
+

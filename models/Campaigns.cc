@@ -1,3 +1,4 @@
+
 /**
  *
  *  Campaigns.cc
@@ -6,30 +7,54 @@
  */
 
 #include "Campaigns.h"
+
 #include <drogon/utils/Utilities.h>
+
 #include <string>
+
 
 using namespace drogon;
 using namespace drogon::orm;
 using namespace drogon_model::Gnp;
 
+
+
 const std::string Campaigns::Cols::_id = "\"id\"";
+
 const std::string Campaigns::Cols::_name = "\"name\"";
+
 const std::string Campaigns::Cols::_deep_link = "\"deep_link\"";
+
 const std::string Campaigns::Cols::_target_audience = "\"target_audience\"";
+
 const std::string Campaigns::Cols::_channel = "\"channel\"";
+
 const std::string Campaigns::Cols::_subject = "\"subject\"";
+
 const std::string Campaigns::Cols::_message_body = "\"message_body\"";
+
 const std::string Campaigns::Cols::_status = "\"status\"";
+
 const std::string Campaigns::Cols::_scheduled_time = "\"scheduled_time\"";
+
 const std::string Campaigns::Cols::_campaign_type = "\"campaign_type\"";
+
 const std::string Campaigns::Cols::_reach = "\"reach\"";
+
 const std::string Campaigns::Cols::_clicks = "\"clicks\"";
+
 const std::string Campaigns::Cols::_created_at = "\"created_at\"";
+
 const std::string Campaigns::Cols::_updated_at = "\"updated_at\"";
+
 const std::string Campaigns::Cols::_html_template = "\"html_template\"";
+
+
 const std::string Campaigns::primaryKeyName = "id";
+
+
 const bool Campaigns::hasPrimaryKey = true;
+
 const std::string Campaigns::tableName = "\"campaigns\"";
 
 const std::vector<typename Campaigns::MetaData> Campaigns::metaData_={
@@ -48,6 +73,7 @@ const std::vector<typename Campaigns::MetaData> Campaigns::metaData_={
 {"created_at","::trantor::Date","timestamp with time zone",0,0,0,1},
 {"updated_at","::trantor::Date","timestamp without time zone",0,0,0,0},
 {"html_template","std::string","text",0,0,0,0}
+
 };
 const std::string &Campaigns::getColumnName(size_t index) noexcept(false)
 {
@@ -58,43 +84,69 @@ Campaigns::Campaigns(const Row &r, const ssize_t indexOffset) noexcept
 {
     if(indexOffset < 0)
     {
+
         if(!r["id"].isNull())
         {
+
             id_=std::make_shared<std::string>(r["id"].as<std::string>());
+
         }
+
         if(!r["name"].isNull())
         {
+
             name_=std::make_shared<std::string>(r["name"].as<std::string>());
+
         }
+
         if(!r["deep_link"].isNull())
         {
+
             deepLink_=std::make_shared<std::string>(r["deep_link"].as<std::string>());
+
         }
+
         if(!r["target_audience"].isNull())
         {
+
             targetAudience_=std::make_shared<std::string>(r["target_audience"].as<std::string>());
+
         }
+
         if(!r["channel"].isNull())
         {
+
             channel_=std::make_shared<std::string>(r["channel"].as<std::string>());
+
         }
+
         if(!r["subject"].isNull())
         {
+
             subject_=std::make_shared<std::string>(r["subject"].as<std::string>());
+
         }
+
         if(!r["message_body"].isNull())
         {
+
             messageBody_=std::make_shared<std::string>(r["message_body"].as<std::string>());
+
         }
+
         if(!r["status"].isNull())
         {
+
             status_=std::make_shared<std::string>(r["status"].as<std::string>());
+
         }
+
         if(!r["scheduled_time"].isNull())
         {
             auto timeStr = r["scheduled_time"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -112,23 +164,34 @@ Campaigns::Campaigns(const Row &r, const ssize_t indexOffset) noexcept
                 scheduledTime_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         if(!r["campaign_type"].isNull())
         {
+
             campaignType_=std::make_shared<std::string>(r["campaign_type"].as<std::string>());
+
         }
+
         if(!r["reach"].isNull())
         {
+
             reach_=std::make_shared<int32_t>(r["reach"].as<int32_t>());
+
         }
+
         if(!r["clicks"].isNull())
         {
+
             clicks_=std::make_shared<int32_t>(r["clicks"].as<int32_t>());
+
         }
+
         if(!r["created_at"].isNull())
         {
             auto timeStr = r["created_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -146,11 +209,13 @@ Campaigns::Campaigns(const Row &r, const ssize_t indexOffset) noexcept
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         if(!r["updated_at"].isNull())
         {
             auto timeStr = r["updated_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -168,10 +233,14 @@ Campaigns::Campaigns(const Row &r, const ssize_t indexOffset) noexcept
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         if(!r["html_template"].isNull())
         {
+
             htmlTemplate_=std::make_shared<std::string>(r["html_template"].as<std::string>());
+
         }
+
     }
     else
     {
@@ -182,52 +251,78 @@ Campaigns::Campaigns(const Row &r, const ssize_t indexOffset) noexcept
             return;
         }
         size_t index;
+
         index = offset + 0;
         if(!r[index].isNull())
         {
+
             id_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 1;
         if(!r[index].isNull())
         {
+
             name_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 2;
         if(!r[index].isNull())
         {
+
             deepLink_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 3;
         if(!r[index].isNull())
         {
+
             targetAudience_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 4;
         if(!r[index].isNull())
         {
+
             channel_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 5;
         if(!r[index].isNull())
         {
+
             subject_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 6;
         if(!r[index].isNull())
         {
+
             messageBody_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 7;
         if(!r[index].isNull())
         {
+
             status_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 8;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -245,27 +340,38 @@ Campaigns::Campaigns(const Row &r, const ssize_t indexOffset) noexcept
                 scheduledTime_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         index = offset + 9;
         if(!r[index].isNull())
         {
+
             campaignType_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 10;
         if(!r[index].isNull())
         {
+
             reach_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 11;
         if(!r[index].isNull())
         {
+
             clicks_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 12;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -283,12 +389,14 @@ Campaigns::Campaigns(const Row &r, const ssize_t indexOffset) noexcept
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         index = offset + 13;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -306,11 +414,15 @@ Campaigns::Campaigns(const Row &r, const ssize_t indexOffset) noexcept
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         index = offset + 14;
         if(!r[index].isNull())
         {
+
             htmlTemplate_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
     }
 
 }
@@ -322,6 +434,7 @@ Campaigns::Campaigns(const Json::Value &pJson, const std::vector<std::string> &p
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         dirtyFlag_[0] = true;
@@ -330,6 +443,7 @@ Campaigns::Campaigns(const Json::Value &pJson, const std::vector<std::string> &p
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -338,6 +452,7 @@ Campaigns::Campaigns(const Json::Value &pJson, const std::vector<std::string> &p
             name_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -346,6 +461,7 @@ Campaigns::Campaigns(const Json::Value &pJson, const std::vector<std::string> &p
             deepLink_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -354,6 +470,7 @@ Campaigns::Campaigns(const Json::Value &pJson, const std::vector<std::string> &p
             targetAudience_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -362,6 +479,7 @@ Campaigns::Campaigns(const Json::Value &pJson, const std::vector<std::string> &p
             channel_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -370,6 +488,7 @@ Campaigns::Campaigns(const Json::Value &pJson, const std::vector<std::string> &p
             subject_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -378,6 +497,7 @@ Campaigns::Campaigns(const Json::Value &pJson, const std::vector<std::string> &p
             messageBody_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -386,6 +506,7 @@ Campaigns::Campaigns(const Json::Value &pJson, const std::vector<std::string> &p
             status_=std::make_shared<std::string>(pJson[pMasqueradingVector[7]].asString());
         }
     }
+
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
     {
         dirtyFlag_[8] = true;
@@ -394,6 +515,7 @@ Campaigns::Campaigns(const Json::Value &pJson, const std::vector<std::string> &p
             auto timeStr = pJson[pMasqueradingVector[8]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -412,6 +534,7 @@ Campaigns::Campaigns(const Json::Value &pJson, const std::vector<std::string> &p
             }
         }
     }
+
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
     {
         dirtyFlag_[9] = true;
@@ -420,6 +543,7 @@ Campaigns::Campaigns(const Json::Value &pJson, const std::vector<std::string> &p
             campaignType_=std::make_shared<std::string>(pJson[pMasqueradingVector[9]].asString());
         }
     }
+
     if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
     {
         dirtyFlag_[10] = true;
@@ -428,6 +552,7 @@ Campaigns::Campaigns(const Json::Value &pJson, const std::vector<std::string> &p
             reach_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[10]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
     {
         dirtyFlag_[11] = true;
@@ -436,6 +561,7 @@ Campaigns::Campaigns(const Json::Value &pJson, const std::vector<std::string> &p
             clicks_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[11]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
     {
         dirtyFlag_[12] = true;
@@ -444,6 +570,7 @@ Campaigns::Campaigns(const Json::Value &pJson, const std::vector<std::string> &p
             auto timeStr = pJson[pMasqueradingVector[12]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -462,6 +589,7 @@ Campaigns::Campaigns(const Json::Value &pJson, const std::vector<std::string> &p
             }
         }
     }
+
     if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
     {
         dirtyFlag_[13] = true;
@@ -470,6 +598,7 @@ Campaigns::Campaigns(const Json::Value &pJson, const std::vector<std::string> &p
             auto timeStr = pJson[pMasqueradingVector[13]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -488,6 +617,7 @@ Campaigns::Campaigns(const Json::Value &pJson, const std::vector<std::string> &p
             }
         }
     }
+
     if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
     {
         dirtyFlag_[14] = true;
@@ -496,10 +626,12 @@ Campaigns::Campaigns(const Json::Value &pJson, const std::vector<std::string> &p
             htmlTemplate_=std::make_shared<std::string>(pJson[pMasqueradingVector[14]].asString());
         }
     }
+
 }
 
 Campaigns::Campaigns(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         dirtyFlag_[0]=true;
@@ -508,6 +640,7 @@ Campaigns::Campaigns(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("name"))
     {
         dirtyFlag_[1]=true;
@@ -516,6 +649,7 @@ Campaigns::Campaigns(const Json::Value &pJson) noexcept(false)
             name_=std::make_shared<std::string>(pJson["name"].asString());
         }
     }
+
     if(pJson.isMember("deep_link"))
     {
         dirtyFlag_[2]=true;
@@ -524,6 +658,7 @@ Campaigns::Campaigns(const Json::Value &pJson) noexcept(false)
             deepLink_=std::make_shared<std::string>(pJson["deep_link"].asString());
         }
     }
+
     if(pJson.isMember("target_audience"))
     {
         dirtyFlag_[3]=true;
@@ -532,6 +667,7 @@ Campaigns::Campaigns(const Json::Value &pJson) noexcept(false)
             targetAudience_=std::make_shared<std::string>(pJson["target_audience"].asString());
         }
     }
+
     if(pJson.isMember("channel"))
     {
         dirtyFlag_[4]=true;
@@ -540,6 +676,7 @@ Campaigns::Campaigns(const Json::Value &pJson) noexcept(false)
             channel_=std::make_shared<std::string>(pJson["channel"].asString());
         }
     }
+
     if(pJson.isMember("subject"))
     {
         dirtyFlag_[5]=true;
@@ -548,6 +685,7 @@ Campaigns::Campaigns(const Json::Value &pJson) noexcept(false)
             subject_=std::make_shared<std::string>(pJson["subject"].asString());
         }
     }
+
     if(pJson.isMember("message_body"))
     {
         dirtyFlag_[6]=true;
@@ -556,6 +694,7 @@ Campaigns::Campaigns(const Json::Value &pJson) noexcept(false)
             messageBody_=std::make_shared<std::string>(pJson["message_body"].asString());
         }
     }
+
     if(pJson.isMember("status"))
     {
         dirtyFlag_[7]=true;
@@ -564,6 +703,7 @@ Campaigns::Campaigns(const Json::Value &pJson) noexcept(false)
             status_=std::make_shared<std::string>(pJson["status"].asString());
         }
     }
+
     if(pJson.isMember("scheduled_time"))
     {
         dirtyFlag_[8]=true;
@@ -572,6 +712,7 @@ Campaigns::Campaigns(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["scheduled_time"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -590,6 +731,7 @@ Campaigns::Campaigns(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("campaign_type"))
     {
         dirtyFlag_[9]=true;
@@ -598,6 +740,7 @@ Campaigns::Campaigns(const Json::Value &pJson) noexcept(false)
             campaignType_=std::make_shared<std::string>(pJson["campaign_type"].asString());
         }
     }
+
     if(pJson.isMember("reach"))
     {
         dirtyFlag_[10]=true;
@@ -606,6 +749,7 @@ Campaigns::Campaigns(const Json::Value &pJson) noexcept(false)
             reach_=std::make_shared<int32_t>((int32_t)pJson["reach"].asInt64());
         }
     }
+
     if(pJson.isMember("clicks"))
     {
         dirtyFlag_[11]=true;
@@ -614,6 +758,7 @@ Campaigns::Campaigns(const Json::Value &pJson) noexcept(false)
             clicks_=std::make_shared<int32_t>((int32_t)pJson["clicks"].asInt64());
         }
     }
+
     if(pJson.isMember("created_at"))
     {
         dirtyFlag_[12]=true;
@@ -622,6 +767,7 @@ Campaigns::Campaigns(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["created_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -640,6 +786,7 @@ Campaigns::Campaigns(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("updated_at"))
     {
         dirtyFlag_[13]=true;
@@ -648,6 +795,7 @@ Campaigns::Campaigns(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["updated_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -666,6 +814,7 @@ Campaigns::Campaigns(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("html_template"))
     {
         dirtyFlag_[14]=true;
@@ -674,6 +823,7 @@ Campaigns::Campaigns(const Json::Value &pJson) noexcept(false)
             htmlTemplate_=std::make_shared<std::string>(pJson["html_template"].asString());
         }
     }
+
 }
 
 void Campaigns::updateByMasqueradedJson(const Json::Value &pJson,
@@ -684,6 +834,7 @@ void Campaigns::updateByMasqueradedJson(const Json::Value &pJson,
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         if(!pJson[pMasqueradingVector[0]].isNull())
@@ -691,6 +842,7 @@ void Campaigns::updateByMasqueradedJson(const Json::Value &pJson,
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -699,6 +851,7 @@ void Campaigns::updateByMasqueradedJson(const Json::Value &pJson,
             name_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -707,6 +860,7 @@ void Campaigns::updateByMasqueradedJson(const Json::Value &pJson,
             deepLink_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -715,6 +869,7 @@ void Campaigns::updateByMasqueradedJson(const Json::Value &pJson,
             targetAudience_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -723,6 +878,7 @@ void Campaigns::updateByMasqueradedJson(const Json::Value &pJson,
             channel_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -731,6 +887,7 @@ void Campaigns::updateByMasqueradedJson(const Json::Value &pJson,
             subject_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -739,6 +896,7 @@ void Campaigns::updateByMasqueradedJson(const Json::Value &pJson,
             messageBody_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -747,6 +905,7 @@ void Campaigns::updateByMasqueradedJson(const Json::Value &pJson,
             status_=std::make_shared<std::string>(pJson[pMasqueradingVector[7]].asString());
         }
     }
+
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
     {
         dirtyFlag_[8] = true;
@@ -755,6 +914,7 @@ void Campaigns::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[8]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -773,6 +933,7 @@ void Campaigns::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
     {
         dirtyFlag_[9] = true;
@@ -781,6 +942,7 @@ void Campaigns::updateByMasqueradedJson(const Json::Value &pJson,
             campaignType_=std::make_shared<std::string>(pJson[pMasqueradingVector[9]].asString());
         }
     }
+
     if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
     {
         dirtyFlag_[10] = true;
@@ -789,6 +951,7 @@ void Campaigns::updateByMasqueradedJson(const Json::Value &pJson,
             reach_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[10]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
     {
         dirtyFlag_[11] = true;
@@ -797,6 +960,7 @@ void Campaigns::updateByMasqueradedJson(const Json::Value &pJson,
             clicks_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[11]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
     {
         dirtyFlag_[12] = true;
@@ -805,6 +969,7 @@ void Campaigns::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[12]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -823,6 +988,7 @@ void Campaigns::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
     if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
     {
         dirtyFlag_[13] = true;
@@ -831,6 +997,7 @@ void Campaigns::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[13]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -849,6 +1016,7 @@ void Campaigns::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
     if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
     {
         dirtyFlag_[14] = true;
@@ -857,10 +1025,12 @@ void Campaigns::updateByMasqueradedJson(const Json::Value &pJson,
             htmlTemplate_=std::make_shared<std::string>(pJson[pMasqueradingVector[14]].asString());
         }
     }
+
 }
 
 void Campaigns::updateByJson(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         if(!pJson["id"].isNull())
@@ -868,6 +1038,7 @@ void Campaigns::updateByJson(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("name"))
     {
         dirtyFlag_[1] = true;
@@ -876,6 +1047,7 @@ void Campaigns::updateByJson(const Json::Value &pJson) noexcept(false)
             name_=std::make_shared<std::string>(pJson["name"].asString());
         }
     }
+
     if(pJson.isMember("deep_link"))
     {
         dirtyFlag_[2] = true;
@@ -884,6 +1056,7 @@ void Campaigns::updateByJson(const Json::Value &pJson) noexcept(false)
             deepLink_=std::make_shared<std::string>(pJson["deep_link"].asString());
         }
     }
+
     if(pJson.isMember("target_audience"))
     {
         dirtyFlag_[3] = true;
@@ -892,6 +1065,7 @@ void Campaigns::updateByJson(const Json::Value &pJson) noexcept(false)
             targetAudience_=std::make_shared<std::string>(pJson["target_audience"].asString());
         }
     }
+
     if(pJson.isMember("channel"))
     {
         dirtyFlag_[4] = true;
@@ -900,6 +1074,7 @@ void Campaigns::updateByJson(const Json::Value &pJson) noexcept(false)
             channel_=std::make_shared<std::string>(pJson["channel"].asString());
         }
     }
+
     if(pJson.isMember("subject"))
     {
         dirtyFlag_[5] = true;
@@ -908,6 +1083,7 @@ void Campaigns::updateByJson(const Json::Value &pJson) noexcept(false)
             subject_=std::make_shared<std::string>(pJson["subject"].asString());
         }
     }
+
     if(pJson.isMember("message_body"))
     {
         dirtyFlag_[6] = true;
@@ -916,6 +1092,7 @@ void Campaigns::updateByJson(const Json::Value &pJson) noexcept(false)
             messageBody_=std::make_shared<std::string>(pJson["message_body"].asString());
         }
     }
+
     if(pJson.isMember("status"))
     {
         dirtyFlag_[7] = true;
@@ -924,6 +1101,7 @@ void Campaigns::updateByJson(const Json::Value &pJson) noexcept(false)
             status_=std::make_shared<std::string>(pJson["status"].asString());
         }
     }
+
     if(pJson.isMember("scheduled_time"))
     {
         dirtyFlag_[8] = true;
@@ -932,6 +1110,7 @@ void Campaigns::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["scheduled_time"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -950,6 +1129,7 @@ void Campaigns::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("campaign_type"))
     {
         dirtyFlag_[9] = true;
@@ -958,6 +1138,7 @@ void Campaigns::updateByJson(const Json::Value &pJson) noexcept(false)
             campaignType_=std::make_shared<std::string>(pJson["campaign_type"].asString());
         }
     }
+
     if(pJson.isMember("reach"))
     {
         dirtyFlag_[10] = true;
@@ -966,6 +1147,7 @@ void Campaigns::updateByJson(const Json::Value &pJson) noexcept(false)
             reach_=std::make_shared<int32_t>((int32_t)pJson["reach"].asInt64());
         }
     }
+
     if(pJson.isMember("clicks"))
     {
         dirtyFlag_[11] = true;
@@ -974,6 +1156,7 @@ void Campaigns::updateByJson(const Json::Value &pJson) noexcept(false)
             clicks_=std::make_shared<int32_t>((int32_t)pJson["clicks"].asInt64());
         }
     }
+
     if(pJson.isMember("created_at"))
     {
         dirtyFlag_[12] = true;
@@ -982,6 +1165,7 @@ void Campaigns::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["created_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -1000,6 +1184,7 @@ void Campaigns::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("updated_at"))
     {
         dirtyFlag_[13] = true;
@@ -1008,6 +1193,7 @@ void Campaigns::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["updated_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -1026,6 +1212,7 @@ void Campaigns::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("html_template"))
     {
         dirtyFlag_[14] = true;
@@ -1034,6 +1221,7 @@ void Campaigns::updateByJson(const Json::Value &pJson) noexcept(false)
             htmlTemplate_=std::make_shared<std::string>(pJson["html_template"].asString());
         }
     }
+
 }
 
 const std::string &Campaigns::getValueOfId() const noexcept
@@ -1380,6 +1568,7 @@ void Campaigns::updateId(const uint64_t id)
 {
 }
 
+
 const std::vector<std::string> &Campaigns::insertColumns() noexcept
 {
     static const std::vector<std::string> inCols={
@@ -1398,12 +1587,14 @@ const std::vector<std::string> &Campaigns::insertColumns() noexcept
         "created_at",
         "updated_at",
         "html_template"
+
     };
     return inCols;
 }
 
 void Campaigns::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -1415,6 +1606,7 @@ void Campaigns::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getName())
@@ -1426,6 +1618,7 @@ void Campaigns::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getDeepLink())
@@ -1437,6 +1630,7 @@ void Campaigns::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getTargetAudience())
@@ -1448,6 +1642,7 @@ void Campaigns::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getChannel())
@@ -1459,6 +1654,7 @@ void Campaigns::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getSubject())
@@ -1470,6 +1666,7 @@ void Campaigns::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getMessageBody())
@@ -1481,6 +1678,7 @@ void Campaigns::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getStatus())
@@ -1492,6 +1690,7 @@ void Campaigns::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[8])
     {
         if(getScheduledTime())
@@ -1503,6 +1702,7 @@ void Campaigns::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[9])
     {
         if(getCampaignType())
@@ -1514,6 +1714,7 @@ void Campaigns::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[10])
     {
         if(getReach())
@@ -1525,6 +1726,7 @@ void Campaigns::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[11])
     {
         if(getClicks())
@@ -1536,6 +1738,7 @@ void Campaigns::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[12])
     {
         if(getCreatedAt())
@@ -1547,6 +1750,7 @@ void Campaigns::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[13])
     {
         if(getUpdatedAt())
@@ -1558,6 +1762,7 @@ void Campaigns::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[14])
     {
         if(getHtmlTemplate())
@@ -1569,76 +1774,94 @@ void Campaigns::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
 }
 
 const std::vector<std::string> Campaigns::updateColumns() const
 {
     std::vector<std::string> ret;
+
     if(dirtyFlag_[0])
     {
         ret.push_back(getColumnName(0));
     }
+
     if(dirtyFlag_[1])
     {
         ret.push_back(getColumnName(1));
     }
+
     if(dirtyFlag_[2])
     {
         ret.push_back(getColumnName(2));
     }
+
     if(dirtyFlag_[3])
     {
         ret.push_back(getColumnName(3));
     }
+
     if(dirtyFlag_[4])
     {
         ret.push_back(getColumnName(4));
     }
+
     if(dirtyFlag_[5])
     {
         ret.push_back(getColumnName(5));
     }
+
     if(dirtyFlag_[6])
     {
         ret.push_back(getColumnName(6));
     }
+
     if(dirtyFlag_[7])
     {
         ret.push_back(getColumnName(7));
     }
+
     if(dirtyFlag_[8])
     {
         ret.push_back(getColumnName(8));
     }
+
     if(dirtyFlag_[9])
     {
         ret.push_back(getColumnName(9));
     }
+
     if(dirtyFlag_[10])
     {
         ret.push_back(getColumnName(10));
     }
+
     if(dirtyFlag_[11])
     {
         ret.push_back(getColumnName(11));
     }
+
     if(dirtyFlag_[12])
     {
         ret.push_back(getColumnName(12));
     }
+
     if(dirtyFlag_[13])
     {
         ret.push_back(getColumnName(13));
     }
+
     if(dirtyFlag_[14])
     {
         ret.push_back(getColumnName(14));
     }
+
     return ret;
 }
 
 void Campaigns::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -1650,6 +1873,7 @@ void Campaigns::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getName())
@@ -1661,6 +1885,7 @@ void Campaigns::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getDeepLink())
@@ -1672,6 +1897,7 @@ void Campaigns::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getTargetAudience())
@@ -1683,6 +1909,7 @@ void Campaigns::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getChannel())
@@ -1694,6 +1921,7 @@ void Campaigns::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getSubject())
@@ -1705,6 +1933,7 @@ void Campaigns::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getMessageBody())
@@ -1716,6 +1945,7 @@ void Campaigns::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getStatus())
@@ -1727,6 +1957,7 @@ void Campaigns::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[8])
     {
         if(getScheduledTime())
@@ -1738,6 +1969,7 @@ void Campaigns::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[9])
     {
         if(getCampaignType())
@@ -1749,6 +1981,7 @@ void Campaigns::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[10])
     {
         if(getReach())
@@ -1760,6 +1993,7 @@ void Campaigns::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[11])
     {
         if(getClicks())
@@ -1771,6 +2005,7 @@ void Campaigns::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[12])
     {
         if(getCreatedAt())
@@ -1782,6 +2017,7 @@ void Campaigns::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[13])
     {
         if(getUpdatedAt())
@@ -1793,6 +2029,7 @@ void Campaigns::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[14])
     {
         if(getHtmlTemplate())
@@ -1804,130 +2041,177 @@ void Campaigns::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
 }
 Json::Value Campaigns::toJson() const
 {
     Json::Value ret;
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getName())
     {
+
         ret["name"]=getValueOfName();
+
     }
     else
     {
         ret["name"]=Json::Value();
     }
+
     if(getDeepLink())
     {
+
         ret["deep_link"]=getValueOfDeepLink();
+
     }
     else
     {
         ret["deep_link"]=Json::Value();
     }
+
     if(getTargetAudience())
     {
+
         ret["target_audience"]=getValueOfTargetAudience();
+
     }
     else
     {
         ret["target_audience"]=Json::Value();
     }
+
     if(getChannel())
     {
+
         ret["channel"]=getValueOfChannel();
+
     }
     else
     {
         ret["channel"]=Json::Value();
     }
+
     if(getSubject())
     {
+
         ret["subject"]=getValueOfSubject();
+
     }
     else
     {
         ret["subject"]=Json::Value();
     }
+
     if(getMessageBody())
     {
+
         ret["message_body"]=getValueOfMessageBody();
+
     }
     else
     {
         ret["message_body"]=Json::Value();
     }
+
     if(getStatus())
     {
+
         ret["status"]=getValueOfStatus();
+
     }
     else
     {
         ret["status"]=Json::Value();
     }
+
     if(getScheduledTime())
     {
+
         ret["scheduled_time"]=getScheduledTime()->toDbStringLocal();
+
     }
     else
     {
         ret["scheduled_time"]=Json::Value();
     }
+
     if(getCampaignType())
     {
+
         ret["campaign_type"]=getValueOfCampaignType();
+
     }
     else
     {
         ret["campaign_type"]=Json::Value();
     }
+
     if(getReach())
     {
+
         ret["reach"]=getValueOfReach();
+
     }
     else
     {
         ret["reach"]=Json::Value();
     }
+
     if(getClicks())
     {
+
         ret["clicks"]=getValueOfClicks();
+
     }
     else
     {
         ret["clicks"]=Json::Value();
     }
+
     if(getCreatedAt())
     {
+
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["created_at"]=Json::Value();
     }
+
     if(getUpdatedAt())
     {
+
         ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["updated_at"]=Json::Value();
     }
+
     if(getHtmlTemplate())
     {
+
         ret["html_template"]=getValueOfHtmlTemplate();
+
     }
     else
     {
         ret["html_template"]=Json::Value();
     }
+
     return ret;
 }
 
@@ -1942,409 +2226,524 @@ Json::Value Campaigns::toMasqueradedJson(
     Json::Value ret;
     if(pMasqueradingVector.size() == 15)
     {
+
         if(!pMasqueradingVector[0].empty())
         {
             if(getId())
             {
+
                 ret[pMasqueradingVector[0]]=getValueOfId();
+
             }
             else
             {
                 ret[pMasqueradingVector[0]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[1].empty())
         {
             if(getName())
             {
+
                 ret[pMasqueradingVector[1]]=getValueOfName();
+
             }
             else
             {
                 ret[pMasqueradingVector[1]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[2].empty())
         {
             if(getDeepLink())
             {
+
                 ret[pMasqueradingVector[2]]=getValueOfDeepLink();
+
             }
             else
             {
                 ret[pMasqueradingVector[2]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[3].empty())
         {
             if(getTargetAudience())
             {
+
                 ret[pMasqueradingVector[3]]=getValueOfTargetAudience();
+
             }
             else
             {
                 ret[pMasqueradingVector[3]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[4].empty())
         {
             if(getChannel())
             {
+
                 ret[pMasqueradingVector[4]]=getValueOfChannel();
+
             }
             else
             {
                 ret[pMasqueradingVector[4]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[5].empty())
         {
             if(getSubject())
             {
+
                 ret[pMasqueradingVector[5]]=getValueOfSubject();
+
             }
             else
             {
                 ret[pMasqueradingVector[5]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[6].empty())
         {
             if(getMessageBody())
             {
+
                 ret[pMasqueradingVector[6]]=getValueOfMessageBody();
+
             }
             else
             {
                 ret[pMasqueradingVector[6]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[7].empty())
         {
             if(getStatus())
             {
+
                 ret[pMasqueradingVector[7]]=getValueOfStatus();
+
             }
             else
             {
                 ret[pMasqueradingVector[7]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[8].empty())
         {
             if(getScheduledTime())
             {
+
                 ret[pMasqueradingVector[8]]=getScheduledTime()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[8]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[9].empty())
         {
             if(getCampaignType())
             {
+
                 ret[pMasqueradingVector[9]]=getValueOfCampaignType();
+
             }
             else
             {
                 ret[pMasqueradingVector[9]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[10].empty())
         {
             if(getReach())
             {
+
                 ret[pMasqueradingVector[10]]=getValueOfReach();
+
             }
             else
             {
                 ret[pMasqueradingVector[10]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[11].empty())
         {
             if(getClicks())
             {
+
                 ret[pMasqueradingVector[11]]=getValueOfClicks();
+
             }
             else
             {
                 ret[pMasqueradingVector[11]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[12].empty())
         {
             if(getCreatedAt())
             {
+
                 ret[pMasqueradingVector[12]]=getCreatedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[12]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[13].empty())
         {
             if(getUpdatedAt())
             {
+
                 ret[pMasqueradingVector[13]]=getUpdatedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[13]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[14].empty())
         {
             if(getHtmlTemplate())
             {
+
                 ret[pMasqueradingVector[14]]=getValueOfHtmlTemplate();
+
             }
             else
             {
                 ret[pMasqueradingVector[14]]=Json::Value();
             }
         }
+
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getName())
     {
+
         ret["name"]=getValueOfName();
+
     }
     else
     {
         ret["name"]=Json::Value();
     }
+
     if(getDeepLink())
     {
+
         ret["deep_link"]=getValueOfDeepLink();
+
     }
     else
     {
         ret["deep_link"]=Json::Value();
     }
+
     if(getTargetAudience())
     {
+
         ret["target_audience"]=getValueOfTargetAudience();
+
     }
     else
     {
         ret["target_audience"]=Json::Value();
     }
+
     if(getChannel())
     {
+
         ret["channel"]=getValueOfChannel();
+
     }
     else
     {
         ret["channel"]=Json::Value();
     }
+
     if(getSubject())
     {
+
         ret["subject"]=getValueOfSubject();
+
     }
     else
     {
         ret["subject"]=Json::Value();
     }
+
     if(getMessageBody())
     {
+
         ret["message_body"]=getValueOfMessageBody();
+
     }
     else
     {
         ret["message_body"]=Json::Value();
     }
+
     if(getStatus())
     {
+
         ret["status"]=getValueOfStatus();
+
     }
     else
     {
         ret["status"]=Json::Value();
     }
+
     if(getScheduledTime())
     {
+
         ret["scheduled_time"]=getScheduledTime()->toDbStringLocal();
+
     }
     else
     {
         ret["scheduled_time"]=Json::Value();
     }
+
     if(getCampaignType())
     {
+
         ret["campaign_type"]=getValueOfCampaignType();
+
     }
     else
     {
         ret["campaign_type"]=Json::Value();
     }
+
     if(getReach())
     {
+
         ret["reach"]=getValueOfReach();
+
     }
     else
     {
         ret["reach"]=Json::Value();
     }
+
     if(getClicks())
     {
+
         ret["clicks"]=getValueOfClicks();
+
     }
     else
     {
         ret["clicks"]=Json::Value();
     }
+
     if(getCreatedAt())
     {
+
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["created_at"]=Json::Value();
     }
+
     if(getUpdatedAt())
     {
+
         ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["updated_at"]=Json::Value();
     }
+
     if(getHtmlTemplate())
     {
+
         ret["html_template"]=getValueOfHtmlTemplate();
+
     }
     else
     {
         ret["html_template"]=Json::Value();
     }
+
     return ret;
 }
 
 bool Campaigns::validateJsonForCreation(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, true))
             return false;
     }
+
     if(pJson.isMember("name"))
     {
         if(!validJsonOfField(1, "name", pJson["name"], err, true))
             return false;
     }
+
     else
     {
         err="The name column cannot be null";
         return false;
     }
+
     if(pJson.isMember("deep_link"))
     {
         if(!validJsonOfField(2, "deep_link", pJson["deep_link"], err, true))
             return false;
     }
+
     if(pJson.isMember("target_audience"))
     {
         if(!validJsonOfField(3, "target_audience", pJson["target_audience"], err, true))
             return false;
     }
+
     else
     {
         err="The target_audience column cannot be null";
         return false;
     }
+
     if(pJson.isMember("channel"))
     {
         if(!validJsonOfField(4, "channel", pJson["channel"], err, true))
             return false;
     }
+
     else
     {
         err="The channel column cannot be null";
         return false;
     }
+
     if(pJson.isMember("subject"))
     {
         if(!validJsonOfField(5, "subject", pJson["subject"], err, true))
             return false;
     }
+
     else
     {
         err="The subject column cannot be null";
         return false;
     }
+
     if(pJson.isMember("message_body"))
     {
         if(!validJsonOfField(6, "message_body", pJson["message_body"], err, true))
             return false;
     }
+
     else
     {
         err="The message_body column cannot be null";
         return false;
     }
+
     if(pJson.isMember("status"))
     {
         if(!validJsonOfField(7, "status", pJson["status"], err, true))
             return false;
     }
+
     else
     {
         err="The status column cannot be null";
         return false;
     }
+
     if(pJson.isMember("scheduled_time"))
     {
         if(!validJsonOfField(8, "scheduled_time", pJson["scheduled_time"], err, true))
             return false;
     }
+
     if(pJson.isMember("campaign_type"))
     {
         if(!validJsonOfField(9, "campaign_type", pJson["campaign_type"], err, true))
             return false;
     }
+
     else
     {
         err="The campaign_type column cannot be null";
         return false;
     }
+
     if(pJson.isMember("reach"))
     {
         if(!validJsonOfField(10, "reach", pJson["reach"], err, true))
             return false;
     }
+
     if(pJson.isMember("clicks"))
     {
         if(!validJsonOfField(11, "clicks", pJson["clicks"], err, true))
             return false;
     }
+
     if(pJson.isMember("created_at"))
     {
         if(!validJsonOfField(12, "created_at", pJson["created_at"], err, true))
             return false;
     }
+
     if(pJson.isMember("updated_at"))
     {
         if(!validJsonOfField(13, "updated_at", pJson["updated_at"], err, true))
             return false;
     }
+
     if(pJson.isMember("html_template"))
     {
         if(!validJsonOfField(14, "html_template", pJson["html_template"], err, true))
             return false;
     }
+
     return true;
 }
 bool Campaigns::validateMasqueradedJsonForCreation(const Json::Value &pJson,
@@ -2357,6 +2756,7 @@ bool Campaigns::validateMasqueradedJsonForCreation(const Json::Value &pJson,
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty())
       {
           if(pJson.isMember(pMasqueradingVector[0]))
@@ -2364,7 +2764,9 @@ bool Campaigns::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[1].empty())
       {
           if(pJson.isMember(pMasqueradingVector[1]))
@@ -2372,12 +2774,15 @@ bool Campaigns::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[1] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[2].empty())
       {
           if(pJson.isMember(pMasqueradingVector[2]))
@@ -2385,7 +2790,9 @@ bool Campaigns::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[3].empty())
       {
           if(pJson.isMember(pMasqueradingVector[3]))
@@ -2393,12 +2800,15 @@ bool Campaigns::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[3] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[4].empty())
       {
           if(pJson.isMember(pMasqueradingVector[4]))
@@ -2406,12 +2816,15 @@ bool Campaigns::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[4] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[5].empty())
       {
           if(pJson.isMember(pMasqueradingVector[5]))
@@ -2419,12 +2832,15 @@ bool Campaigns::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[5] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[6].empty())
       {
           if(pJson.isMember(pMasqueradingVector[6]))
@@ -2432,12 +2848,15 @@ bool Campaigns::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[6] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[7].empty())
       {
           if(pJson.isMember(pMasqueradingVector[7]))
@@ -2445,12 +2864,15 @@ bool Campaigns::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[7] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[8].empty())
       {
           if(pJson.isMember(pMasqueradingVector[8]))
@@ -2458,7 +2880,9 @@ bool Campaigns::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(8, pMasqueradingVector[8], pJson[pMasqueradingVector[8]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[9].empty())
       {
           if(pJson.isMember(pMasqueradingVector[9]))
@@ -2466,12 +2890,15 @@ bool Campaigns::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(9, pMasqueradingVector[9], pJson[pMasqueradingVector[9]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[9] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[10].empty())
       {
           if(pJson.isMember(pMasqueradingVector[10]))
@@ -2479,7 +2906,9 @@ bool Campaigns::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(10, pMasqueradingVector[10], pJson[pMasqueradingVector[10]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[11].empty())
       {
           if(pJson.isMember(pMasqueradingVector[11]))
@@ -2487,7 +2916,9 @@ bool Campaigns::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(11, pMasqueradingVector[11], pJson[pMasqueradingVector[11]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[12].empty())
       {
           if(pJson.isMember(pMasqueradingVector[12]))
@@ -2495,7 +2926,9 @@ bool Campaigns::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(12, pMasqueradingVector[12], pJson[pMasqueradingVector[12]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[13].empty())
       {
           if(pJson.isMember(pMasqueradingVector[13]))
@@ -2503,7 +2936,9 @@ bool Campaigns::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(13, pMasqueradingVector[13], pJson[pMasqueradingVector[13]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[14].empty())
       {
           if(pJson.isMember(pMasqueradingVector[14]))
@@ -2511,7 +2946,9 @@ bool Campaigns::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(14, pMasqueradingVector[14], pJson[pMasqueradingVector[14]], err, true))
                   return false;
           }
+
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -2522,86 +2959,103 @@ bool Campaigns::validateMasqueradedJsonForCreation(const Json::Value &pJson,
 }
 bool Campaigns::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, false))
             return false;
     }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
     if(pJson.isMember("name"))
     {
         if(!validJsonOfField(1, "name", pJson["name"], err, false))
             return false;
     }
+
     if(pJson.isMember("deep_link"))
     {
         if(!validJsonOfField(2, "deep_link", pJson["deep_link"], err, false))
             return false;
     }
+
     if(pJson.isMember("target_audience"))
     {
         if(!validJsonOfField(3, "target_audience", pJson["target_audience"], err, false))
             return false;
     }
+
     if(pJson.isMember("channel"))
     {
         if(!validJsonOfField(4, "channel", pJson["channel"], err, false))
             return false;
     }
+
     if(pJson.isMember("subject"))
     {
         if(!validJsonOfField(5, "subject", pJson["subject"], err, false))
             return false;
     }
+
     if(pJson.isMember("message_body"))
     {
         if(!validJsonOfField(6, "message_body", pJson["message_body"], err, false))
             return false;
     }
+
     if(pJson.isMember("status"))
     {
         if(!validJsonOfField(7, "status", pJson["status"], err, false))
             return false;
     }
+
     if(pJson.isMember("scheduled_time"))
     {
         if(!validJsonOfField(8, "scheduled_time", pJson["scheduled_time"], err, false))
             return false;
     }
+
     if(pJson.isMember("campaign_type"))
     {
         if(!validJsonOfField(9, "campaign_type", pJson["campaign_type"], err, false))
             return false;
     }
+
     if(pJson.isMember("reach"))
     {
         if(!validJsonOfField(10, "reach", pJson["reach"], err, false))
             return false;
     }
+
     if(pJson.isMember("clicks"))
     {
         if(!validJsonOfField(11, "clicks", pJson["clicks"], err, false))
             return false;
     }
+
     if(pJson.isMember("created_at"))
     {
         if(!validJsonOfField(12, "created_at", pJson["created_at"], err, false))
             return false;
     }
+
     if(pJson.isMember("updated_at"))
     {
         if(!validJsonOfField(13, "updated_at", pJson["updated_at"], err, false))
             return false;
     }
+
     if(pJson.isMember("html_template"))
     {
         if(!validJsonOfField(14, "html_template", pJson["html_template"], err, false))
             return false;
     }
+
     return true;
 }
 bool Campaigns::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
@@ -2614,86 +3068,103 @@ bool Campaigns::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
       {
           if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
               return false;
       }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
       if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
       {
           if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
       {
           if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
       {
           if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
       {
           if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
       {
           if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
       {
           if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
       {
           if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
       {
           if(!validJsonOfField(8, pMasqueradingVector[8], pJson[pMasqueradingVector[8]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
       {
           if(!validJsonOfField(9, pMasqueradingVector[9], pJson[pMasqueradingVector[9]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
       {
           if(!validJsonOfField(10, pMasqueradingVector[10], pJson[pMasqueradingVector[10]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
       {
           if(!validJsonOfField(11, pMasqueradingVector[11], pJson[pMasqueradingVector[11]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
       {
           if(!validJsonOfField(12, pMasqueradingVector[12], pJson[pMasqueradingVector[12]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
       {
           if(!validJsonOfField(13, pMasqueradingVector[13], pJson[pMasqueradingVector[13]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
       {
           if(!validJsonOfField(14, pMasqueradingVector[14], pJson[pMasqueradingVector[14]], err, false))
               return false;
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -2710,247 +3181,309 @@ bool Campaigns::validJsonOfField(size_t index,
 {
     switch(index)
     {
+
         case 0:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 1:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 255)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 255)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 255)";
                 return false;
             }
+
             break;
+
         case 2:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 350)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 350)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 350)";
                 return false;
             }
+
             break;
+
         case 3:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 50)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 50)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 50)";
                 return false;
             }
+
             break;
+
         case 4:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 50)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 50)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 50)";
                 return false;
             }
+
             break;
+
         case 5:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 150)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 150)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 150)";
                 return false;
             }
+
             break;
+
         case 6:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 255)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 255)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 255)";
                 return false;
             }
+
             break;
+
         case 7:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 50)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 50)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 50)";
                 return false;
             }
+
             break;
+
         case 8:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 9:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 50)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 50)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 50)";
                 return false;
             }
+
             break;
+
         case 10:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 11:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 12:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 13:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 14:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         default:
             err="Internal error in the server";
             return false;
     }
     return true;
 }
+

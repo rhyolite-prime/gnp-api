@@ -1,3 +1,4 @@
+
 /**
  *
  *  Users.h
@@ -39,6 +40,8 @@ namespace drogon_model
 namespace Gnp
 {
 
+
+
 class Users
 {
   public:
@@ -75,14 +78,19 @@ class Users
         static const std::string _profile_image;
         static const std::string _affiliate_id;
         static const std::string _user_groups;
+
     };
 
     static const int primaryKeyNumber;
     static const std::string tableName;
     static const bool hasPrimaryKey;
+
     static const std::string primaryKeyName;
+
     using PrimaryKeyType = std::string;
     const PrimaryKeyType &getPrimaryKey() const;
+
+
 
     /**
      * @brief constructor
@@ -426,6 +434,7 @@ class Users
     void setUserGroupsToNull() noexcept;
 
 
+
     static size_t getColumnNumber() noexcept {  return 31;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
@@ -433,6 +442,7 @@ class Users
     std::string toString() const;
     Json::Value toMasqueradedJson(const std::vector<std::string> &pMasqueradingVector) const;
     /// Relationship interfaces
+
   private:
     friend drogon::orm::Mapper<Users>;
     friend drogon::orm::BaseBuilder<Users, true, true>;
@@ -479,6 +489,7 @@ class Users
     std::shared_ptr<std::vector<char>> profileImage_;
     std::shared_ptr<std::string> affiliateId_;
     std::shared_ptr<std::string> userGroups_;
+
     struct MetaData
     {
         const std::string colName_;
@@ -494,13 +505,19 @@ class Users
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
+
         static const std::string sql="select * from " + tableName + " where id = $1";
+
+
         return sql;
     }
 
     static const std::string &sqlForDeletingByPrimaryKey()
     {
+
         static const std::string sql="delete from " + tableName + " where id = $1";
+
+
         return sql;
     }
     std::string sqlForInserting(bool &needSelection) const
@@ -510,25 +527,30 @@ class Users
         needSelection = false;
         sql += "id,";
         ++parametersCount;
+
         if(!dirtyFlag_[0])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[1])
         {
             sql += "first_name,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[2])
         {
             sql += "last_name,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[3])
         {
             sql += "email,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[4])
         {
             sql += "username,";
@@ -536,30 +558,36 @@ class Users
         }
         sql += "email_verified_at,";
         ++parametersCount;
+
         if(!dirtyFlag_[5])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[6])
         {
             sql += "password_hash,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[7])
         {
             sql += "last_active_device,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[8])
         {
             sql += "phone_number,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[9])
         {
             sql += "country,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[10])
         {
             sql += "phone_verified_at,";
@@ -567,21 +595,25 @@ class Users
         }
         sql += "is_locked_out,";
         ++parametersCount;
+
         if(!dirtyFlag_[11])
         {
             needSelection=true;
         }
         sql += "is_active,";
         ++parametersCount;
+
         if(!dirtyFlag_[12])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[13])
         {
             sql += "created_at,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[14])
         {
             sql += "updated_at,";
@@ -589,31 +621,37 @@ class Users
         }
         sql += "is_admin_user,";
         ++parametersCount;
+
         if(!dirtyFlag_[15])
         {
             needSelection=true;
         }
         sql += "is_partner_admin_user,";
         ++parametersCount;
+
         if(!dirtyFlag_[16])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[17])
         {
             sql += "partner_id,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[18])
         {
             sql += "credential_id,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[19])
         {
             sql += "public_key,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[20])
         {
             sql += "public_key_algorithm,";
@@ -621,20 +659,24 @@ class Users
         }
         sql += "sign_count,";
         ++parametersCount;
+
         if(!dirtyFlag_[21])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[22])
         {
             sql += "user_handle,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[23])
         {
             sql += "transports,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[24])
         {
             sql += "credential_type,";
@@ -642,35 +684,42 @@ class Users
         }
         sql += "is_affiliate,";
         ++parametersCount;
+
         if(!dirtyFlag_[25])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[26])
         {
             sql += "last_active,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[27])
         {
             sql += "roles,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[28])
         {
             sql += "profile_image,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[29])
         {
             sql += "affiliate_id,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[30])
         {
             sql += "user_groups,";
             ++parametersCount;
         }
+
         if(parametersCount > 0)
         {
             sql[sql.length()-1]=')';
@@ -679,200 +728,304 @@ class Users
         else
             sql += ") values (";
 
+
         int placeholder=1;
         char placeholderStr[64];
         size_t n=0;
+
         if(dirtyFlag_[0])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[1])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[2])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[3])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[4])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[5])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[6])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[7])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[8])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[9])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[10])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[11])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[12])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[13])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[14])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[15])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[16])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[17])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[18])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[19])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[20])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[21])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[22])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[23])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[24])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[25])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[26])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[27])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[28])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[29])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[30])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(parametersCount > 0)
         {
             sql.resize(sql.length() - 1);
         }
+
         if(needSelection)
         {
             sql.append(") returning *");
@@ -881,9 +1034,11 @@ class Users
         {
             sql.append(1, ')');
         }
+
         LOG_TRACE << sql;
         return sql;
     }
 };
 } // namespace Gnp
+
 } // namespace drogon_model

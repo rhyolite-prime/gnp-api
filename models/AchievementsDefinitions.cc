@@ -1,3 +1,4 @@
+
 /**
  *
  *  AchievementsDefinitions.cc
@@ -6,23 +7,40 @@
  */
 
 #include "AchievementsDefinitions.h"
+
 #include <drogon/utils/Utilities.h>
+
 #include <string>
+
 
 using namespace drogon;
 using namespace drogon::orm;
 using namespace drogon_model::Gnp;
 
+
+
 const std::string AchievementsDefinitions::Cols::_id = "\"id\"";
+
 const std::string AchievementsDefinitions::Cols::_name = "\"name\"";
+
 const std::string AchievementsDefinitions::Cols::_description = "\"description\"";
+
 const std::string AchievementsDefinitions::Cols::_points_required = "\"points_required\"";
+
 const std::string AchievementsDefinitions::Cols::_games_required = "\"games_required\"";
+
 const std::string AchievementsDefinitions::Cols::_game_type = "\"game_type\"";
+
 const std::string AchievementsDefinitions::Cols::_achievement_type = "\"achievement_type\"";
+
 const std::string AchievementsDefinitions::Cols::_bonus_points = "\"bonus_points\"";
+
+
 const std::string AchievementsDefinitions::primaryKeyName = "id";
+
+
 const bool AchievementsDefinitions::hasPrimaryKey = true;
+
 const std::string AchievementsDefinitions::tableName = "\"achievements_definitions\"";
 
 const std::vector<typename AchievementsDefinitions::MetaData> AchievementsDefinitions::metaData_={
@@ -34,6 +52,7 @@ const std::vector<typename AchievementsDefinitions::MetaData> AchievementsDefini
 {"game_type","std::string","character varying",20,0,0,0},
 {"achievement_type","std::string","character varying",20,0,0,0},
 {"bonus_points","int32_t","integer",4,0,0,0}
+
 };
 const std::string &AchievementsDefinitions::getColumnName(size_t index) noexcept(false)
 {
@@ -44,38 +63,63 @@ AchievementsDefinitions::AchievementsDefinitions(const Row &r, const ssize_t ind
 {
     if(indexOffset < 0)
     {
+
         if(!r["id"].isNull())
         {
+
             id_=std::make_shared<std::string>(r["id"].as<std::string>());
+
         }
+
         if(!r["name"].isNull())
         {
+
             name_=std::make_shared<std::string>(r["name"].as<std::string>());
+
         }
+
         if(!r["description"].isNull())
         {
+
             description_=std::make_shared<std::string>(r["description"].as<std::string>());
+
         }
+
         if(!r["points_required"].isNull())
         {
+
             pointsRequired_=std::make_shared<int32_t>(r["points_required"].as<int32_t>());
+
         }
+
         if(!r["games_required"].isNull())
         {
+
             gamesRequired_=std::make_shared<int32_t>(r["games_required"].as<int32_t>());
+
         }
+
         if(!r["game_type"].isNull())
         {
+
             gameType_=std::make_shared<std::string>(r["game_type"].as<std::string>());
+
         }
+
         if(!r["achievement_type"].isNull())
         {
+
             achievementType_=std::make_shared<std::string>(r["achievement_type"].as<std::string>());
+
         }
+
         if(!r["bonus_points"].isNull())
         {
+
             bonusPoints_=std::make_shared<int32_t>(r["bonus_points"].as<int32_t>());
+
         }
+
     }
     else
     {
@@ -86,46 +130,71 @@ AchievementsDefinitions::AchievementsDefinitions(const Row &r, const ssize_t ind
             return;
         }
         size_t index;
+
         index = offset + 0;
         if(!r[index].isNull())
         {
+
             id_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 1;
         if(!r[index].isNull())
         {
+
             name_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 2;
         if(!r[index].isNull())
         {
+
             description_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 3;
         if(!r[index].isNull())
         {
+
             pointsRequired_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 4;
         if(!r[index].isNull())
         {
+
             gamesRequired_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 5;
         if(!r[index].isNull())
         {
+
             gameType_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 6;
         if(!r[index].isNull())
         {
+
             achievementType_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 7;
         if(!r[index].isNull())
         {
+
             bonusPoints_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
     }
 
 }
@@ -137,6 +206,7 @@ AchievementsDefinitions::AchievementsDefinitions(const Json::Value &pJson, const
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         dirtyFlag_[0] = true;
@@ -145,6 +215,7 @@ AchievementsDefinitions::AchievementsDefinitions(const Json::Value &pJson, const
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -153,6 +224,7 @@ AchievementsDefinitions::AchievementsDefinitions(const Json::Value &pJson, const
             name_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -161,6 +233,7 @@ AchievementsDefinitions::AchievementsDefinitions(const Json::Value &pJson, const
             description_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -169,6 +242,7 @@ AchievementsDefinitions::AchievementsDefinitions(const Json::Value &pJson, const
             pointsRequired_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[3]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -177,6 +251,7 @@ AchievementsDefinitions::AchievementsDefinitions(const Json::Value &pJson, const
             gamesRequired_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[4]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -185,6 +260,7 @@ AchievementsDefinitions::AchievementsDefinitions(const Json::Value &pJson, const
             gameType_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -193,6 +269,7 @@ AchievementsDefinitions::AchievementsDefinitions(const Json::Value &pJson, const
             achievementType_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -201,10 +278,12 @@ AchievementsDefinitions::AchievementsDefinitions(const Json::Value &pJson, const
             bonusPoints_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[7]].asInt64());
         }
     }
+
 }
 
 AchievementsDefinitions::AchievementsDefinitions(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         dirtyFlag_[0]=true;
@@ -213,6 +292,7 @@ AchievementsDefinitions::AchievementsDefinitions(const Json::Value &pJson) noexc
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("name"))
     {
         dirtyFlag_[1]=true;
@@ -221,6 +301,7 @@ AchievementsDefinitions::AchievementsDefinitions(const Json::Value &pJson) noexc
             name_=std::make_shared<std::string>(pJson["name"].asString());
         }
     }
+
     if(pJson.isMember("description"))
     {
         dirtyFlag_[2]=true;
@@ -229,6 +310,7 @@ AchievementsDefinitions::AchievementsDefinitions(const Json::Value &pJson) noexc
             description_=std::make_shared<std::string>(pJson["description"].asString());
         }
     }
+
     if(pJson.isMember("points_required"))
     {
         dirtyFlag_[3]=true;
@@ -237,6 +319,7 @@ AchievementsDefinitions::AchievementsDefinitions(const Json::Value &pJson) noexc
             pointsRequired_=std::make_shared<int32_t>((int32_t)pJson["points_required"].asInt64());
         }
     }
+
     if(pJson.isMember("games_required"))
     {
         dirtyFlag_[4]=true;
@@ -245,6 +328,7 @@ AchievementsDefinitions::AchievementsDefinitions(const Json::Value &pJson) noexc
             gamesRequired_=std::make_shared<int32_t>((int32_t)pJson["games_required"].asInt64());
         }
     }
+
     if(pJson.isMember("game_type"))
     {
         dirtyFlag_[5]=true;
@@ -253,6 +337,7 @@ AchievementsDefinitions::AchievementsDefinitions(const Json::Value &pJson) noexc
             gameType_=std::make_shared<std::string>(pJson["game_type"].asString());
         }
     }
+
     if(pJson.isMember("achievement_type"))
     {
         dirtyFlag_[6]=true;
@@ -261,6 +346,7 @@ AchievementsDefinitions::AchievementsDefinitions(const Json::Value &pJson) noexc
             achievementType_=std::make_shared<std::string>(pJson["achievement_type"].asString());
         }
     }
+
     if(pJson.isMember("bonus_points"))
     {
         dirtyFlag_[7]=true;
@@ -269,6 +355,7 @@ AchievementsDefinitions::AchievementsDefinitions(const Json::Value &pJson) noexc
             bonusPoints_=std::make_shared<int32_t>((int32_t)pJson["bonus_points"].asInt64());
         }
     }
+
 }
 
 void AchievementsDefinitions::updateByMasqueradedJson(const Json::Value &pJson,
@@ -279,6 +366,7 @@ void AchievementsDefinitions::updateByMasqueradedJson(const Json::Value &pJson,
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         if(!pJson[pMasqueradingVector[0]].isNull())
@@ -286,6 +374,7 @@ void AchievementsDefinitions::updateByMasqueradedJson(const Json::Value &pJson,
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -294,6 +383,7 @@ void AchievementsDefinitions::updateByMasqueradedJson(const Json::Value &pJson,
             name_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -302,6 +392,7 @@ void AchievementsDefinitions::updateByMasqueradedJson(const Json::Value &pJson,
             description_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -310,6 +401,7 @@ void AchievementsDefinitions::updateByMasqueradedJson(const Json::Value &pJson,
             pointsRequired_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[3]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -318,6 +410,7 @@ void AchievementsDefinitions::updateByMasqueradedJson(const Json::Value &pJson,
             gamesRequired_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[4]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -326,6 +419,7 @@ void AchievementsDefinitions::updateByMasqueradedJson(const Json::Value &pJson,
             gameType_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -334,6 +428,7 @@ void AchievementsDefinitions::updateByMasqueradedJson(const Json::Value &pJson,
             achievementType_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -342,10 +437,12 @@ void AchievementsDefinitions::updateByMasqueradedJson(const Json::Value &pJson,
             bonusPoints_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[7]].asInt64());
         }
     }
+
 }
 
 void AchievementsDefinitions::updateByJson(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         if(!pJson["id"].isNull())
@@ -353,6 +450,7 @@ void AchievementsDefinitions::updateByJson(const Json::Value &pJson) noexcept(fa
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("name"))
     {
         dirtyFlag_[1] = true;
@@ -361,6 +459,7 @@ void AchievementsDefinitions::updateByJson(const Json::Value &pJson) noexcept(fa
             name_=std::make_shared<std::string>(pJson["name"].asString());
         }
     }
+
     if(pJson.isMember("description"))
     {
         dirtyFlag_[2] = true;
@@ -369,6 +468,7 @@ void AchievementsDefinitions::updateByJson(const Json::Value &pJson) noexcept(fa
             description_=std::make_shared<std::string>(pJson["description"].asString());
         }
     }
+
     if(pJson.isMember("points_required"))
     {
         dirtyFlag_[3] = true;
@@ -377,6 +477,7 @@ void AchievementsDefinitions::updateByJson(const Json::Value &pJson) noexcept(fa
             pointsRequired_=std::make_shared<int32_t>((int32_t)pJson["points_required"].asInt64());
         }
     }
+
     if(pJson.isMember("games_required"))
     {
         dirtyFlag_[4] = true;
@@ -385,6 +486,7 @@ void AchievementsDefinitions::updateByJson(const Json::Value &pJson) noexcept(fa
             gamesRequired_=std::make_shared<int32_t>((int32_t)pJson["games_required"].asInt64());
         }
     }
+
     if(pJson.isMember("game_type"))
     {
         dirtyFlag_[5] = true;
@@ -393,6 +495,7 @@ void AchievementsDefinitions::updateByJson(const Json::Value &pJson) noexcept(fa
             gameType_=std::make_shared<std::string>(pJson["game_type"].asString());
         }
     }
+
     if(pJson.isMember("achievement_type"))
     {
         dirtyFlag_[6] = true;
@@ -401,6 +504,7 @@ void AchievementsDefinitions::updateByJson(const Json::Value &pJson) noexcept(fa
             achievementType_=std::make_shared<std::string>(pJson["achievement_type"].asString());
         }
     }
+
     if(pJson.isMember("bonus_points"))
     {
         dirtyFlag_[7] = true;
@@ -409,6 +513,7 @@ void AchievementsDefinitions::updateByJson(const Json::Value &pJson) noexcept(fa
             bonusPoints_=std::make_shared<int32_t>((int32_t)pJson["bonus_points"].asInt64());
         }
     }
+
 }
 
 const std::string &AchievementsDefinitions::getValueOfId() const noexcept
@@ -611,6 +716,7 @@ void AchievementsDefinitions::updateId(const uint64_t id)
 {
 }
 
+
 const std::vector<std::string> &AchievementsDefinitions::insertColumns() noexcept
 {
     static const std::vector<std::string> inCols={
@@ -622,12 +728,14 @@ const std::vector<std::string> &AchievementsDefinitions::insertColumns() noexcep
         "game_type",
         "achievement_type",
         "bonus_points"
+
     };
     return inCols;
 }
 
 void AchievementsDefinitions::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -639,6 +747,7 @@ void AchievementsDefinitions::outputArgs(drogon::orm::internal::SqlBinder &binde
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getName())
@@ -650,6 +759,7 @@ void AchievementsDefinitions::outputArgs(drogon::orm::internal::SqlBinder &binde
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getDescription())
@@ -661,6 +771,7 @@ void AchievementsDefinitions::outputArgs(drogon::orm::internal::SqlBinder &binde
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getPointsRequired())
@@ -672,6 +783,7 @@ void AchievementsDefinitions::outputArgs(drogon::orm::internal::SqlBinder &binde
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getGamesRequired())
@@ -683,6 +795,7 @@ void AchievementsDefinitions::outputArgs(drogon::orm::internal::SqlBinder &binde
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getGameType())
@@ -694,6 +807,7 @@ void AchievementsDefinitions::outputArgs(drogon::orm::internal::SqlBinder &binde
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getAchievementType())
@@ -705,6 +819,7 @@ void AchievementsDefinitions::outputArgs(drogon::orm::internal::SqlBinder &binde
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getBonusPoints())
@@ -716,48 +831,59 @@ void AchievementsDefinitions::outputArgs(drogon::orm::internal::SqlBinder &binde
             binder << nullptr;
         }
     }
+
 }
 
 const std::vector<std::string> AchievementsDefinitions::updateColumns() const
 {
     std::vector<std::string> ret;
+
     if(dirtyFlag_[0])
     {
         ret.push_back(getColumnName(0));
     }
+
     if(dirtyFlag_[1])
     {
         ret.push_back(getColumnName(1));
     }
+
     if(dirtyFlag_[2])
     {
         ret.push_back(getColumnName(2));
     }
+
     if(dirtyFlag_[3])
     {
         ret.push_back(getColumnName(3));
     }
+
     if(dirtyFlag_[4])
     {
         ret.push_back(getColumnName(4));
     }
+
     if(dirtyFlag_[5])
     {
         ret.push_back(getColumnName(5));
     }
+
     if(dirtyFlag_[6])
     {
         ret.push_back(getColumnName(6));
     }
+
     if(dirtyFlag_[7])
     {
         ret.push_back(getColumnName(7));
     }
+
     return ret;
 }
 
 void AchievementsDefinitions::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -769,6 +895,7 @@ void AchievementsDefinitions::updateArgs(drogon::orm::internal::SqlBinder &binde
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getName())
@@ -780,6 +907,7 @@ void AchievementsDefinitions::updateArgs(drogon::orm::internal::SqlBinder &binde
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getDescription())
@@ -791,6 +919,7 @@ void AchievementsDefinitions::updateArgs(drogon::orm::internal::SqlBinder &binde
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getPointsRequired())
@@ -802,6 +931,7 @@ void AchievementsDefinitions::updateArgs(drogon::orm::internal::SqlBinder &binde
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getGamesRequired())
@@ -813,6 +943,7 @@ void AchievementsDefinitions::updateArgs(drogon::orm::internal::SqlBinder &binde
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getGameType())
@@ -824,6 +955,7 @@ void AchievementsDefinitions::updateArgs(drogon::orm::internal::SqlBinder &binde
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getAchievementType())
@@ -835,6 +967,7 @@ void AchievementsDefinitions::updateArgs(drogon::orm::internal::SqlBinder &binde
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getBonusPoints())
@@ -846,74 +979,100 @@ void AchievementsDefinitions::updateArgs(drogon::orm::internal::SqlBinder &binde
             binder << nullptr;
         }
     }
+
 }
 Json::Value AchievementsDefinitions::toJson() const
 {
     Json::Value ret;
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getName())
     {
+
         ret["name"]=getValueOfName();
+
     }
     else
     {
         ret["name"]=Json::Value();
     }
+
     if(getDescription())
     {
+
         ret["description"]=getValueOfDescription();
+
     }
     else
     {
         ret["description"]=Json::Value();
     }
+
     if(getPointsRequired())
     {
+
         ret["points_required"]=getValueOfPointsRequired();
+
     }
     else
     {
         ret["points_required"]=Json::Value();
     }
+
     if(getGamesRequired())
     {
+
         ret["games_required"]=getValueOfGamesRequired();
+
     }
     else
     {
         ret["games_required"]=Json::Value();
     }
+
     if(getGameType())
     {
+
         ret["game_type"]=getValueOfGameType();
+
     }
     else
     {
         ret["game_type"]=Json::Value();
     }
+
     if(getAchievementType())
     {
+
         ret["achievement_type"]=getValueOfAchievementType();
+
     }
     else
     {
         ret["achievement_type"]=Json::Value();
     }
+
     if(getBonusPoints())
     {
+
         ret["bonus_points"]=getValueOfBonusPoints();
+
     }
     else
     {
         ret["bonus_points"]=Json::Value();
     }
+
     return ret;
 }
 
@@ -928,211 +1087,271 @@ Json::Value AchievementsDefinitions::toMasqueradedJson(
     Json::Value ret;
     if(pMasqueradingVector.size() == 8)
     {
+
         if(!pMasqueradingVector[0].empty())
         {
             if(getId())
             {
+
                 ret[pMasqueradingVector[0]]=getValueOfId();
+
             }
             else
             {
                 ret[pMasqueradingVector[0]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[1].empty())
         {
             if(getName())
             {
+
                 ret[pMasqueradingVector[1]]=getValueOfName();
+
             }
             else
             {
                 ret[pMasqueradingVector[1]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[2].empty())
         {
             if(getDescription())
             {
+
                 ret[pMasqueradingVector[2]]=getValueOfDescription();
+
             }
             else
             {
                 ret[pMasqueradingVector[2]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[3].empty())
         {
             if(getPointsRequired())
             {
+
                 ret[pMasqueradingVector[3]]=getValueOfPointsRequired();
+
             }
             else
             {
                 ret[pMasqueradingVector[3]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[4].empty())
         {
             if(getGamesRequired())
             {
+
                 ret[pMasqueradingVector[4]]=getValueOfGamesRequired();
+
             }
             else
             {
                 ret[pMasqueradingVector[4]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[5].empty())
         {
             if(getGameType())
             {
+
                 ret[pMasqueradingVector[5]]=getValueOfGameType();
+
             }
             else
             {
                 ret[pMasqueradingVector[5]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[6].empty())
         {
             if(getAchievementType())
             {
+
                 ret[pMasqueradingVector[6]]=getValueOfAchievementType();
+
             }
             else
             {
                 ret[pMasqueradingVector[6]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[7].empty())
         {
             if(getBonusPoints())
             {
+
                 ret[pMasqueradingVector[7]]=getValueOfBonusPoints();
+
             }
             else
             {
                 ret[pMasqueradingVector[7]]=Json::Value();
             }
         }
+
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getName())
     {
+
         ret["name"]=getValueOfName();
+
     }
     else
     {
         ret["name"]=Json::Value();
     }
+
     if(getDescription())
     {
+
         ret["description"]=getValueOfDescription();
+
     }
     else
     {
         ret["description"]=Json::Value();
     }
+
     if(getPointsRequired())
     {
+
         ret["points_required"]=getValueOfPointsRequired();
+
     }
     else
     {
         ret["points_required"]=Json::Value();
     }
+
     if(getGamesRequired())
     {
+
         ret["games_required"]=getValueOfGamesRequired();
+
     }
     else
     {
         ret["games_required"]=Json::Value();
     }
+
     if(getGameType())
     {
+
         ret["game_type"]=getValueOfGameType();
+
     }
     else
     {
         ret["game_type"]=Json::Value();
     }
+
     if(getAchievementType())
     {
+
         ret["achievement_type"]=getValueOfAchievementType();
+
     }
     else
     {
         ret["achievement_type"]=Json::Value();
     }
+
     if(getBonusPoints())
     {
+
         ret["bonus_points"]=getValueOfBonusPoints();
+
     }
     else
     {
         ret["bonus_points"]=Json::Value();
     }
+
     return ret;
 }
 
 bool AchievementsDefinitions::validateJsonForCreation(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, true))
             return false;
     }
+
     if(pJson.isMember("name"))
     {
         if(!validJsonOfField(1, "name", pJson["name"], err, true))
             return false;
     }
+
     else
     {
         err="The name column cannot be null";
         return false;
     }
+
     if(pJson.isMember("description"))
     {
         if(!validJsonOfField(2, "description", pJson["description"], err, true))
             return false;
     }
+
     if(pJson.isMember("points_required"))
     {
         if(!validJsonOfField(3, "points_required", pJson["points_required"], err, true))
             return false;
     }
+
     if(pJson.isMember("games_required"))
     {
         if(!validJsonOfField(4, "games_required", pJson["games_required"], err, true))
             return false;
     }
+
     if(pJson.isMember("game_type"))
     {
         if(!validJsonOfField(5, "game_type", pJson["game_type"], err, true))
             return false;
     }
+
     if(pJson.isMember("achievement_type"))
     {
         if(!validJsonOfField(6, "achievement_type", pJson["achievement_type"], err, true))
             return false;
     }
+
     if(pJson.isMember("bonus_points"))
     {
         if(!validJsonOfField(7, "bonus_points", pJson["bonus_points"], err, true))
             return false;
     }
+
     return true;
 }
 bool AchievementsDefinitions::validateMasqueradedJsonForCreation(const Json::Value &pJson,
@@ -1145,6 +1364,7 @@ bool AchievementsDefinitions::validateMasqueradedJsonForCreation(const Json::Val
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty())
       {
           if(pJson.isMember(pMasqueradingVector[0]))
@@ -1152,7 +1372,9 @@ bool AchievementsDefinitions::validateMasqueradedJsonForCreation(const Json::Val
               if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[1].empty())
       {
           if(pJson.isMember(pMasqueradingVector[1]))
@@ -1160,12 +1382,15 @@ bool AchievementsDefinitions::validateMasqueradedJsonForCreation(const Json::Val
               if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[1] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[2].empty())
       {
           if(pJson.isMember(pMasqueradingVector[2]))
@@ -1173,7 +1398,9 @@ bool AchievementsDefinitions::validateMasqueradedJsonForCreation(const Json::Val
               if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[3].empty())
       {
           if(pJson.isMember(pMasqueradingVector[3]))
@@ -1181,7 +1408,9 @@ bool AchievementsDefinitions::validateMasqueradedJsonForCreation(const Json::Val
               if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[4].empty())
       {
           if(pJson.isMember(pMasqueradingVector[4]))
@@ -1189,7 +1418,9 @@ bool AchievementsDefinitions::validateMasqueradedJsonForCreation(const Json::Val
               if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[5].empty())
       {
           if(pJson.isMember(pMasqueradingVector[5]))
@@ -1197,7 +1428,9 @@ bool AchievementsDefinitions::validateMasqueradedJsonForCreation(const Json::Val
               if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[6].empty())
       {
           if(pJson.isMember(pMasqueradingVector[6]))
@@ -1205,7 +1438,9 @@ bool AchievementsDefinitions::validateMasqueradedJsonForCreation(const Json::Val
               if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[7].empty())
       {
           if(pJson.isMember(pMasqueradingVector[7]))
@@ -1213,7 +1448,9 @@ bool AchievementsDefinitions::validateMasqueradedJsonForCreation(const Json::Val
               if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, true))
                   return false;
           }
+
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -1224,51 +1461,61 @@ bool AchievementsDefinitions::validateMasqueradedJsonForCreation(const Json::Val
 }
 bool AchievementsDefinitions::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, false))
             return false;
     }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
     if(pJson.isMember("name"))
     {
         if(!validJsonOfField(1, "name", pJson["name"], err, false))
             return false;
     }
+
     if(pJson.isMember("description"))
     {
         if(!validJsonOfField(2, "description", pJson["description"], err, false))
             return false;
     }
+
     if(pJson.isMember("points_required"))
     {
         if(!validJsonOfField(3, "points_required", pJson["points_required"], err, false))
             return false;
     }
+
     if(pJson.isMember("games_required"))
     {
         if(!validJsonOfField(4, "games_required", pJson["games_required"], err, false))
             return false;
     }
+
     if(pJson.isMember("game_type"))
     {
         if(!validJsonOfField(5, "game_type", pJson["game_type"], err, false))
             return false;
     }
+
     if(pJson.isMember("achievement_type"))
     {
         if(!validJsonOfField(6, "achievement_type", pJson["achievement_type"], err, false))
             return false;
     }
+
     if(pJson.isMember("bonus_points"))
     {
         if(!validJsonOfField(7, "bonus_points", pJson["bonus_points"], err, false))
             return false;
     }
+
     return true;
 }
 bool AchievementsDefinitions::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
@@ -1281,51 +1528,61 @@ bool AchievementsDefinitions::validateMasqueradedJsonForUpdate(const Json::Value
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
       {
           if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
               return false;
       }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
       if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
       {
           if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
       {
           if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
       {
           if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
       {
           if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
       {
           if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
       {
           if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
       {
           if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, false))
               return false;
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -1342,123 +1599,157 @@ bool AchievementsDefinitions::validJsonOfField(size_t index,
 {
     switch(index)
     {
+
         case 0:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 1:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 100)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 100)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 100)";
                 return false;
             }
+
             break;
+
         case 2:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 3:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 4:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 5:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 20)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 20)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 20)";
                 return false;
             }
+
             break;
+
         case 6:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 20)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 20)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 20)";
                 return false;
             }
+
             break;
+
         case 7:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         default:
             err="Internal error in the server";
             return false;
     }
     return true;
 }
+

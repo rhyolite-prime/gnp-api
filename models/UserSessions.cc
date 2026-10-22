@@ -1,3 +1,4 @@
+
 /**
  *
  *  UserSessions.cc
@@ -6,22 +7,38 @@
  */
 
 #include "UserSessions.h"
+
 #include <drogon/utils/Utilities.h>
+
 #include <string>
+
 
 using namespace drogon;
 using namespace drogon::orm;
 using namespace drogon_model::Gnp;
 
+
+
 const std::string UserSessions::Cols::_id = "\"id\"";
+
 const std::string UserSessions::Cols::_user_id = "\"user_id\"";
+
 const std::string UserSessions::Cols::_partner_id = "\"partner_id\"";
+
 const std::string UserSessions::Cols::_session_start = "\"session_start\"";
+
 const std::string UserSessions::Cols::_session_end = "\"session_end\"";
+
 const std::string UserSessions::Cols::_duration_seconds = "\"duration_seconds\"";
+
 const std::string UserSessions::Cols::_is_active = "\"is_active\"";
+
+
 const std::string UserSessions::primaryKeyName = "id";
+
+
 const bool UserSessions::hasPrimaryKey = true;
+
 const std::string UserSessions::tableName = "\"user_sessions\"";
 
 const std::vector<typename UserSessions::MetaData> UserSessions::metaData_={
@@ -32,6 +49,7 @@ const std::vector<typename UserSessions::MetaData> UserSessions::metaData_={
 {"session_end","::trantor::Date","timestamp without time zone",0,0,0,0},
 {"duration_seconds","int32_t","integer",4,0,0,0},
 {"is_active","bool","boolean",1,0,0,0}
+
 };
 const std::string &UserSessions::getColumnName(size_t index) noexcept(false)
 {
@@ -42,23 +60,34 @@ UserSessions::UserSessions(const Row &r, const ssize_t indexOffset) noexcept
 {
     if(indexOffset < 0)
     {
+
         if(!r["id"].isNull())
         {
+
             id_=std::make_shared<std::string>(r["id"].as<std::string>());
+
         }
+
         if(!r["user_id"].isNull())
         {
+
             userId_=std::make_shared<std::string>(r["user_id"].as<std::string>());
+
         }
+
         if(!r["partner_id"].isNull())
         {
+
             partnerId_=std::make_shared<std::string>(r["partner_id"].as<std::string>());
+
         }
+
         if(!r["session_start"].isNull())
         {
             auto timeStr = r["session_start"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -76,11 +105,13 @@ UserSessions::UserSessions(const Row &r, const ssize_t indexOffset) noexcept
                 sessionStart_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         if(!r["session_end"].isNull())
         {
             auto timeStr = r["session_end"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -98,14 +129,21 @@ UserSessions::UserSessions(const Row &r, const ssize_t indexOffset) noexcept
                 sessionEnd_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         if(!r["duration_seconds"].isNull())
         {
+
             durationSeconds_=std::make_shared<int32_t>(r["duration_seconds"].as<int32_t>());
+
         }
+
         if(!r["is_active"].isNull())
         {
+
             isActive_=std::make_shared<bool>(r["is_active"].as<bool>());
+
         }
+
     }
     else
     {
@@ -116,27 +154,38 @@ UserSessions::UserSessions(const Row &r, const ssize_t indexOffset) noexcept
             return;
         }
         size_t index;
+
         index = offset + 0;
         if(!r[index].isNull())
         {
+
             id_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 1;
         if(!r[index].isNull())
         {
+
             userId_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 2;
         if(!r[index].isNull())
         {
+
             partnerId_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 3;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -154,12 +203,14 @@ UserSessions::UserSessions(const Row &r, const ssize_t indexOffset) noexcept
                 sessionStart_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         index = offset + 4;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -177,16 +228,23 @@ UserSessions::UserSessions(const Row &r, const ssize_t indexOffset) noexcept
                 sessionEnd_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         index = offset + 5;
         if(!r[index].isNull())
         {
+
             durationSeconds_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 6;
         if(!r[index].isNull())
         {
+
             isActive_=std::make_shared<bool>(r[index].as<bool>());
+
         }
+
     }
 
 }
@@ -198,6 +256,7 @@ UserSessions::UserSessions(const Json::Value &pJson, const std::vector<std::stri
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         dirtyFlag_[0] = true;
@@ -206,6 +265,7 @@ UserSessions::UserSessions(const Json::Value &pJson, const std::vector<std::stri
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -214,6 +274,7 @@ UserSessions::UserSessions(const Json::Value &pJson, const std::vector<std::stri
             userId_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -222,6 +283,7 @@ UserSessions::UserSessions(const Json::Value &pJson, const std::vector<std::stri
             partnerId_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -230,6 +292,7 @@ UserSessions::UserSessions(const Json::Value &pJson, const std::vector<std::stri
             auto timeStr = pJson[pMasqueradingVector[3]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -248,6 +311,7 @@ UserSessions::UserSessions(const Json::Value &pJson, const std::vector<std::stri
             }
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -256,6 +320,7 @@ UserSessions::UserSessions(const Json::Value &pJson, const std::vector<std::stri
             auto timeStr = pJson[pMasqueradingVector[4]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -274,6 +339,7 @@ UserSessions::UserSessions(const Json::Value &pJson, const std::vector<std::stri
             }
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -282,6 +348,7 @@ UserSessions::UserSessions(const Json::Value &pJson, const std::vector<std::stri
             durationSeconds_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[5]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -290,10 +357,12 @@ UserSessions::UserSessions(const Json::Value &pJson, const std::vector<std::stri
             isActive_=std::make_shared<bool>(pJson[pMasqueradingVector[6]].asBool());
         }
     }
+
 }
 
 UserSessions::UserSessions(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         dirtyFlag_[0]=true;
@@ -302,6 +371,7 @@ UserSessions::UserSessions(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("user_id"))
     {
         dirtyFlag_[1]=true;
@@ -310,6 +380,7 @@ UserSessions::UserSessions(const Json::Value &pJson) noexcept(false)
             userId_=std::make_shared<std::string>(pJson["user_id"].asString());
         }
     }
+
     if(pJson.isMember("partner_id"))
     {
         dirtyFlag_[2]=true;
@@ -318,6 +389,7 @@ UserSessions::UserSessions(const Json::Value &pJson) noexcept(false)
             partnerId_=std::make_shared<std::string>(pJson["partner_id"].asString());
         }
     }
+
     if(pJson.isMember("session_start"))
     {
         dirtyFlag_[3]=true;
@@ -326,6 +398,7 @@ UserSessions::UserSessions(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["session_start"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -344,6 +417,7 @@ UserSessions::UserSessions(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("session_end"))
     {
         dirtyFlag_[4]=true;
@@ -352,6 +426,7 @@ UserSessions::UserSessions(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["session_end"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -370,6 +445,7 @@ UserSessions::UserSessions(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("duration_seconds"))
     {
         dirtyFlag_[5]=true;
@@ -378,6 +454,7 @@ UserSessions::UserSessions(const Json::Value &pJson) noexcept(false)
             durationSeconds_=std::make_shared<int32_t>((int32_t)pJson["duration_seconds"].asInt64());
         }
     }
+
     if(pJson.isMember("is_active"))
     {
         dirtyFlag_[6]=true;
@@ -386,6 +463,7 @@ UserSessions::UserSessions(const Json::Value &pJson) noexcept(false)
             isActive_=std::make_shared<bool>(pJson["is_active"].asBool());
         }
     }
+
 }
 
 void UserSessions::updateByMasqueradedJson(const Json::Value &pJson,
@@ -396,6 +474,7 @@ void UserSessions::updateByMasqueradedJson(const Json::Value &pJson,
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         if(!pJson[pMasqueradingVector[0]].isNull())
@@ -403,6 +482,7 @@ void UserSessions::updateByMasqueradedJson(const Json::Value &pJson,
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -411,6 +491,7 @@ void UserSessions::updateByMasqueradedJson(const Json::Value &pJson,
             userId_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -419,6 +500,7 @@ void UserSessions::updateByMasqueradedJson(const Json::Value &pJson,
             partnerId_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -427,6 +509,7 @@ void UserSessions::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[3]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -445,6 +528,7 @@ void UserSessions::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -453,6 +537,7 @@ void UserSessions::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[4]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -471,6 +556,7 @@ void UserSessions::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -479,6 +565,7 @@ void UserSessions::updateByMasqueradedJson(const Json::Value &pJson,
             durationSeconds_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[5]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -487,10 +574,12 @@ void UserSessions::updateByMasqueradedJson(const Json::Value &pJson,
             isActive_=std::make_shared<bool>(pJson[pMasqueradingVector[6]].asBool());
         }
     }
+
 }
 
 void UserSessions::updateByJson(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         if(!pJson["id"].isNull())
@@ -498,6 +587,7 @@ void UserSessions::updateByJson(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("user_id"))
     {
         dirtyFlag_[1] = true;
@@ -506,6 +596,7 @@ void UserSessions::updateByJson(const Json::Value &pJson) noexcept(false)
             userId_=std::make_shared<std::string>(pJson["user_id"].asString());
         }
     }
+
     if(pJson.isMember("partner_id"))
     {
         dirtyFlag_[2] = true;
@@ -514,6 +605,7 @@ void UserSessions::updateByJson(const Json::Value &pJson) noexcept(false)
             partnerId_=std::make_shared<std::string>(pJson["partner_id"].asString());
         }
     }
+
     if(pJson.isMember("session_start"))
     {
         dirtyFlag_[3] = true;
@@ -522,6 +614,7 @@ void UserSessions::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["session_start"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -540,6 +633,7 @@ void UserSessions::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("session_end"))
     {
         dirtyFlag_[4] = true;
@@ -548,6 +642,7 @@ void UserSessions::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["session_end"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -566,6 +661,7 @@ void UserSessions::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("duration_seconds"))
     {
         dirtyFlag_[5] = true;
@@ -574,6 +670,7 @@ void UserSessions::updateByJson(const Json::Value &pJson) noexcept(false)
             durationSeconds_=std::make_shared<int32_t>((int32_t)pJson["duration_seconds"].asInt64());
         }
     }
+
     if(pJson.isMember("is_active"))
     {
         dirtyFlag_[6] = true;
@@ -582,6 +679,7 @@ void UserSessions::updateByJson(const Json::Value &pJson) noexcept(false)
             isActive_=std::make_shared<bool>(pJson["is_active"].asBool());
         }
     }
+
 }
 
 const std::string &UserSessions::getValueOfId() const noexcept
@@ -752,6 +850,7 @@ void UserSessions::updateId(const uint64_t id)
 {
 }
 
+
 const std::vector<std::string> &UserSessions::insertColumns() noexcept
 {
     static const std::vector<std::string> inCols={
@@ -762,12 +861,14 @@ const std::vector<std::string> &UserSessions::insertColumns() noexcept
         "session_end",
         "duration_seconds",
         "is_active"
+
     };
     return inCols;
 }
 
 void UserSessions::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -779,6 +880,7 @@ void UserSessions::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getUserId())
@@ -790,6 +892,7 @@ void UserSessions::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getPartnerId())
@@ -801,6 +904,7 @@ void UserSessions::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getSessionStart())
@@ -812,6 +916,7 @@ void UserSessions::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getSessionEnd())
@@ -823,6 +928,7 @@ void UserSessions::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getDurationSeconds())
@@ -834,6 +940,7 @@ void UserSessions::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getIsActive())
@@ -845,44 +952,54 @@ void UserSessions::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
 }
 
 const std::vector<std::string> UserSessions::updateColumns() const
 {
     std::vector<std::string> ret;
+
     if(dirtyFlag_[0])
     {
         ret.push_back(getColumnName(0));
     }
+
     if(dirtyFlag_[1])
     {
         ret.push_back(getColumnName(1));
     }
+
     if(dirtyFlag_[2])
     {
         ret.push_back(getColumnName(2));
     }
+
     if(dirtyFlag_[3])
     {
         ret.push_back(getColumnName(3));
     }
+
     if(dirtyFlag_[4])
     {
         ret.push_back(getColumnName(4));
     }
+
     if(dirtyFlag_[5])
     {
         ret.push_back(getColumnName(5));
     }
+
     if(dirtyFlag_[6])
     {
         ret.push_back(getColumnName(6));
     }
+
     return ret;
 }
 
 void UserSessions::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -894,6 +1011,7 @@ void UserSessions::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getUserId())
@@ -905,6 +1023,7 @@ void UserSessions::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getPartnerId())
@@ -916,6 +1035,7 @@ void UserSessions::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getSessionStart())
@@ -927,6 +1047,7 @@ void UserSessions::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getSessionEnd())
@@ -938,6 +1059,7 @@ void UserSessions::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getDurationSeconds())
@@ -949,6 +1071,7 @@ void UserSessions::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getIsActive())
@@ -960,66 +1083,89 @@ void UserSessions::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
 }
 Json::Value UserSessions::toJson() const
 {
     Json::Value ret;
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getUserId())
     {
+
         ret["user_id"]=getValueOfUserId();
+
     }
     else
     {
         ret["user_id"]=Json::Value();
     }
+
     if(getPartnerId())
     {
+
         ret["partner_id"]=getValueOfPartnerId();
+
     }
     else
     {
         ret["partner_id"]=Json::Value();
     }
+
     if(getSessionStart())
     {
+
         ret["session_start"]=getSessionStart()->toDbStringLocal();
+
     }
     else
     {
         ret["session_start"]=Json::Value();
     }
+
     if(getSessionEnd())
     {
+
         ret["session_end"]=getSessionEnd()->toDbStringLocal();
+
     }
     else
     {
         ret["session_end"]=Json::Value();
     }
+
     if(getDurationSeconds())
     {
+
         ret["duration_seconds"]=getValueOfDurationSeconds();
+
     }
     else
     {
         ret["duration_seconds"]=Json::Value();
     }
+
     if(getIsActive())
     {
+
         ret["is_active"]=getValueOfIsActive();
+
     }
     else
     {
         ret["is_active"]=Json::Value();
     }
+
     return ret;
 }
 
@@ -1034,182 +1180,234 @@ Json::Value UserSessions::toMasqueradedJson(
     Json::Value ret;
     if(pMasqueradingVector.size() == 7)
     {
+
         if(!pMasqueradingVector[0].empty())
         {
             if(getId())
             {
+
                 ret[pMasqueradingVector[0]]=getValueOfId();
+
             }
             else
             {
                 ret[pMasqueradingVector[0]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[1].empty())
         {
             if(getUserId())
             {
+
                 ret[pMasqueradingVector[1]]=getValueOfUserId();
+
             }
             else
             {
                 ret[pMasqueradingVector[1]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[2].empty())
         {
             if(getPartnerId())
             {
+
                 ret[pMasqueradingVector[2]]=getValueOfPartnerId();
+
             }
             else
             {
                 ret[pMasqueradingVector[2]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[3].empty())
         {
             if(getSessionStart())
             {
+
                 ret[pMasqueradingVector[3]]=getSessionStart()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[3]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[4].empty())
         {
             if(getSessionEnd())
             {
+
                 ret[pMasqueradingVector[4]]=getSessionEnd()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[4]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[5].empty())
         {
             if(getDurationSeconds())
             {
+
                 ret[pMasqueradingVector[5]]=getValueOfDurationSeconds();
+
             }
             else
             {
                 ret[pMasqueradingVector[5]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[6].empty())
         {
             if(getIsActive())
             {
+
                 ret[pMasqueradingVector[6]]=getValueOfIsActive();
+
             }
             else
             {
                 ret[pMasqueradingVector[6]]=Json::Value();
             }
         }
+
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getUserId())
     {
+
         ret["user_id"]=getValueOfUserId();
+
     }
     else
     {
         ret["user_id"]=Json::Value();
     }
+
     if(getPartnerId())
     {
+
         ret["partner_id"]=getValueOfPartnerId();
+
     }
     else
     {
         ret["partner_id"]=Json::Value();
     }
+
     if(getSessionStart())
     {
+
         ret["session_start"]=getSessionStart()->toDbStringLocal();
+
     }
     else
     {
         ret["session_start"]=Json::Value();
     }
+
     if(getSessionEnd())
     {
+
         ret["session_end"]=getSessionEnd()->toDbStringLocal();
+
     }
     else
     {
         ret["session_end"]=Json::Value();
     }
+
     if(getDurationSeconds())
     {
+
         ret["duration_seconds"]=getValueOfDurationSeconds();
+
     }
     else
     {
         ret["duration_seconds"]=Json::Value();
     }
+
     if(getIsActive())
     {
+
         ret["is_active"]=getValueOfIsActive();
+
     }
     else
     {
         ret["is_active"]=Json::Value();
     }
+
     return ret;
 }
 
 bool UserSessions::validateJsonForCreation(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, true))
             return false;
     }
+
     if(pJson.isMember("user_id"))
     {
         if(!validJsonOfField(1, "user_id", pJson["user_id"], err, true))
             return false;
     }
+
     if(pJson.isMember("partner_id"))
     {
         if(!validJsonOfField(2, "partner_id", pJson["partner_id"], err, true))
             return false;
     }
+
     if(pJson.isMember("session_start"))
     {
         if(!validJsonOfField(3, "session_start", pJson["session_start"], err, true))
             return false;
     }
+
     if(pJson.isMember("session_end"))
     {
         if(!validJsonOfField(4, "session_end", pJson["session_end"], err, true))
             return false;
     }
+
     if(pJson.isMember("duration_seconds"))
     {
         if(!validJsonOfField(5, "duration_seconds", pJson["duration_seconds"], err, true))
             return false;
     }
+
     if(pJson.isMember("is_active"))
     {
         if(!validJsonOfField(6, "is_active", pJson["is_active"], err, true))
             return false;
     }
+
     return true;
 }
 bool UserSessions::validateMasqueradedJsonForCreation(const Json::Value &pJson,
@@ -1222,6 +1420,7 @@ bool UserSessions::validateMasqueradedJsonForCreation(const Json::Value &pJson,
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty())
       {
           if(pJson.isMember(pMasqueradingVector[0]))
@@ -1229,7 +1428,9 @@ bool UserSessions::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[1].empty())
       {
           if(pJson.isMember(pMasqueradingVector[1]))
@@ -1237,7 +1438,9 @@ bool UserSessions::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[2].empty())
       {
           if(pJson.isMember(pMasqueradingVector[2]))
@@ -1245,7 +1448,9 @@ bool UserSessions::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[3].empty())
       {
           if(pJson.isMember(pMasqueradingVector[3]))
@@ -1253,7 +1458,9 @@ bool UserSessions::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[4].empty())
       {
           if(pJson.isMember(pMasqueradingVector[4]))
@@ -1261,7 +1468,9 @@ bool UserSessions::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[5].empty())
       {
           if(pJson.isMember(pMasqueradingVector[5]))
@@ -1269,7 +1478,9 @@ bool UserSessions::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[6].empty())
       {
           if(pJson.isMember(pMasqueradingVector[6]))
@@ -1277,7 +1488,9 @@ bool UserSessions::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, true))
                   return false;
           }
+
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -1288,46 +1501,55 @@ bool UserSessions::validateMasqueradedJsonForCreation(const Json::Value &pJson,
 }
 bool UserSessions::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, false))
             return false;
     }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
     if(pJson.isMember("user_id"))
     {
         if(!validJsonOfField(1, "user_id", pJson["user_id"], err, false))
             return false;
     }
+
     if(pJson.isMember("partner_id"))
     {
         if(!validJsonOfField(2, "partner_id", pJson["partner_id"], err, false))
             return false;
     }
+
     if(pJson.isMember("session_start"))
     {
         if(!validJsonOfField(3, "session_start", pJson["session_start"], err, false))
             return false;
     }
+
     if(pJson.isMember("session_end"))
     {
         if(!validJsonOfField(4, "session_end", pJson["session_end"], err, false))
             return false;
     }
+
     if(pJson.isMember("duration_seconds"))
     {
         if(!validJsonOfField(5, "duration_seconds", pJson["duration_seconds"], err, false))
             return false;
     }
+
     if(pJson.isMember("is_active"))
     {
         if(!validJsonOfField(6, "is_active", pJson["is_active"], err, false))
             return false;
     }
+
     return true;
 }
 bool UserSessions::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
@@ -1340,46 +1562,55 @@ bool UserSessions::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
       {
           if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
               return false;
       }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
       if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
       {
           if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
       {
           if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
       {
           if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
       {
           if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
       {
           if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
       {
           if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, false))
               return false;
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -1396,88 +1627,118 @@ bool UserSessions::validJsonOfField(size_t index,
 {
     switch(index)
     {
+
         case 0:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 1:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 2:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 3:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 4:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 5:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 6:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isBool())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         default:
             err="Internal error in the server";
             return false;
     }
     return true;
 }
+

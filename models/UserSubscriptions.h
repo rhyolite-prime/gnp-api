@@ -1,3 +1,4 @@
+
 /**
  *
  *  UserSubscriptions.h
@@ -39,6 +40,8 @@ namespace drogon_model
 namespace Gnp
 {
 
+
+
 class UserSubscriptions
 {
   public:
@@ -58,14 +61,25 @@ class UserSubscriptions
         static const std::string _end_date;
         static const std::string _created_at;
         static const std::string _updated_at;
+        static const std::string _plan_fee;
+        static const std::string _auto_renew;
+        static const std::string _acquisition_source;
+        static const std::string _cancelled_at;
+        static const std::string _cancellation_type;
+        static const std::string _churn_reason;
+
     };
 
     static const int primaryKeyNumber;
     static const std::string tableName;
     static const bool hasPrimaryKey;
+
     static const std::string primaryKeyName;
+
     using PrimaryKeyType = std::string;
     const PrimaryKeyType &getPrimaryKey() const;
+
+
 
     /**
      * @brief constructor
@@ -236,14 +250,72 @@ class UserSubscriptions
     void setUpdatedAt(const ::trantor::Date &pUpdatedAt) noexcept;
     void setUpdatedAtToNull() noexcept;
 
+    /**  For column plan_fee  */
+    ///Get the value of the column plan_fee, returns the default value if the column is null
+    const std::string &getValueOfPlanFee() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getPlanFee() const noexcept;
+    ///Set the value of the column plan_fee
+    void setPlanFee(const std::string &pPlanFee) noexcept;
+    void setPlanFee(std::string &&pPlanFee) noexcept;
 
-    static size_t getColumnNumber() noexcept {  return 14;  }
+    /**  For column auto_renew  */
+    ///Get the value of the column auto_renew, returns the default value if the column is null
+    const bool &getValueOfAutoRenew() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<bool> &getAutoRenew() const noexcept;
+    ///Set the value of the column auto_renew
+    void setAutoRenew(const bool &pAutoRenew) noexcept;
+
+    /**  For column acquisition_source  */
+    ///Get the value of the column acquisition_source, returns the default value if the column is null
+    const std::string &getValueOfAcquisitionSource() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getAcquisitionSource() const noexcept;
+    ///Set the value of the column acquisition_source
+    void setAcquisitionSource(const std::string &pAcquisitionSource) noexcept;
+    void setAcquisitionSource(std::string &&pAcquisitionSource) noexcept;
+    void setAcquisitionSourceToNull() noexcept;
+
+    /**  For column cancelled_at  */
+    ///Get the value of the column cancelled_at, returns the default value if the column is null
+    const ::trantor::Date &getValueOfCancelledAt() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<::trantor::Date> &getCancelledAt() const noexcept;
+    ///Set the value of the column cancelled_at
+    void setCancelledAt(const ::trantor::Date &pCancelledAt) noexcept;
+    void setCancelledAtToNull() noexcept;
+
+    /**  For column cancellation_type  */
+    ///Get the value of the column cancellation_type, returns the default value if the column is null
+    const std::string &getValueOfCancellationType() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getCancellationType() const noexcept;
+    ///Set the value of the column cancellation_type
+    void setCancellationType(const std::string &pCancellationType) noexcept;
+    void setCancellationType(std::string &&pCancellationType) noexcept;
+    void setCancellationTypeToNull() noexcept;
+
+    /**  For column churn_reason  */
+    ///Get the value of the column churn_reason, returns the default value if the column is null
+    const std::string &getValueOfChurnReason() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getChurnReason() const noexcept;
+    ///Set the value of the column churn_reason
+    void setChurnReason(const std::string &pChurnReason) noexcept;
+    void setChurnReason(std::string &&pChurnReason) noexcept;
+    void setChurnReasonToNull() noexcept;
+
+
+
+    static size_t getColumnNumber() noexcept {  return 20;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
     std::string toString() const;
     Json::Value toMasqueradedJson(const std::vector<std::string> &pMasqueradingVector) const;
     /// Relationship interfaces
+
   private:
     friend drogon::orm::Mapper<UserSubscriptions>;
     friend drogon::orm::BaseBuilder<UserSubscriptions, true, true>;
@@ -273,6 +345,13 @@ class UserSubscriptions
     std::shared_ptr<::trantor::Date> endDate_;
     std::shared_ptr<::trantor::Date> createdAt_;
     std::shared_ptr<::trantor::Date> updatedAt_;
+    std::shared_ptr<std::string> planFee_;
+    std::shared_ptr<bool> autoRenew_;
+    std::shared_ptr<std::string> acquisitionSource_;
+    std::shared_ptr<::trantor::Date> cancelledAt_;
+    std::shared_ptr<std::string> cancellationType_;
+    std::shared_ptr<std::string> churnReason_;
+
     struct MetaData
     {
         const std::string colName_;
@@ -284,17 +363,23 @@ class UserSubscriptions
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[14]={ false };
+    bool dirtyFlag_[20]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
+
         static const std::string sql="select * from " + tableName + " where id = $1";
+
+
         return sql;
     }
 
     static const std::string &sqlForDeletingByPrimaryKey()
     {
+
         static const std::string sql="delete from " + tableName + " where id = $1";
+
+
         return sql;
     }
     std::string sqlForInserting(bool &needSelection) const
@@ -304,45 +389,54 @@ class UserSubscriptions
         needSelection = false;
         sql += "id,";
         ++parametersCount;
+
         if(!dirtyFlag_[0])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[1])
         {
             sql += "subscription_identifier,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[2])
         {
             sql += "user_id,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[3])
         {
             sql += "partner_id,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[4])
         {
             sql += "subscription_plan_id,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[5])
         {
             sql += "billing_cycle,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[6])
         {
             sql += "subscription_plan_description,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[7])
         {
             sql += "email,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[8])
         {
             sql += "newspaper_entitlements,";
@@ -350,30 +444,75 @@ class UserSubscriptions
         }
         sql += "is_active,";
         ++parametersCount;
+
         if(!dirtyFlag_[9])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[10])
         {
             sql += "start_date,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[11])
         {
             sql += "end_date,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[12])
         {
             sql += "created_at,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[13])
         {
             sql += "updated_at,";
             ++parametersCount;
         }
+        sql += "plan_fee,";
+        ++parametersCount;
+
+        if(!dirtyFlag_[14])
+        {
+            needSelection=true;
+        }
+        sql += "auto_renew,";
+        ++parametersCount;
+
+        if(!dirtyFlag_[15])
+        {
+            needSelection=true;
+        }
+        sql += "acquisition_source,";
+        ++parametersCount;
+
+        if(!dirtyFlag_[16])
+        {
+            needSelection=true;
+        }
+
+        if(dirtyFlag_[17])
+        {
+            sql += "cancelled_at,";
+            ++parametersCount;
+        }
+
+        if(dirtyFlag_[18])
+        {
+            sql += "cancellation_type,";
+            ++parametersCount;
+        }
+
+        if(dirtyFlag_[19])
+        {
+            sql += "churn_reason,";
+            ++parametersCount;
+        }
+
         if(parametersCount > 0)
         {
             sql[sql.length()-1]=')';
@@ -382,91 +521,201 @@ class UserSubscriptions
         else
             sql += ") values (";
 
+
         int placeholder=1;
         char placeholderStr[64];
         size_t n=0;
+
         if(dirtyFlag_[0])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[1])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[2])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[3])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[4])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[5])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[6])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[7])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[8])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[9])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[10])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[11])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[12])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[13])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
+        if(dirtyFlag_[14])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
+        else
+        {
+            sql +="default,";
+        }
+
+        if(dirtyFlag_[15])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
+        else
+        {
+            sql +="default,";
+        }
+
+        if(dirtyFlag_[16])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
+        else
+        {
+            sql +="default,";
+        }
+
+        if(dirtyFlag_[17])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
+        if(dirtyFlag_[18])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
+        if(dirtyFlag_[19])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
         if(parametersCount > 0)
         {
             sql.resize(sql.length() - 1);
         }
+
         if(needSelection)
         {
             sql.append(") returning *");
@@ -475,9 +724,11 @@ class UserSubscriptions
         {
             sql.append(1, ')');
         }
+
         LOG_TRACE << sql;
         return sql;
     }
 };
 } // namespace Gnp
+
 } // namespace drogon_model

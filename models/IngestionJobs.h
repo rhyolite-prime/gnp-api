@@ -1,3 +1,4 @@
+
 /**
  *
  *  IngestionJobs.h
@@ -39,6 +40,12 @@ namespace drogon_model
 namespace Gnp
 {
 
+
+class Newspapers;
+
+class Publications;
+
+
 class IngestionJobs
 {
   public:
@@ -51,14 +58,27 @@ class IngestionJobs
         static const std::string _status;
         static const std::string _created_at;
         static const std::string _updated_at;
+        static const std::string _publication_id;
+        static const std::string _newspaper_id;
+        static const std::string _total_pages;
+        static const std::string _ocr_pages_completed;
+        static const std::string _rag_chunks_queued;
+        static const std::string _file_size_bytes;
+        static const std::string _processing_duration_ms;
+        static const std::string _error_message;
+
     };
 
     static const int primaryKeyNumber;
     static const std::string tableName;
     static const bool hasPrimaryKey;
+
     static const std::string primaryKeyName;
+
     using PrimaryKeyType = std::string;
     const PrimaryKeyType &getPrimaryKey() const;
+
+
 
     /**
      * @brief constructor
@@ -165,14 +185,98 @@ class IngestionJobs
     void setUpdatedAt(const ::trantor::Date &pUpdatedAt) noexcept;
     void setUpdatedAtToNull() noexcept;
 
+    /**  For column publication_id  */
+    ///Get the value of the column publication_id, returns the default value if the column is null
+    const std::string &getValueOfPublicationId() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getPublicationId() const noexcept;
+    ///Set the value of the column publication_id
+    void setPublicationId(const std::string &pPublicationId) noexcept;
+    void setPublicationId(std::string &&pPublicationId) noexcept;
+    void setPublicationIdToNull() noexcept;
 
-    static size_t getColumnNumber() noexcept {  return 7;  }
+    /**  For column newspaper_id  */
+    ///Get the value of the column newspaper_id, returns the default value if the column is null
+    const std::string &getValueOfNewspaperId() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getNewspaperId() const noexcept;
+    ///Set the value of the column newspaper_id
+    void setNewspaperId(const std::string &pNewspaperId) noexcept;
+    void setNewspaperId(std::string &&pNewspaperId) noexcept;
+    void setNewspaperIdToNull() noexcept;
+
+    /**  For column total_pages  */
+    ///Get the value of the column total_pages, returns the default value if the column is null
+    const int32_t &getValueOfTotalPages() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<int32_t> &getTotalPages() const noexcept;
+    ///Set the value of the column total_pages
+    void setTotalPages(const int32_t &pTotalPages) noexcept;
+
+    /**  For column ocr_pages_completed  */
+    ///Get the value of the column ocr_pages_completed, returns the default value if the column is null
+    const int32_t &getValueOfOcrPagesCompleted() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<int32_t> &getOcrPagesCompleted() const noexcept;
+    ///Set the value of the column ocr_pages_completed
+    void setOcrPagesCompleted(const int32_t &pOcrPagesCompleted) noexcept;
+
+    /**  For column rag_chunks_queued  */
+    ///Get the value of the column rag_chunks_queued, returns the default value if the column is null
+    const int32_t &getValueOfRagChunksQueued() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<int32_t> &getRagChunksQueued() const noexcept;
+    ///Set the value of the column rag_chunks_queued
+    void setRagChunksQueued(const int32_t &pRagChunksQueued) noexcept;
+
+    /**  For column file_size_bytes  */
+    ///Get the value of the column file_size_bytes, returns the default value if the column is null
+    const int64_t &getValueOfFileSizeBytes() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<int64_t> &getFileSizeBytes() const noexcept;
+    ///Set the value of the column file_size_bytes
+    void setFileSizeBytes(const int64_t &pFileSizeBytes) noexcept;
+    void setFileSizeBytesToNull() noexcept;
+
+    /**  For column processing_duration_ms  */
+    ///Get the value of the column processing_duration_ms, returns the default value if the column is null
+    const int32_t &getValueOfProcessingDurationMs() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<int32_t> &getProcessingDurationMs() const noexcept;
+    ///Set the value of the column processing_duration_ms
+    void setProcessingDurationMs(const int32_t &pProcessingDurationMs) noexcept;
+    void setProcessingDurationMsToNull() noexcept;
+
+    /**  For column error_message  */
+    ///Get the value of the column error_message, returns the default value if the column is null
+    const std::string &getValueOfErrorMessage() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getErrorMessage() const noexcept;
+    ///Set the value of the column error_message
+    void setErrorMessage(const std::string &pErrorMessage) noexcept;
+    void setErrorMessage(std::string &&pErrorMessage) noexcept;
+    void setErrorMessageToNull() noexcept;
+
+
+
+    static size_t getColumnNumber() noexcept {  return 15;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
     std::string toString() const;
     Json::Value toMasqueradedJson(const std::vector<std::string> &pMasqueradingVector) const;
     /// Relationship interfaces
+
+    Newspapers getNewspapers(const drogon::orm::DbClientPtr &clientPtr) const;
+    void getNewspapers(const drogon::orm::DbClientPtr &clientPtr,
+                       const std::function<void(Newspapers)> &rcb,
+                       const drogon::orm::ExceptionCallback &ecb) const;
+
+    Publications getPublications(const drogon::orm::DbClientPtr &clientPtr) const;
+    void getPublications(const drogon::orm::DbClientPtr &clientPtr,
+                         const std::function<void(Publications)> &rcb,
+                         const drogon::orm::ExceptionCallback &ecb) const;
+
   private:
     friend drogon::orm::Mapper<IngestionJobs>;
     friend drogon::orm::BaseBuilder<IngestionJobs, true, true>;
@@ -195,6 +299,15 @@ class IngestionJobs
     std::shared_ptr<std::string> status_;
     std::shared_ptr<::trantor::Date> createdAt_;
     std::shared_ptr<::trantor::Date> updatedAt_;
+    std::shared_ptr<std::string> publicationId_;
+    std::shared_ptr<std::string> newspaperId_;
+    std::shared_ptr<int32_t> totalPages_;
+    std::shared_ptr<int32_t> ocrPagesCompleted_;
+    std::shared_ptr<int32_t> ragChunksQueued_;
+    std::shared_ptr<int64_t> fileSizeBytes_;
+    std::shared_ptr<int32_t> processingDurationMs_;
+    std::shared_ptr<std::string> errorMessage_;
+
     struct MetaData
     {
         const std::string colName_;
@@ -206,17 +319,23 @@ class IngestionJobs
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[7]={ false };
+    bool dirtyFlag_[15]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
+
         static const std::string sql="select * from " + tableName + " where id = $1";
+
+
         return sql;
     }
 
     static const std::string &sqlForDeletingByPrimaryKey()
     {
+
         static const std::string sql="delete from " + tableName + " where id = $1";
+
+
         return sql;
     }
     std::string sqlForInserting(bool &needSelection) const
@@ -226,25 +345,30 @@ class IngestionJobs
         needSelection = false;
         sql += "id,";
         ++parametersCount;
+
         if(!dirtyFlag_[0])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[1])
         {
             sql += "publication_date,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[2])
         {
             sql += "ingested_by,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[3])
         {
             sql += "percentage_completion,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[4])
         {
             sql += "status,";
@@ -252,15 +376,69 @@ class IngestionJobs
         }
         sql += "created_at,";
         ++parametersCount;
+
         if(!dirtyFlag_[5])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[6])
         {
             sql += "updated_at,";
             ++parametersCount;
         }
+
+        if(dirtyFlag_[7])
+        {
+            sql += "publication_id,";
+            ++parametersCount;
+        }
+
+        if(dirtyFlag_[8])
+        {
+            sql += "newspaper_id,";
+            ++parametersCount;
+        }
+        sql += "total_pages,";
+        ++parametersCount;
+
+        if(!dirtyFlag_[9])
+        {
+            needSelection=true;
+        }
+        sql += "ocr_pages_completed,";
+        ++parametersCount;
+
+        if(!dirtyFlag_[10])
+        {
+            needSelection=true;
+        }
+        sql += "rag_chunks_queued,";
+        ++parametersCount;
+
+        if(!dirtyFlag_[11])
+        {
+            needSelection=true;
+        }
+
+        if(dirtyFlag_[12])
+        {
+            sql += "file_size_bytes,";
+            ++parametersCount;
+        }
+
+        if(dirtyFlag_[13])
+        {
+            sql += "processing_duration_ms,";
+            ++parametersCount;
+        }
+
+        if(dirtyFlag_[14])
+        {
+            sql += "error_message,";
+            ++parametersCount;
+        }
+
         if(parametersCount > 0)
         {
             sql[sql.length()-1]=')';
@@ -269,56 +447,161 @@ class IngestionJobs
         else
             sql += ") values (";
 
+
         int placeholder=1;
         char placeholderStr[64];
         size_t n=0;
+
         if(dirtyFlag_[0])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[1])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[2])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[3])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[4])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[5])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[6])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
+        if(dirtyFlag_[7])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
+        if(dirtyFlag_[8])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
+        if(dirtyFlag_[9])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
+        else
+        {
+            sql +="default,";
+        }
+
+        if(dirtyFlag_[10])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
+        else
+        {
+            sql +="default,";
+        }
+
+        if(dirtyFlag_[11])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
+        else
+        {
+            sql +="default,";
+        }
+
+        if(dirtyFlag_[12])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
+        if(dirtyFlag_[13])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
+        if(dirtyFlag_[14])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
         if(parametersCount > 0)
         {
             sql.resize(sql.length() - 1);
         }
+
         if(needSelection)
         {
             sql.append(") returning *");
@@ -327,9 +610,11 @@ class IngestionJobs
         {
             sql.append(1, ')');
         }
+
         LOG_TRACE << sql;
         return sql;
     }
 };
 } // namespace Gnp
+
 } // namespace drogon_model

@@ -1,3 +1,4 @@
+
 /**
  *
  *  PartnerInvoicePayments.h
@@ -38,7 +39,10 @@ namespace drogon_model
 {
 namespace Gnp
 {
+
+
 class PartnerInvoices;
+
 
 class PartnerInvoicePayments
 {
@@ -58,14 +62,19 @@ class PartnerInvoicePayments
         static const std::string _notes;
         static const std::string _created_at;
         static const std::string _updated_at;
+
     };
 
     static const int primaryKeyNumber;
     static const std::string tableName;
     static const bool hasPrimaryKey;
+
     static const std::string primaryKeyName;
+
     using PrimaryKeyType = std::string;
     const PrimaryKeyType &getPrimaryKey() const;
+
+
 
     /**
      * @brief constructor
@@ -231,6 +240,7 @@ class PartnerInvoicePayments
     void setUpdatedAtToNull() noexcept;
 
 
+
     static size_t getColumnNumber() noexcept {  return 13;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
@@ -238,10 +248,12 @@ class PartnerInvoicePayments
     std::string toString() const;
     Json::Value toMasqueradedJson(const std::vector<std::string> &pMasqueradingVector) const;
     /// Relationship interfaces
+
     PartnerInvoices getPartnerInvoices(const drogon::orm::DbClientPtr &clientPtr) const;
     void getPartnerInvoices(const drogon::orm::DbClientPtr &clientPtr,
                             const std::function<void(PartnerInvoices)> &rcb,
                             const drogon::orm::ExceptionCallback &ecb) const;
+
   private:
     friend drogon::orm::Mapper<PartnerInvoicePayments>;
     friend drogon::orm::BaseBuilder<PartnerInvoicePayments, true, true>;
@@ -270,6 +282,7 @@ class PartnerInvoicePayments
     std::shared_ptr<std::string> notes_;
     std::shared_ptr<::trantor::Date> createdAt_;
     std::shared_ptr<::trantor::Date> updatedAt_;
+
     struct MetaData
     {
         const std::string colName_;
@@ -285,13 +298,19 @@ class PartnerInvoicePayments
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
+
         static const std::string sql="select * from " + tableName + " where id = $1";
+
+
         return sql;
     }
 
     static const std::string &sqlForDeletingByPrimaryKey()
     {
+
         static const std::string sql="delete from " + tableName + " where id = $1";
+
+
         return sql;
     }
     std::string sqlForInserting(bool &needSelection) const
@@ -301,15 +320,18 @@ class PartnerInvoicePayments
         needSelection = false;
         sql += "id,";
         ++parametersCount;
+
         if(!dirtyFlag_[0])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[1])
         {
             sql += "invoice_id,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[2])
         {
             sql += "partner_id,";
@@ -317,25 +339,30 @@ class PartnerInvoicePayments
         }
         sql += "payment_date,";
         ++parametersCount;
+
         if(!dirtyFlag_[3])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[4])
         {
             sql += "amount_paid,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[5])
         {
             sql += "payment_method,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[6])
         {
             sql += "payment_reference,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[7])
         {
             sql += "transaction_id,";
@@ -343,16 +370,19 @@ class PartnerInvoicePayments
         }
         sql += "currency,";
         ++parametersCount;
+
         if(!dirtyFlag_[8])
         {
             needSelection=true;
         }
         sql += "payment_status,";
         ++parametersCount;
+
         if(!dirtyFlag_[9])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[10])
         {
             sql += "notes,";
@@ -360,15 +390,18 @@ class PartnerInvoicePayments
         }
         sql += "created_at,";
         ++parametersCount;
+
         if(!dirtyFlag_[11])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[12])
         {
             sql += "updated_at,";
             ++parametersCount;
         }
+
         if(parametersCount > 0)
         {
             sql[sql.length()-1]=')';
@@ -377,98 +410,145 @@ class PartnerInvoicePayments
         else
             sql += ") values (";
 
+
         int placeholder=1;
         char placeholderStr[64];
         size_t n=0;
+
         if(dirtyFlag_[0])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[1])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[2])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[3])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[4])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[5])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[6])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[7])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[8])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[9])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[10])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[11])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[12])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(parametersCount > 0)
         {
             sql.resize(sql.length() - 1);
         }
+
         if(needSelection)
         {
             sql.append(") returning *");
@@ -477,9 +557,11 @@ class PartnerInvoicePayments
         {
             sql.append(1, ')');
         }
+
         LOG_TRACE << sql;
         return sql;
     }
 };
 } // namespace Gnp
+
 } // namespace drogon_model

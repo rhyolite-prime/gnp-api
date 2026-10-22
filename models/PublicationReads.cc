@@ -1,3 +1,4 @@
+
 /**
  *
  *  PublicationReads.cc
@@ -6,21 +7,36 @@
  */
 
 #include "PublicationReads.h"
+
 #include "Users.h"
+
 #include <drogon/utils/Utilities.h>
+
 #include <string>
+
 
 using namespace drogon;
 using namespace drogon::orm;
 using namespace drogon_model::Gnp;
 
+
+
 const std::string PublicationReads::Cols::_id = "\"id\"";
+
 const std::string PublicationReads::Cols::_user_id = "\"user_id\"";
+
 const std::string PublicationReads::Cols::_partner_id = "\"partner_id\"";
+
 const std::string PublicationReads::Cols::_publication_id = "\"publication_id\"";
+
 const std::string PublicationReads::Cols::_read_at = "\"read_at\"";
+
+
 const std::string PublicationReads::primaryKeyName = "id";
+
+
 const bool PublicationReads::hasPrimaryKey = true;
+
 const std::string PublicationReads::tableName = "\"publication_reads\"";
 
 const std::vector<typename PublicationReads::MetaData> PublicationReads::metaData_={
@@ -29,6 +45,7 @@ const std::vector<typename PublicationReads::MetaData> PublicationReads::metaDat
 {"partner_id","std::string","uuid",0,0,0,0},
 {"publication_id","std::string","uuid",0,0,0,0},
 {"read_at","::trantor::Date","timestamp without time zone",0,0,0,1}
+
 };
 const std::string &PublicationReads::getColumnName(size_t index) noexcept(false)
 {
@@ -39,27 +56,41 @@ PublicationReads::PublicationReads(const Row &r, const ssize_t indexOffset) noex
 {
     if(indexOffset < 0)
     {
+
         if(!r["id"].isNull())
         {
+
             id_=std::make_shared<std::string>(r["id"].as<std::string>());
+
         }
+
         if(!r["user_id"].isNull())
         {
+
             userId_=std::make_shared<std::string>(r["user_id"].as<std::string>());
+
         }
+
         if(!r["partner_id"].isNull())
         {
+
             partnerId_=std::make_shared<std::string>(r["partner_id"].as<std::string>());
+
         }
+
         if(!r["publication_id"].isNull())
         {
+
             publicationId_=std::make_shared<std::string>(r["publication_id"].as<std::string>());
+
         }
+
         if(!r["read_at"].isNull())
         {
             auto timeStr = r["read_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -77,6 +108,7 @@ PublicationReads::PublicationReads(const Row &r, const ssize_t indexOffset) noex
                 readAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
     }
     else
     {
@@ -87,32 +119,46 @@ PublicationReads::PublicationReads(const Row &r, const ssize_t indexOffset) noex
             return;
         }
         size_t index;
+
         index = offset + 0;
         if(!r[index].isNull())
         {
+
             id_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 1;
         if(!r[index].isNull())
         {
+
             userId_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 2;
         if(!r[index].isNull())
         {
+
             partnerId_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 3;
         if(!r[index].isNull())
         {
+
             publicationId_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 4;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -130,6 +176,7 @@ PublicationReads::PublicationReads(const Row &r, const ssize_t indexOffset) noex
                 readAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
     }
 
 }
@@ -141,6 +188,7 @@ PublicationReads::PublicationReads(const Json::Value &pJson, const std::vector<s
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         dirtyFlag_[0] = true;
@@ -149,6 +197,7 @@ PublicationReads::PublicationReads(const Json::Value &pJson, const std::vector<s
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -157,6 +206,7 @@ PublicationReads::PublicationReads(const Json::Value &pJson, const std::vector<s
             userId_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -165,6 +215,7 @@ PublicationReads::PublicationReads(const Json::Value &pJson, const std::vector<s
             partnerId_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -173,6 +224,7 @@ PublicationReads::PublicationReads(const Json::Value &pJson, const std::vector<s
             publicationId_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -181,6 +233,7 @@ PublicationReads::PublicationReads(const Json::Value &pJson, const std::vector<s
             auto timeStr = pJson[pMasqueradingVector[4]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -199,10 +252,12 @@ PublicationReads::PublicationReads(const Json::Value &pJson, const std::vector<s
             }
         }
     }
+
 }
 
 PublicationReads::PublicationReads(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         dirtyFlag_[0]=true;
@@ -211,6 +266,7 @@ PublicationReads::PublicationReads(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("user_id"))
     {
         dirtyFlag_[1]=true;
@@ -219,6 +275,7 @@ PublicationReads::PublicationReads(const Json::Value &pJson) noexcept(false)
             userId_=std::make_shared<std::string>(pJson["user_id"].asString());
         }
     }
+
     if(pJson.isMember("partner_id"))
     {
         dirtyFlag_[2]=true;
@@ -227,6 +284,7 @@ PublicationReads::PublicationReads(const Json::Value &pJson) noexcept(false)
             partnerId_=std::make_shared<std::string>(pJson["partner_id"].asString());
         }
     }
+
     if(pJson.isMember("publication_id"))
     {
         dirtyFlag_[3]=true;
@@ -235,6 +293,7 @@ PublicationReads::PublicationReads(const Json::Value &pJson) noexcept(false)
             publicationId_=std::make_shared<std::string>(pJson["publication_id"].asString());
         }
     }
+
     if(pJson.isMember("read_at"))
     {
         dirtyFlag_[4]=true;
@@ -243,6 +302,7 @@ PublicationReads::PublicationReads(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["read_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -261,6 +321,7 @@ PublicationReads::PublicationReads(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
 }
 
 void PublicationReads::updateByMasqueradedJson(const Json::Value &pJson,
@@ -271,6 +332,7 @@ void PublicationReads::updateByMasqueradedJson(const Json::Value &pJson,
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         if(!pJson[pMasqueradingVector[0]].isNull())
@@ -278,6 +340,7 @@ void PublicationReads::updateByMasqueradedJson(const Json::Value &pJson,
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -286,6 +349,7 @@ void PublicationReads::updateByMasqueradedJson(const Json::Value &pJson,
             userId_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -294,6 +358,7 @@ void PublicationReads::updateByMasqueradedJson(const Json::Value &pJson,
             partnerId_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -302,6 +367,7 @@ void PublicationReads::updateByMasqueradedJson(const Json::Value &pJson,
             publicationId_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -310,6 +376,7 @@ void PublicationReads::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[4]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -328,10 +395,12 @@ void PublicationReads::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
 }
 
 void PublicationReads::updateByJson(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         if(!pJson["id"].isNull())
@@ -339,6 +408,7 @@ void PublicationReads::updateByJson(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("user_id"))
     {
         dirtyFlag_[1] = true;
@@ -347,6 +417,7 @@ void PublicationReads::updateByJson(const Json::Value &pJson) noexcept(false)
             userId_=std::make_shared<std::string>(pJson["user_id"].asString());
         }
     }
+
     if(pJson.isMember("partner_id"))
     {
         dirtyFlag_[2] = true;
@@ -355,6 +426,7 @@ void PublicationReads::updateByJson(const Json::Value &pJson) noexcept(false)
             partnerId_=std::make_shared<std::string>(pJson["partner_id"].asString());
         }
     }
+
     if(pJson.isMember("publication_id"))
     {
         dirtyFlag_[3] = true;
@@ -363,6 +435,7 @@ void PublicationReads::updateByJson(const Json::Value &pJson) noexcept(false)
             publicationId_=std::make_shared<std::string>(pJson["publication_id"].asString());
         }
     }
+
     if(pJson.isMember("read_at"))
     {
         dirtyFlag_[4] = true;
@@ -371,6 +444,7 @@ void PublicationReads::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["read_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -389,6 +463,7 @@ void PublicationReads::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
 }
 
 const std::string &PublicationReads::getValueOfId() const noexcept
@@ -515,6 +590,7 @@ void PublicationReads::updateId(const uint64_t id)
 {
 }
 
+
 const std::vector<std::string> &PublicationReads::insertColumns() noexcept
 {
     static const std::vector<std::string> inCols={
@@ -523,12 +599,14 @@ const std::vector<std::string> &PublicationReads::insertColumns() noexcept
         "partner_id",
         "publication_id",
         "read_at"
+
     };
     return inCols;
 }
 
 void PublicationReads::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -540,6 +618,7 @@ void PublicationReads::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getUserId())
@@ -551,6 +630,7 @@ void PublicationReads::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getPartnerId())
@@ -562,6 +642,7 @@ void PublicationReads::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getPublicationId())
@@ -573,6 +654,7 @@ void PublicationReads::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getReadAt())
@@ -584,36 +666,44 @@ void PublicationReads::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
 }
 
 const std::vector<std::string> PublicationReads::updateColumns() const
 {
     std::vector<std::string> ret;
+
     if(dirtyFlag_[0])
     {
         ret.push_back(getColumnName(0));
     }
+
     if(dirtyFlag_[1])
     {
         ret.push_back(getColumnName(1));
     }
+
     if(dirtyFlag_[2])
     {
         ret.push_back(getColumnName(2));
     }
+
     if(dirtyFlag_[3])
     {
         ret.push_back(getColumnName(3));
     }
+
     if(dirtyFlag_[4])
     {
         ret.push_back(getColumnName(4));
     }
+
     return ret;
 }
 
 void PublicationReads::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -625,6 +715,7 @@ void PublicationReads::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getUserId())
@@ -636,6 +727,7 @@ void PublicationReads::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getPartnerId())
@@ -647,6 +739,7 @@ void PublicationReads::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getPublicationId())
@@ -658,6 +751,7 @@ void PublicationReads::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getReadAt())
@@ -669,50 +763,67 @@ void PublicationReads::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
 }
 Json::Value PublicationReads::toJson() const
 {
     Json::Value ret;
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getUserId())
     {
+
         ret["user_id"]=getValueOfUserId();
+
     }
     else
     {
         ret["user_id"]=Json::Value();
     }
+
     if(getPartnerId())
     {
+
         ret["partner_id"]=getValueOfPartnerId();
+
     }
     else
     {
         ret["partner_id"]=Json::Value();
     }
+
     if(getPublicationId())
     {
+
         ret["publication_id"]=getValueOfPublicationId();
+
     }
     else
     {
         ret["publication_id"]=Json::Value();
     }
+
     if(getReadAt())
     {
+
         ret["read_at"]=getReadAt()->toDbStringLocal();
+
     }
     else
     {
         ret["read_at"]=Json::Value();
     }
+
     return ret;
 }
 
@@ -727,139 +838,178 @@ Json::Value PublicationReads::toMasqueradedJson(
     Json::Value ret;
     if(pMasqueradingVector.size() == 5)
     {
+
         if(!pMasqueradingVector[0].empty())
         {
             if(getId())
             {
+
                 ret[pMasqueradingVector[0]]=getValueOfId();
+
             }
             else
             {
                 ret[pMasqueradingVector[0]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[1].empty())
         {
             if(getUserId())
             {
+
                 ret[pMasqueradingVector[1]]=getValueOfUserId();
+
             }
             else
             {
                 ret[pMasqueradingVector[1]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[2].empty())
         {
             if(getPartnerId())
             {
+
                 ret[pMasqueradingVector[2]]=getValueOfPartnerId();
+
             }
             else
             {
                 ret[pMasqueradingVector[2]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[3].empty())
         {
             if(getPublicationId())
             {
+
                 ret[pMasqueradingVector[3]]=getValueOfPublicationId();
+
             }
             else
             {
                 ret[pMasqueradingVector[3]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[4].empty())
         {
             if(getReadAt())
             {
+
                 ret[pMasqueradingVector[4]]=getReadAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[4]]=Json::Value();
             }
         }
+
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getUserId())
     {
+
         ret["user_id"]=getValueOfUserId();
+
     }
     else
     {
         ret["user_id"]=Json::Value();
     }
+
     if(getPartnerId())
     {
+
         ret["partner_id"]=getValueOfPartnerId();
+
     }
     else
     {
         ret["partner_id"]=Json::Value();
     }
+
     if(getPublicationId())
     {
+
         ret["publication_id"]=getValueOfPublicationId();
+
     }
     else
     {
         ret["publication_id"]=Json::Value();
     }
+
     if(getReadAt())
     {
+
         ret["read_at"]=getReadAt()->toDbStringLocal();
+
     }
     else
     {
         ret["read_at"]=Json::Value();
     }
+
     return ret;
 }
 
 bool PublicationReads::validateJsonForCreation(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, true))
             return false;
     }
+
     if(pJson.isMember("user_id"))
     {
         if(!validJsonOfField(1, "user_id", pJson["user_id"], err, true))
             return false;
     }
+
     else
     {
         err="The user_id column cannot be null";
         return false;
     }
+
     if(pJson.isMember("partner_id"))
     {
         if(!validJsonOfField(2, "partner_id", pJson["partner_id"], err, true))
             return false;
     }
+
     if(pJson.isMember("publication_id"))
     {
         if(!validJsonOfField(3, "publication_id", pJson["publication_id"], err, true))
             return false;
     }
+
     if(pJson.isMember("read_at"))
     {
         if(!validJsonOfField(4, "read_at", pJson["read_at"], err, true))
             return false;
     }
+
     return true;
 }
 bool PublicationReads::validateMasqueradedJsonForCreation(const Json::Value &pJson,
@@ -872,6 +1022,7 @@ bool PublicationReads::validateMasqueradedJsonForCreation(const Json::Value &pJs
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty())
       {
           if(pJson.isMember(pMasqueradingVector[0]))
@@ -879,7 +1030,9 @@ bool PublicationReads::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[1].empty())
       {
           if(pJson.isMember(pMasqueradingVector[1]))
@@ -887,12 +1040,15 @@ bool PublicationReads::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[1] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[2].empty())
       {
           if(pJson.isMember(pMasqueradingVector[2]))
@@ -900,7 +1056,9 @@ bool PublicationReads::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[3].empty())
       {
           if(pJson.isMember(pMasqueradingVector[3]))
@@ -908,7 +1066,9 @@ bool PublicationReads::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[4].empty())
       {
           if(pJson.isMember(pMasqueradingVector[4]))
@@ -916,7 +1076,9 @@ bool PublicationReads::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
                   return false;
           }
+
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -927,36 +1089,43 @@ bool PublicationReads::validateMasqueradedJsonForCreation(const Json::Value &pJs
 }
 bool PublicationReads::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, false))
             return false;
     }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
     if(pJson.isMember("user_id"))
     {
         if(!validJsonOfField(1, "user_id", pJson["user_id"], err, false))
             return false;
     }
+
     if(pJson.isMember("partner_id"))
     {
         if(!validJsonOfField(2, "partner_id", pJson["partner_id"], err, false))
             return false;
     }
+
     if(pJson.isMember("publication_id"))
     {
         if(!validJsonOfField(3, "publication_id", pJson["publication_id"], err, false))
             return false;
     }
+
     if(pJson.isMember("read_at"))
     {
         if(!validJsonOfField(4, "read_at", pJson["read_at"], err, false))
             return false;
     }
+
     return true;
 }
 bool PublicationReads::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
@@ -969,36 +1138,43 @@ bool PublicationReads::validateMasqueradedJsonForUpdate(const Json::Value &pJson
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
       {
           if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
               return false;
       }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
       if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
       {
           if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
       {
           if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
       {
           if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
       {
           if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, false))
               return false;
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -1015,70 +1191,92 @@ bool PublicationReads::validJsonOfField(size_t index,
 {
     switch(index)
     {
+
         case 0:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 1:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 2:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 3:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 4:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         default:
             err="Internal error in the server";
             return false;
     }
     return true;
 }
+
 Users PublicationReads::getUsers(const DbClientPtr &clientPtr) const {
     static const std::string sql = "select * from users where id = $1";
     Result r(nullptr);
@@ -1122,3 +1320,4 @@ void PublicationReads::getUsers(const DbClientPtr &clientPtr,
                }
                >> ecb;
 }
+
