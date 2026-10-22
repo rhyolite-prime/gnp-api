@@ -70,17 +70,17 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::getAll(int pageNo, int page
       std::string sql =
           "SELECT a.*, COALESCE(SUM(c.amount), 0) as total_earnings "
           "FROM affiliates a "
-          "LEFT JOIN commissions c ON a.id = c.affiliate_id "
+          "LEFT JOIN affiliate_commissions c ON a.id = c.affiliate_id "
           "WHERE 1=1 ";
 
       // Add search criteria if query is not empty
       if (!query.empty()) {
-        sql += "AND (a.name ILIKE $1 OR a.email ILIKE $1 OR a.phone ILIKE $1 "
-               "OR a.website ILIKE $1) ";
+        sql += "AND (TRIM(CONCAT(COALESCE(a.first_name, ''), ' ', "
+               "COALESCE(a.last_name, ''))) ILIKE $1 OR a.email ILIKE $1 "
+               "OR a.phone ILIKE $1) ";
       }
 
-      sql += "GROUP BY a.id, a.name, a.email, a.phone, a.status, a.website, "
-             "a.platforms, a.date_joined, a.updated_at "
+      sql += "GROUP BY a.id "
              "ORDER BY total_earnings " +
              orderDirection +
              " "
@@ -1499,14 +1499,16 @@ drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::issueBulkPayout() {
   auto dbClient = drogon::app().getDbClient();
 
   try {
-    // Find all affiliates with pending commissions
-    // We use a subquery to get IDs based on names to be consistent with
-    // issueAffiliatePayout's finding logic
-    std::string sql = "SELECT id FROM affiliates WHERE name IN (SELECT "
-                      "DISTINCT affiliate_name FROM commissions WHERE status "
-                      "= 'pending')";
+    // Find all affiliates with pending commissions (affiliate_commissions
+    // carries the status enum; the name lives on the affiliates row).
+    std::string sql =
+        "SELECT a.id FROM affiliates a "
+        "WHERE EXISTS (SELECT 1 FROM affiliate_commissions ac "
+        "              WHERE ac.affiliate_id = a.id "
+        "                AND ac.status = $1)";
 
-    auto result = co_await dbClient->execSqlCoro(sql);
+    auto result = co_await dbClient->execSqlCoro(
+        sql, static_cast<int>(constants::StatusTypes::PENDING));
 
     if (result.empty()) {
       dto::BaseApiResponse response;

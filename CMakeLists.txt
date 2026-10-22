@@ -134,6 +134,18 @@ add_executable(${PROJECT_NAME} main.cc
         services/redis/RedisCacheManager.h
         services/redis/RedisCacheManager.cc
         services/reports/ReportingService.h
+        services/reports/ReportSqlHelpers.h
+        services/reports/ReportInstrumentation.h
+        services/reports/ReportingService.cc
+        services/reports/ReportingServiceFinancial.cc
+        services/reports/ReportingServiceSubscribers.cc
+        services/reports/ReportingServiceContent.cc
+        services/reports/ReportingServicePartners.cc
+        services/reports/ReportingServiceMarketing.cc
+        services/reports/ReportingServiceArchivesGames.cc
+        services/reports/ReportingServiceAdmin.cc
+        utils/ReportResponseBuilder.h
+        utils/ReportCache.h
         services/g3_storage/G3StorageService.h
         services/g3_storage/G3StorageService.cc
         constants/StatusTypes.h

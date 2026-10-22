@@ -3,6 +3,7 @@
 //
 
 #include "CampaignService.h"
+#include "services/reports/ReportInstrumentation.h"
 #include "Campaigns.h" // Defines drogon_model::Gnp::Campaigns
 #include "constants/ErrorCodes.h"
 #include "controllers/NotificationsHub.h"
@@ -283,6 +284,11 @@ CampaignService::updateCampaignStats(const std::string &campaignId,
 
     // Update the campaign record in the database
     auto count = co_await mp.update(campaign);
+
+    // Report telemetry: per-recipient campaign event (campaign_recipient_events)
+    co_await reporting::recordCampaignRecipientEvent(
+        campaignId, "", campaign.getValueOfChannel(),
+        metricsType == "click" ? "clicked" : "delivered", 0.0);
 
     dto::BaseApiResponse response;
     if (count > 0) {
