@@ -160,6 +160,9 @@ public:
   ADD_METHOD_TO(AdminController::updateAffiliateProfileImage, std::string(PREFIX) + "update-affiliate-profile-image/{1}", Post, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::deleteAffiliate, std::string(PREFIX) + "delete-affiliate", Delete, Options, "JwtAuthFilter");
 
+   // archive RAG indexing maintenance
+   ADD_METHOD_TO(AdminController::indexArchiveRag, std::string(PREFIX) + "rag/index-pending", Post, Options, "JwtAuthFilter");
+
    // settings
    ADD_METHOD_TO(AdminController::manageSettings, std::string(PREFIX) + "manage-settings", Post, Options, "JwtAuthFilter");
 
@@ -321,8 +324,11 @@ public:
     Task<HttpResponsePtr> dispatchDailyNewsUpdate(HttpRequestPtr req, const std::string &deliveryChannel);
     Task<HttpResponsePtr> dispatchSubscriptionRenewalReminder(HttpRequestPtr req);
 
-    // settings
-    Task<HttpResponsePtr> manageSettings(HttpRequestPtr req);
+  // Archive RAG maintenance
+  Task<HttpResponsePtr> indexArchiveRag(HttpRequestPtr req);
+
+  // settings
+  Task<HttpResponsePtr> manageSettings(HttpRequestPtr req);
 
 
 

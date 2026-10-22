@@ -1,6 +1,7 @@
 -- =============================================================================
 -- Full-text search support for the Graphic Archives search
--- (NewspaperService::searchArchives / POST /api/v1/news-papers/search-archives)
+-- (NewspaperService::searchArchives / POST /api/v1/news-papers/search-archives
+--  and RagManager::answerArchiveQuestion / POST /api/v1/news-papers/ask-archives)
 --
 -- The search runs against newspaper_details.page_text and
 -- newspaper_details.supporting_text:
