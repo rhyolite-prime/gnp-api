@@ -89,6 +89,7 @@ Manages the lifecycle of newspaper editions — ingestion, publishing, and retri
 | `GET` | `/unpublish` | Retract/unpublish a newspaper edition |
 | `GET` | `/increment-view-count` | Track/increment view analytics for a newspaper |
 | `POST` | `/search-archives` | Full-text search of archived page text (see below) |
+| `POST` | `/ask-archives` | JWT-protected, cited RAG answers from archive OCR (see below) |
 | `POST` | `/ingest` | Submit a new newspaper edition for ingestion into the system |
 | `POST` | `/update` | Update newspaper metadata/content |
 | `DELETE` | `/delete` | Remove a newspaper edition from the system |
@@ -126,6 +127,28 @@ falls back to the first 300 characters of the page text.
 
 > Requires the indexes from `sql/newspaper_details_search_index.sql` to stay
 > fast on large archives.
+
+### Archive Question Answering (`/ask-archives`)
+
+JWT-protected RAG endpoint for research questions against newspaper OCR. Send a
+JSON body with `question` (or `query`), optional `topK` (1–12, default 5), and
+optional `dateFrom`, `dateTo`, `publicationDate`, `publicationYear`,
+`publicationId` or `publicationName` filters. It retrieves ranked page excerpts
+from `newspaper_details.page_text` and `supporting_text`, then returns
+`result.answer` with citation labels (for example `[S1]`) and matching source
+metadata/excerpts in `result.citations`. If Ollama is unavailable or disabled,
+retrieved excerpts are still returned as an extractive answer.
+
+Generation and structured query planning use a local Ollama model configured
+through `GNP_RAG_BASE_URL`, `GNP_RAG_CHAT_PATH`, `GNP_RAG_MODEL`, and
+`GNP_RAG_ENABLED`. PostgreSQL full-text search uses entity/event query stages;
+optional passage embeddings use Ollama `/api/embed` and pgvector behind
+`GNP_RAG_VECTOR_ENABLED`. The optional authenticated
+`POST /api/v1/admin/rag/index-pending` route processes a bounded OCR embedding
+queue. See [`docs/archive-rag.md`](docs/archive-rag.md) for setup, pgvector
+requirements, rollout flags, and the evaluation utility. Apply
+`sql/newspaper_details_search_index.sql` for page-level FTS; apply
+`sql/archive_rag_chunks.sql` only when pgvector is available.
 
 ---
 

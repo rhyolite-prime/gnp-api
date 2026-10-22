@@ -32,6 +32,7 @@
 #include "services/publications/PublicationService.h"
 #include "services/quartz/QuartzApi.h"
 #include "services/redis/RedisCacheManager.h"
+#include "services/rag/RagManager.h"
 #include "services/reports/ReportingService.h"
 #include "services/roles/RoleService.h"
 #include "services/settings/SettingService.h"
@@ -87,6 +88,7 @@ public:
   ::gnp::services::PermissionService &getPermissionService() { return permissionService_; }
   ::gnp::services::JoomlaApi &getJoomlaApi() { return joomlaApi_; }
   ::gnp::services::GameManager &getGameManager() { return gameManager_; }
+  ::gnp::services::RagManager &getRagManager() { return ragManager_; }
 
 private:
   services::RedisCacheManager redisCacheService_;
@@ -122,6 +124,7 @@ private:
   ::gnp::services::TelegramService telegramService_;
   ::gnp::services::JoomlaApi joomlaApi_;
   ::gnp::services::GameManager gameManager_;
+  ::gnp::services::RagManager ragManager_;
 };
 
 } // namespace gnp::plugins

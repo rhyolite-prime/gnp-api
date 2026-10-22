@@ -2059,6 +2059,21 @@ void NewspaperService::incrementViewCount(
 
     co_await mp_detail.insert(detail);
 
+    // OCR ingestion stays independent of Ollama availability. Queue the page
+    // for asynchronous local embedding; if the optional RAG migration has not
+    // been applied yet, keep the existing ingestion path successful.
+    try {
+      co_await dbClient->execSqlCoro(
+          "INSERT INTO public.newspaper_archive_rag_index_queue (detail_id) "
+          "VALUES ($1::uuid) ON CONFLICT (detail_id) DO UPDATE "
+          "SET queued_at = NOW(), claimed_at = NULL, last_error = NULL",
+          dto.getId());
+    } catch (const drogon::orm::DrogonDbException &e) {
+      LOG_WARN << "Could not enqueue OCR page for archive RAG indexing; "
+               << "apply sql/archive_rag_chunks.sql when enabling embeddings: "
+               << e.base().what();
+    }
+
     dto::BaseApiResponse successResponse;
     successResponse.success = true;
     successResponse.message = "OCR ingestion handled successfully";

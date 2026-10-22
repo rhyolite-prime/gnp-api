@@ -40,8 +40,7 @@ using drogon_model::Gnp::UserSubscriptions;
 
 namespace gnp::services {
 
-drogon::Task<dto::BaseApiResponse>
-UserService::getAll(int pageNo, int pageSize, const std::string &query) {
+drogon::Task<dto::BaseApiResponse> UserService::getAll(int pageNo, int pageSize, const std::string &query) {
   auto dbClient = drogon::app().getDbClient();
   auto mp = CoroMapper<Users>(dbClient);
 
@@ -1424,8 +1423,7 @@ drogon::Task<dto::BaseApiResponse> UserService::update(const dto::UserDto &userD
 
 
 
-drogon::Task<dto::BaseApiResponse> UserService::updateAdminUser(const dto::AdminUserDto &userDto,
-                             const std::string &userId) {
+drogon::Task<dto::BaseApiResponse> UserService::updateAdminUser(const dto::AdminUserDto &userDto, const std::string &userId) {
 
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Users> mp(dbClient);
@@ -1852,8 +1850,7 @@ drogon::Task<dto::BaseApiResponse> UserService::registerUserPasskeys(
   co_return response;
 }
 
-drogon::Task<dto::BaseApiResponse>
-UserService::validateUserPasskeys(const dto::LoginUserPasskeyDto &passkeyDto) {
+drogon::Task<dto::BaseApiResponse> UserService::validateUserPasskeys(const dto::LoginUserPasskeyDto &passkeyDto) {
 
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Users> mp(dbClient);
@@ -2101,8 +2098,7 @@ UserService::validateUserCredentials(const dto::SigninDto &signin_dto) {
   co_return response;
 }
 
-drogon::Task<dto::BaseApiResponse>
-UserService::validateAdminUserCredentials(const dto::SigninDto &signin_dto) {
+drogon::Task<dto::BaseApiResponse> UserService::validateAdminUserCredentials(const dto::SigninDto &signin_dto) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Users> mapper(dbClient);
 
@@ -2130,8 +2126,7 @@ UserService::validateAdminUserCredentials(const dto::SigninDto &signin_dto) {
       userToUpdate.setLastActive(trantor::Date::now());
       co_await mapper.update(userToUpdate);
 
-      std::unordered_set<std::string> allPermissions =
-          co_await PermissionService::getUserPermissions(user.getValueOfId());
+      std::unordered_set<std::string> allPermissions =  co_await PermissionService::getUserPermissions(user.getValueOfId());
 
       Json::Value permissionsArray = Json::arrayValue;
       for (const auto &perm : allPermissions) {
@@ -2772,8 +2767,7 @@ UserService::deactivateUserAccount(const std::string &userId) {
   co_return response;
 }
 
-drogon::Task<dto::BaseApiResponse>
-UserService::deleteUser(const std::string &userId) {
+drogon::Task<dto::BaseApiResponse> UserService::deleteUser(const std::string &userId) {
 
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Users> mp(dbClient);
@@ -3111,9 +3105,8 @@ UserService::changeUserPassword(const std::string userId,
   co_return response;
 }
 
-drogon::Task<dto::BaseApiResponse>
-UserService::getAllUserGroups(int pageNo, int pageSize,
-                              const std::string &query) {
+drogon::Task<dto::BaseApiResponse> UserService::getAllUserGroups(int pageNo, int pageSize, const std::string &query) {
+
   auto dbClient = drogon::app().getDbClient();
   auto mp = CoroMapper<UserGroups>(dbClient);
 
@@ -3191,8 +3184,8 @@ UserService::getAllUserGroups(int pageNo, int pageSize,
   co_return response;
 }
 
-drogon::Task<dto::BaseApiResponse>
-UserService::createUserGroup(const dto::UserGroupDto &userGroupDto) {
+drogon::Task<dto::BaseApiResponse> UserService::createUserGroup(const dto::UserGroupDto &userGroupDto) {
+
   auto dbClient = drogon::app().getDbClient();
   auto mp = CoroMapper<UserGroups>(dbClient);
 
@@ -3248,8 +3241,7 @@ UserService::createUserGroup(const dto::UserGroupDto &userGroupDto) {
   co_return response;
 }
 
-drogon::Task<dto::BaseApiResponse>
-UserService::updateUserGroup(const dto::UserGroupDto &userGroupDto,
+drogon::Task<dto::BaseApiResponse> UserService::updateUserGroup(const dto::UserGroupDto &userGroupDto,
                              const std::string &userGroupId) {
   auto dbClient = drogon::app().getDbClient();
   auto mp = CoroMapper<UserGroups>(dbClient);
