@@ -955,27 +955,27 @@ RenderedAnswer renderStructuredAnswer(const std::string &content,
 template <typename Row>
 RagSource sourceFromRow(const Row &row) {
   RagSource source;
-  source.id = row["id"].isNull() ? "" : row["id"].as<std::string>();
+  source.id = row["id"].isNull() ? "" : row["id"].template as<std::string>();
   source.chunkId = row["chunk_id"].isNull()
-      ? "" : row["chunk_id"].as<std::string>();
+      ? "" : row["chunk_id"].template as<std::string>();
   source.newspaperId = row["newspaper_id"].isNull()
-      ? "" : row["newspaper_id"].as<std::string>();
+      ? "" : row["newspaper_id"].template as<std::string>();
   source.publicationId = row["publication_id"].isNull()
-      ? "" : row["publication_id"].as<std::string>();
+      ? "" : row["publication_id"].template as<std::string>();
   source.publicationName = row["publication_name"].isNull()
-      ? "" : row["publication_name"].as<std::string>();
+      ? "" : row["publication_name"].template as<std::string>();
   source.publicationDate = row["publication_date"].isNull()
-      ? "" : row["publication_date"].as<std::string>();
+      ? "" : row["publication_date"].template as<std::string>();
   source.editionNumber = row["edition_number"].isNull()
-      ? "" : row["edition_number"].as<std::string>();
+      ? "" : row["edition_number"].template as<std::string>();
   source.documentId = row["document_id"].isNull()
-      ? "" : row["document_id"].as<std::string>();
+      ? "" : row["document_id"].template as<std::string>();
   source.pageNumber = row["page_number"].isNull()
-      ? 0 : row["page_number"].as<int>();
+      ? 0 : row["page_number"].template as<int>();
   source.score = row["relevance"].isNull()
-      ? 0.0 : row["relevance"].as<double>();
+      ? 0.0 : row["relevance"].template as<double>();
   source.excerpt = row["excerpt"].isNull()
-      ? "" : removeHeadlineMarkers(row["excerpt"].as<std::string>());
+      ? "" : removeHeadlineMarkers(row["excerpt"].template as<std::string>());
   if (source.excerpt.empty()) {
     source.excerpt = "No readable OCR excerpt was available for this page.";
   }
