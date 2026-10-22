@@ -1,3 +1,4 @@
+
 /**
  *
  *  UserNotificationSubscriptions.cc
@@ -6,21 +7,36 @@
  */
 
 #include "UserNotificationSubscriptions.h"
+
 #include <drogon/utils/Utilities.h>
+
 #include <string>
+
 
 using namespace drogon;
 using namespace drogon::orm;
 using namespace drogon_model::Gnp;
 
+
+
 const std::string UserNotificationSubscriptions::Cols::_id = "\"id\"";
+
 const std::string UserNotificationSubscriptions::Cols::_user_id = "\"user_id\"";
+
 const std::string UserNotificationSubscriptions::Cols::_notification_type = "\"notification_type\"";
+
 const std::string UserNotificationSubscriptions::Cols::_subscription_status = "\"subscription_status\"";
+
 const std::string UserNotificationSubscriptions::Cols::_created_at = "\"created_at\"";
+
 const std::string UserNotificationSubscriptions::Cols::_updated_at = "\"updated_at\"";
+
+
 const std::string UserNotificationSubscriptions::primaryKeyName = "id";
+
+
 const bool UserNotificationSubscriptions::hasPrimaryKey = true;
+
 const std::string UserNotificationSubscriptions::tableName = "\"user_notification_subscriptions\"";
 
 const std::vector<typename UserNotificationSubscriptions::MetaData> UserNotificationSubscriptions::metaData_={
@@ -30,6 +46,7 @@ const std::vector<typename UserNotificationSubscriptions::MetaData> UserNotifica
 {"subscription_status","int32_t","integer",4,0,0,0},
 {"created_at","::trantor::Date","timestamp with time zone",0,0,0,1},
 {"updated_at","::trantor::Date","timestamp without time zone",0,0,0,0}
+
 };
 const std::string &UserNotificationSubscriptions::getColumnName(size_t index) noexcept(false)
 {
@@ -40,27 +57,41 @@ UserNotificationSubscriptions::UserNotificationSubscriptions(const Row &r, const
 {
     if(indexOffset < 0)
     {
+
         if(!r["id"].isNull())
         {
+
             id_=std::make_shared<std::string>(r["id"].as<std::string>());
+
         }
+
         if(!r["user_id"].isNull())
         {
+
             userId_=std::make_shared<std::string>(r["user_id"].as<std::string>());
+
         }
+
         if(!r["notification_type"].isNull())
         {
+
             notificationType_=std::make_shared<int32_t>(r["notification_type"].as<int32_t>());
+
         }
+
         if(!r["subscription_status"].isNull())
         {
+
             subscriptionStatus_=std::make_shared<int32_t>(r["subscription_status"].as<int32_t>());
+
         }
+
         if(!r["created_at"].isNull())
         {
             auto timeStr = r["created_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -78,11 +109,13 @@ UserNotificationSubscriptions::UserNotificationSubscriptions(const Row &r, const
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         if(!r["updated_at"].isNull())
         {
             auto timeStr = r["updated_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -100,6 +133,7 @@ UserNotificationSubscriptions::UserNotificationSubscriptions(const Row &r, const
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
     }
     else
     {
@@ -110,32 +144,46 @@ UserNotificationSubscriptions::UserNotificationSubscriptions(const Row &r, const
             return;
         }
         size_t index;
+
         index = offset + 0;
         if(!r[index].isNull())
         {
+
             id_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 1;
         if(!r[index].isNull())
         {
+
             userId_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 2;
         if(!r[index].isNull())
         {
+
             notificationType_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 3;
         if(!r[index].isNull())
         {
+
             subscriptionStatus_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 4;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -153,12 +201,14 @@ UserNotificationSubscriptions::UserNotificationSubscriptions(const Row &r, const
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         index = offset + 5;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -176,6 +226,7 @@ UserNotificationSubscriptions::UserNotificationSubscriptions(const Row &r, const
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
     }
 
 }
@@ -187,6 +238,7 @@ UserNotificationSubscriptions::UserNotificationSubscriptions(const Json::Value &
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         dirtyFlag_[0] = true;
@@ -195,6 +247,7 @@ UserNotificationSubscriptions::UserNotificationSubscriptions(const Json::Value &
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -203,6 +256,7 @@ UserNotificationSubscriptions::UserNotificationSubscriptions(const Json::Value &
             userId_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -211,6 +265,7 @@ UserNotificationSubscriptions::UserNotificationSubscriptions(const Json::Value &
             notificationType_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[2]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -219,6 +274,7 @@ UserNotificationSubscriptions::UserNotificationSubscriptions(const Json::Value &
             subscriptionStatus_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[3]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -227,6 +283,7 @@ UserNotificationSubscriptions::UserNotificationSubscriptions(const Json::Value &
             auto timeStr = pJson[pMasqueradingVector[4]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -245,6 +302,7 @@ UserNotificationSubscriptions::UserNotificationSubscriptions(const Json::Value &
             }
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -253,6 +311,7 @@ UserNotificationSubscriptions::UserNotificationSubscriptions(const Json::Value &
             auto timeStr = pJson[pMasqueradingVector[5]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -271,10 +330,12 @@ UserNotificationSubscriptions::UserNotificationSubscriptions(const Json::Value &
             }
         }
     }
+
 }
 
 UserNotificationSubscriptions::UserNotificationSubscriptions(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         dirtyFlag_[0]=true;
@@ -283,6 +344,7 @@ UserNotificationSubscriptions::UserNotificationSubscriptions(const Json::Value &
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("user_id"))
     {
         dirtyFlag_[1]=true;
@@ -291,6 +353,7 @@ UserNotificationSubscriptions::UserNotificationSubscriptions(const Json::Value &
             userId_=std::make_shared<std::string>(pJson["user_id"].asString());
         }
     }
+
     if(pJson.isMember("notification_type"))
     {
         dirtyFlag_[2]=true;
@@ -299,6 +362,7 @@ UserNotificationSubscriptions::UserNotificationSubscriptions(const Json::Value &
             notificationType_=std::make_shared<int32_t>((int32_t)pJson["notification_type"].asInt64());
         }
     }
+
     if(pJson.isMember("subscription_status"))
     {
         dirtyFlag_[3]=true;
@@ -307,6 +371,7 @@ UserNotificationSubscriptions::UserNotificationSubscriptions(const Json::Value &
             subscriptionStatus_=std::make_shared<int32_t>((int32_t)pJson["subscription_status"].asInt64());
         }
     }
+
     if(pJson.isMember("created_at"))
     {
         dirtyFlag_[4]=true;
@@ -315,6 +380,7 @@ UserNotificationSubscriptions::UserNotificationSubscriptions(const Json::Value &
             auto timeStr = pJson["created_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -333,6 +399,7 @@ UserNotificationSubscriptions::UserNotificationSubscriptions(const Json::Value &
             }
         }
     }
+
     if(pJson.isMember("updated_at"))
     {
         dirtyFlag_[5]=true;
@@ -341,6 +408,7 @@ UserNotificationSubscriptions::UserNotificationSubscriptions(const Json::Value &
             auto timeStr = pJson["updated_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -359,6 +427,7 @@ UserNotificationSubscriptions::UserNotificationSubscriptions(const Json::Value &
             }
         }
     }
+
 }
 
 void UserNotificationSubscriptions::updateByMasqueradedJson(const Json::Value &pJson,
@@ -369,6 +438,7 @@ void UserNotificationSubscriptions::updateByMasqueradedJson(const Json::Value &p
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         if(!pJson[pMasqueradingVector[0]].isNull())
@@ -376,6 +446,7 @@ void UserNotificationSubscriptions::updateByMasqueradedJson(const Json::Value &p
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -384,6 +455,7 @@ void UserNotificationSubscriptions::updateByMasqueradedJson(const Json::Value &p
             userId_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -392,6 +464,7 @@ void UserNotificationSubscriptions::updateByMasqueradedJson(const Json::Value &p
             notificationType_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[2]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -400,6 +473,7 @@ void UserNotificationSubscriptions::updateByMasqueradedJson(const Json::Value &p
             subscriptionStatus_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[3]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -408,6 +482,7 @@ void UserNotificationSubscriptions::updateByMasqueradedJson(const Json::Value &p
             auto timeStr = pJson[pMasqueradingVector[4]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -426,6 +501,7 @@ void UserNotificationSubscriptions::updateByMasqueradedJson(const Json::Value &p
             }
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -434,6 +510,7 @@ void UserNotificationSubscriptions::updateByMasqueradedJson(const Json::Value &p
             auto timeStr = pJson[pMasqueradingVector[5]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -452,10 +529,12 @@ void UserNotificationSubscriptions::updateByMasqueradedJson(const Json::Value &p
             }
         }
     }
+
 }
 
 void UserNotificationSubscriptions::updateByJson(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         if(!pJson["id"].isNull())
@@ -463,6 +542,7 @@ void UserNotificationSubscriptions::updateByJson(const Json::Value &pJson) noexc
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("user_id"))
     {
         dirtyFlag_[1] = true;
@@ -471,6 +551,7 @@ void UserNotificationSubscriptions::updateByJson(const Json::Value &pJson) noexc
             userId_=std::make_shared<std::string>(pJson["user_id"].asString());
         }
     }
+
     if(pJson.isMember("notification_type"))
     {
         dirtyFlag_[2] = true;
@@ -479,6 +560,7 @@ void UserNotificationSubscriptions::updateByJson(const Json::Value &pJson) noexc
             notificationType_=std::make_shared<int32_t>((int32_t)pJson["notification_type"].asInt64());
         }
     }
+
     if(pJson.isMember("subscription_status"))
     {
         dirtyFlag_[3] = true;
@@ -487,6 +569,7 @@ void UserNotificationSubscriptions::updateByJson(const Json::Value &pJson) noexc
             subscriptionStatus_=std::make_shared<int32_t>((int32_t)pJson["subscription_status"].asInt64());
         }
     }
+
     if(pJson.isMember("created_at"))
     {
         dirtyFlag_[4] = true;
@@ -495,6 +578,7 @@ void UserNotificationSubscriptions::updateByJson(const Json::Value &pJson) noexc
             auto timeStr = pJson["created_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -513,6 +597,7 @@ void UserNotificationSubscriptions::updateByJson(const Json::Value &pJson) noexc
             }
         }
     }
+
     if(pJson.isMember("updated_at"))
     {
         dirtyFlag_[5] = true;
@@ -521,6 +606,7 @@ void UserNotificationSubscriptions::updateByJson(const Json::Value &pJson) noexc
             auto timeStr = pJson["updated_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -539,6 +625,7 @@ void UserNotificationSubscriptions::updateByJson(const Json::Value &pJson) noexc
             }
         }
     }
+
 }
 
 const std::string &UserNotificationSubscriptions::getValueOfId() const noexcept
@@ -677,6 +764,7 @@ void UserNotificationSubscriptions::updateId(const uint64_t id)
 {
 }
 
+
 const std::vector<std::string> &UserNotificationSubscriptions::insertColumns() noexcept
 {
     static const std::vector<std::string> inCols={
@@ -686,12 +774,14 @@ const std::vector<std::string> &UserNotificationSubscriptions::insertColumns() n
         "subscription_status",
         "created_at",
         "updated_at"
+
     };
     return inCols;
 }
 
 void UserNotificationSubscriptions::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -703,6 +793,7 @@ void UserNotificationSubscriptions::outputArgs(drogon::orm::internal::SqlBinder 
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getUserId())
@@ -714,6 +805,7 @@ void UserNotificationSubscriptions::outputArgs(drogon::orm::internal::SqlBinder 
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getNotificationType())
@@ -725,6 +817,7 @@ void UserNotificationSubscriptions::outputArgs(drogon::orm::internal::SqlBinder 
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getSubscriptionStatus())
@@ -736,6 +829,7 @@ void UserNotificationSubscriptions::outputArgs(drogon::orm::internal::SqlBinder 
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getCreatedAt())
@@ -747,6 +841,7 @@ void UserNotificationSubscriptions::outputArgs(drogon::orm::internal::SqlBinder 
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getUpdatedAt())
@@ -758,40 +853,49 @@ void UserNotificationSubscriptions::outputArgs(drogon::orm::internal::SqlBinder 
             binder << nullptr;
         }
     }
+
 }
 
 const std::vector<std::string> UserNotificationSubscriptions::updateColumns() const
 {
     std::vector<std::string> ret;
+
     if(dirtyFlag_[0])
     {
         ret.push_back(getColumnName(0));
     }
+
     if(dirtyFlag_[1])
     {
         ret.push_back(getColumnName(1));
     }
+
     if(dirtyFlag_[2])
     {
         ret.push_back(getColumnName(2));
     }
+
     if(dirtyFlag_[3])
     {
         ret.push_back(getColumnName(3));
     }
+
     if(dirtyFlag_[4])
     {
         ret.push_back(getColumnName(4));
     }
+
     if(dirtyFlag_[5])
     {
         ret.push_back(getColumnName(5));
     }
+
     return ret;
 }
 
 void UserNotificationSubscriptions::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -803,6 +907,7 @@ void UserNotificationSubscriptions::updateArgs(drogon::orm::internal::SqlBinder 
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getUserId())
@@ -814,6 +919,7 @@ void UserNotificationSubscriptions::updateArgs(drogon::orm::internal::SqlBinder 
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getNotificationType())
@@ -825,6 +931,7 @@ void UserNotificationSubscriptions::updateArgs(drogon::orm::internal::SqlBinder 
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getSubscriptionStatus())
@@ -836,6 +943,7 @@ void UserNotificationSubscriptions::updateArgs(drogon::orm::internal::SqlBinder 
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getCreatedAt())
@@ -847,6 +955,7 @@ void UserNotificationSubscriptions::updateArgs(drogon::orm::internal::SqlBinder 
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getUpdatedAt())
@@ -858,58 +967,78 @@ void UserNotificationSubscriptions::updateArgs(drogon::orm::internal::SqlBinder 
             binder << nullptr;
         }
     }
+
 }
 Json::Value UserNotificationSubscriptions::toJson() const
 {
     Json::Value ret;
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getUserId())
     {
+
         ret["user_id"]=getValueOfUserId();
+
     }
     else
     {
         ret["user_id"]=Json::Value();
     }
+
     if(getNotificationType())
     {
+
         ret["notification_type"]=getValueOfNotificationType();
+
     }
     else
     {
         ret["notification_type"]=Json::Value();
     }
+
     if(getSubscriptionStatus())
     {
+
         ret["subscription_status"]=getValueOfSubscriptionStatus();
+
     }
     else
     {
         ret["subscription_status"]=Json::Value();
     }
+
     if(getCreatedAt())
     {
+
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["created_at"]=Json::Value();
     }
+
     if(getUpdatedAt())
     {
+
         ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["updated_at"]=Json::Value();
     }
+
     return ret;
 }
 
@@ -924,163 +1053,209 @@ Json::Value UserNotificationSubscriptions::toMasqueradedJson(
     Json::Value ret;
     if(pMasqueradingVector.size() == 6)
     {
+
         if(!pMasqueradingVector[0].empty())
         {
             if(getId())
             {
+
                 ret[pMasqueradingVector[0]]=getValueOfId();
+
             }
             else
             {
                 ret[pMasqueradingVector[0]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[1].empty())
         {
             if(getUserId())
             {
+
                 ret[pMasqueradingVector[1]]=getValueOfUserId();
+
             }
             else
             {
                 ret[pMasqueradingVector[1]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[2].empty())
         {
             if(getNotificationType())
             {
+
                 ret[pMasqueradingVector[2]]=getValueOfNotificationType();
+
             }
             else
             {
                 ret[pMasqueradingVector[2]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[3].empty())
         {
             if(getSubscriptionStatus())
             {
+
                 ret[pMasqueradingVector[3]]=getValueOfSubscriptionStatus();
+
             }
             else
             {
                 ret[pMasqueradingVector[3]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[4].empty())
         {
             if(getCreatedAt())
             {
+
                 ret[pMasqueradingVector[4]]=getCreatedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[4]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[5].empty())
         {
             if(getUpdatedAt())
             {
+
                 ret[pMasqueradingVector[5]]=getUpdatedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[5]]=Json::Value();
             }
         }
+
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getUserId())
     {
+
         ret["user_id"]=getValueOfUserId();
+
     }
     else
     {
         ret["user_id"]=Json::Value();
     }
+
     if(getNotificationType())
     {
+
         ret["notification_type"]=getValueOfNotificationType();
+
     }
     else
     {
         ret["notification_type"]=Json::Value();
     }
+
     if(getSubscriptionStatus())
     {
+
         ret["subscription_status"]=getValueOfSubscriptionStatus();
+
     }
     else
     {
         ret["subscription_status"]=Json::Value();
     }
+
     if(getCreatedAt())
     {
+
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["created_at"]=Json::Value();
     }
+
     if(getUpdatedAt())
     {
+
         ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["updated_at"]=Json::Value();
     }
+
     return ret;
 }
 
 bool UserNotificationSubscriptions::validateJsonForCreation(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, true))
             return false;
     }
+
     if(pJson.isMember("user_id"))
     {
         if(!validJsonOfField(1, "user_id", pJson["user_id"], err, true))
             return false;
     }
+
     else
     {
         err="The user_id column cannot be null";
         return false;
     }
+
     if(pJson.isMember("notification_type"))
     {
         if(!validJsonOfField(2, "notification_type", pJson["notification_type"], err, true))
             return false;
     }
+
     if(pJson.isMember("subscription_status"))
     {
         if(!validJsonOfField(3, "subscription_status", pJson["subscription_status"], err, true))
             return false;
     }
+
     if(pJson.isMember("created_at"))
     {
         if(!validJsonOfField(4, "created_at", pJson["created_at"], err, true))
             return false;
     }
+
     if(pJson.isMember("updated_at"))
     {
         if(!validJsonOfField(5, "updated_at", pJson["updated_at"], err, true))
             return false;
     }
+
     return true;
 }
 bool UserNotificationSubscriptions::validateMasqueradedJsonForCreation(const Json::Value &pJson,
@@ -1093,6 +1268,7 @@ bool UserNotificationSubscriptions::validateMasqueradedJsonForCreation(const Jso
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty())
       {
           if(pJson.isMember(pMasqueradingVector[0]))
@@ -1100,7 +1276,9 @@ bool UserNotificationSubscriptions::validateMasqueradedJsonForCreation(const Jso
               if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[1].empty())
       {
           if(pJson.isMember(pMasqueradingVector[1]))
@@ -1108,12 +1286,15 @@ bool UserNotificationSubscriptions::validateMasqueradedJsonForCreation(const Jso
               if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[1] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[2].empty())
       {
           if(pJson.isMember(pMasqueradingVector[2]))
@@ -1121,7 +1302,9 @@ bool UserNotificationSubscriptions::validateMasqueradedJsonForCreation(const Jso
               if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[3].empty())
       {
           if(pJson.isMember(pMasqueradingVector[3]))
@@ -1129,7 +1312,9 @@ bool UserNotificationSubscriptions::validateMasqueradedJsonForCreation(const Jso
               if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[4].empty())
       {
           if(pJson.isMember(pMasqueradingVector[4]))
@@ -1137,7 +1322,9 @@ bool UserNotificationSubscriptions::validateMasqueradedJsonForCreation(const Jso
               if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[5].empty())
       {
           if(pJson.isMember(pMasqueradingVector[5]))
@@ -1145,7 +1332,9 @@ bool UserNotificationSubscriptions::validateMasqueradedJsonForCreation(const Jso
               if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, true))
                   return false;
           }
+
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -1156,41 +1345,49 @@ bool UserNotificationSubscriptions::validateMasqueradedJsonForCreation(const Jso
 }
 bool UserNotificationSubscriptions::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, false))
             return false;
     }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
     if(pJson.isMember("user_id"))
     {
         if(!validJsonOfField(1, "user_id", pJson["user_id"], err, false))
             return false;
     }
+
     if(pJson.isMember("notification_type"))
     {
         if(!validJsonOfField(2, "notification_type", pJson["notification_type"], err, false))
             return false;
     }
+
     if(pJson.isMember("subscription_status"))
     {
         if(!validJsonOfField(3, "subscription_status", pJson["subscription_status"], err, false))
             return false;
     }
+
     if(pJson.isMember("created_at"))
     {
         if(!validJsonOfField(4, "created_at", pJson["created_at"], err, false))
             return false;
     }
+
     if(pJson.isMember("updated_at"))
     {
         if(!validJsonOfField(5, "updated_at", pJson["updated_at"], err, false))
             return false;
     }
+
     return true;
 }
 bool UserNotificationSubscriptions::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
@@ -1203,41 +1400,49 @@ bool UserNotificationSubscriptions::validateMasqueradedJsonForUpdate(const Json:
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
       {
           if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
               return false;
       }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
       if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
       {
           if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
       {
           if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
       {
           if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
       {
           if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
       {
           if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, false))
               return false;
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -1254,78 +1459,104 @@ bool UserNotificationSubscriptions::validJsonOfField(size_t index,
 {
     switch(index)
     {
+
         case 0:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 1:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 2:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 3:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 4:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 5:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         default:
             err="Internal error in the server";
             return false;
     }
     return true;
 }
+

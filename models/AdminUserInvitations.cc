@@ -1,3 +1,4 @@
+
 /**
  *
  *  AdminUserInvitations.cc
@@ -6,25 +7,44 @@
  */
 
 #include "AdminUserInvitations.h"
+
 #include <drogon/utils/Utilities.h>
+
 #include <string>
+
 
 using namespace drogon;
 using namespace drogon::orm;
 using namespace drogon_model::Gnp;
 
+
+
 const std::string AdminUserInvitations::Cols::_id = "\"id\"";
+
 const std::string AdminUserInvitations::Cols::_email = "\"email\"";
+
 const std::string AdminUserInvitations::Cols::_token_hash = "\"token_hash\"";
+
 const std::string AdminUserInvitations::Cols::_partner_id = "\"partner_id\"";
+
 const std::string AdminUserInvitations::Cols::_user_id = "\"user_id\"";
+
 const std::string AdminUserInvitations::Cols::_status = "\"status\"";
+
 const std::string AdminUserInvitations::Cols::_expires_at = "\"expires_at\"";
+
 const std::string AdminUserInvitations::Cols::_accepted_at = "\"accepted_at\"";
+
 const std::string AdminUserInvitations::Cols::_created_at = "\"created_at\"";
+
 const std::string AdminUserInvitations::Cols::_updated_at = "\"updated_at\"";
+
+
 const std::string AdminUserInvitations::primaryKeyName = "id";
+
+
 const bool AdminUserInvitations::hasPrimaryKey = true;
+
 const std::string AdminUserInvitations::tableName = "\"admin_user_invitations\"";
 
 const std::vector<typename AdminUserInvitations::MetaData> AdminUserInvitations::metaData_={
@@ -38,6 +58,7 @@ const std::vector<typename AdminUserInvitations::MetaData> AdminUserInvitations:
 {"accepted_at","::trantor::Date","timestamp with time zone",0,0,0,0},
 {"created_at","::trantor::Date","timestamp with time zone",0,0,0,1},
 {"updated_at","::trantor::Date","timestamp with time zone",0,0,0,0}
+
 };
 const std::string &AdminUserInvitations::getColumnName(size_t index) noexcept(false)
 {
@@ -48,35 +69,55 @@ AdminUserInvitations::AdminUserInvitations(const Row &r, const ssize_t indexOffs
 {
     if(indexOffset < 0)
     {
+
         if(!r["id"].isNull())
         {
+
             id_=std::make_shared<std::string>(r["id"].as<std::string>());
+
         }
+
         if(!r["email"].isNull())
         {
+
             email_=std::make_shared<std::string>(r["email"].as<std::string>());
+
         }
+
         if(!r["token_hash"].isNull())
         {
+
             tokenHash_=std::make_shared<std::string>(r["token_hash"].as<std::string>());
+
         }
+
         if(!r["partner_id"].isNull())
         {
+
             partnerId_=std::make_shared<std::string>(r["partner_id"].as<std::string>());
+
         }
+
         if(!r["user_id"].isNull())
         {
+
             userId_=std::make_shared<std::string>(r["user_id"].as<std::string>());
+
         }
+
         if(!r["status"].isNull())
         {
+
             status_=std::make_shared<std::string>(r["status"].as<std::string>());
+
         }
+
         if(!r["expires_at"].isNull())
         {
             auto timeStr = r["expires_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -94,11 +135,13 @@ AdminUserInvitations::AdminUserInvitations(const Row &r, const ssize_t indexOffs
                 expiresAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         if(!r["accepted_at"].isNull())
         {
             auto timeStr = r["accepted_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -116,11 +159,13 @@ AdminUserInvitations::AdminUserInvitations(const Row &r, const ssize_t indexOffs
                 acceptedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         if(!r["created_at"].isNull())
         {
             auto timeStr = r["created_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -138,11 +183,13 @@ AdminUserInvitations::AdminUserInvitations(const Row &r, const ssize_t indexOffs
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         if(!r["updated_at"].isNull())
         {
             auto timeStr = r["updated_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -160,6 +207,7 @@ AdminUserInvitations::AdminUserInvitations(const Row &r, const ssize_t indexOffs
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
     }
     else
     {
@@ -170,42 +218,62 @@ AdminUserInvitations::AdminUserInvitations(const Row &r, const ssize_t indexOffs
             return;
         }
         size_t index;
+
         index = offset + 0;
         if(!r[index].isNull())
         {
+
             id_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 1;
         if(!r[index].isNull())
         {
+
             email_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 2;
         if(!r[index].isNull())
         {
+
             tokenHash_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 3;
         if(!r[index].isNull())
         {
+
             partnerId_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 4;
         if(!r[index].isNull())
         {
+
             userId_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 5;
         if(!r[index].isNull())
         {
+
             status_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 6;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -223,12 +291,14 @@ AdminUserInvitations::AdminUserInvitations(const Row &r, const ssize_t indexOffs
                 expiresAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         index = offset + 7;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -246,12 +316,14 @@ AdminUserInvitations::AdminUserInvitations(const Row &r, const ssize_t indexOffs
                 acceptedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         index = offset + 8;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -269,12 +341,14 @@ AdminUserInvitations::AdminUserInvitations(const Row &r, const ssize_t indexOffs
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         index = offset + 9;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -292,6 +366,7 @@ AdminUserInvitations::AdminUserInvitations(const Row &r, const ssize_t indexOffs
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
     }
 
 }
@@ -303,6 +378,7 @@ AdminUserInvitations::AdminUserInvitations(const Json::Value &pJson, const std::
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         dirtyFlag_[0] = true;
@@ -311,6 +387,7 @@ AdminUserInvitations::AdminUserInvitations(const Json::Value &pJson, const std::
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -319,6 +396,7 @@ AdminUserInvitations::AdminUserInvitations(const Json::Value &pJson, const std::
             email_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -327,6 +405,7 @@ AdminUserInvitations::AdminUserInvitations(const Json::Value &pJson, const std::
             tokenHash_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -335,6 +414,7 @@ AdminUserInvitations::AdminUserInvitations(const Json::Value &pJson, const std::
             partnerId_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -343,6 +423,7 @@ AdminUserInvitations::AdminUserInvitations(const Json::Value &pJson, const std::
             userId_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -351,6 +432,7 @@ AdminUserInvitations::AdminUserInvitations(const Json::Value &pJson, const std::
             status_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -359,6 +441,7 @@ AdminUserInvitations::AdminUserInvitations(const Json::Value &pJson, const std::
             auto timeStr = pJson[pMasqueradingVector[6]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -377,6 +460,7 @@ AdminUserInvitations::AdminUserInvitations(const Json::Value &pJson, const std::
             }
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -385,6 +469,7 @@ AdminUserInvitations::AdminUserInvitations(const Json::Value &pJson, const std::
             auto timeStr = pJson[pMasqueradingVector[7]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -403,6 +488,7 @@ AdminUserInvitations::AdminUserInvitations(const Json::Value &pJson, const std::
             }
         }
     }
+
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
     {
         dirtyFlag_[8] = true;
@@ -411,6 +497,7 @@ AdminUserInvitations::AdminUserInvitations(const Json::Value &pJson, const std::
             auto timeStr = pJson[pMasqueradingVector[8]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -429,6 +516,7 @@ AdminUserInvitations::AdminUserInvitations(const Json::Value &pJson, const std::
             }
         }
     }
+
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
     {
         dirtyFlag_[9] = true;
@@ -437,6 +525,7 @@ AdminUserInvitations::AdminUserInvitations(const Json::Value &pJson, const std::
             auto timeStr = pJson[pMasqueradingVector[9]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -455,10 +544,12 @@ AdminUserInvitations::AdminUserInvitations(const Json::Value &pJson, const std::
             }
         }
     }
+
 }
 
 AdminUserInvitations::AdminUserInvitations(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         dirtyFlag_[0]=true;
@@ -467,6 +558,7 @@ AdminUserInvitations::AdminUserInvitations(const Json::Value &pJson) noexcept(fa
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("email"))
     {
         dirtyFlag_[1]=true;
@@ -475,6 +567,7 @@ AdminUserInvitations::AdminUserInvitations(const Json::Value &pJson) noexcept(fa
             email_=std::make_shared<std::string>(pJson["email"].asString());
         }
     }
+
     if(pJson.isMember("token_hash"))
     {
         dirtyFlag_[2]=true;
@@ -483,6 +576,7 @@ AdminUserInvitations::AdminUserInvitations(const Json::Value &pJson) noexcept(fa
             tokenHash_=std::make_shared<std::string>(pJson["token_hash"].asString());
         }
     }
+
     if(pJson.isMember("partner_id"))
     {
         dirtyFlag_[3]=true;
@@ -491,6 +585,7 @@ AdminUserInvitations::AdminUserInvitations(const Json::Value &pJson) noexcept(fa
             partnerId_=std::make_shared<std::string>(pJson["partner_id"].asString());
         }
     }
+
     if(pJson.isMember("user_id"))
     {
         dirtyFlag_[4]=true;
@@ -499,6 +594,7 @@ AdminUserInvitations::AdminUserInvitations(const Json::Value &pJson) noexcept(fa
             userId_=std::make_shared<std::string>(pJson["user_id"].asString());
         }
     }
+
     if(pJson.isMember("status"))
     {
         dirtyFlag_[5]=true;
@@ -507,6 +603,7 @@ AdminUserInvitations::AdminUserInvitations(const Json::Value &pJson) noexcept(fa
             status_=std::make_shared<std::string>(pJson["status"].asString());
         }
     }
+
     if(pJson.isMember("expires_at"))
     {
         dirtyFlag_[6]=true;
@@ -515,6 +612,7 @@ AdminUserInvitations::AdminUserInvitations(const Json::Value &pJson) noexcept(fa
             auto timeStr = pJson["expires_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -533,6 +631,7 @@ AdminUserInvitations::AdminUserInvitations(const Json::Value &pJson) noexcept(fa
             }
         }
     }
+
     if(pJson.isMember("accepted_at"))
     {
         dirtyFlag_[7]=true;
@@ -541,6 +640,7 @@ AdminUserInvitations::AdminUserInvitations(const Json::Value &pJson) noexcept(fa
             auto timeStr = pJson["accepted_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -559,6 +659,7 @@ AdminUserInvitations::AdminUserInvitations(const Json::Value &pJson) noexcept(fa
             }
         }
     }
+
     if(pJson.isMember("created_at"))
     {
         dirtyFlag_[8]=true;
@@ -567,6 +668,7 @@ AdminUserInvitations::AdminUserInvitations(const Json::Value &pJson) noexcept(fa
             auto timeStr = pJson["created_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -585,6 +687,7 @@ AdminUserInvitations::AdminUserInvitations(const Json::Value &pJson) noexcept(fa
             }
         }
     }
+
     if(pJson.isMember("updated_at"))
     {
         dirtyFlag_[9]=true;
@@ -593,6 +696,7 @@ AdminUserInvitations::AdminUserInvitations(const Json::Value &pJson) noexcept(fa
             auto timeStr = pJson["updated_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -611,6 +715,7 @@ AdminUserInvitations::AdminUserInvitations(const Json::Value &pJson) noexcept(fa
             }
         }
     }
+
 }
 
 void AdminUserInvitations::updateByMasqueradedJson(const Json::Value &pJson,
@@ -621,6 +726,7 @@ void AdminUserInvitations::updateByMasqueradedJson(const Json::Value &pJson,
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         if(!pJson[pMasqueradingVector[0]].isNull())
@@ -628,6 +734,7 @@ void AdminUserInvitations::updateByMasqueradedJson(const Json::Value &pJson,
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -636,6 +743,7 @@ void AdminUserInvitations::updateByMasqueradedJson(const Json::Value &pJson,
             email_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -644,6 +752,7 @@ void AdminUserInvitations::updateByMasqueradedJson(const Json::Value &pJson,
             tokenHash_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -652,6 +761,7 @@ void AdminUserInvitations::updateByMasqueradedJson(const Json::Value &pJson,
             partnerId_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -660,6 +770,7 @@ void AdminUserInvitations::updateByMasqueradedJson(const Json::Value &pJson,
             userId_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -668,6 +779,7 @@ void AdminUserInvitations::updateByMasqueradedJson(const Json::Value &pJson,
             status_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -676,6 +788,7 @@ void AdminUserInvitations::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[6]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -694,6 +807,7 @@ void AdminUserInvitations::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -702,6 +816,7 @@ void AdminUserInvitations::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[7]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -720,6 +835,7 @@ void AdminUserInvitations::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
     {
         dirtyFlag_[8] = true;
@@ -728,6 +844,7 @@ void AdminUserInvitations::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[8]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -746,6 +863,7 @@ void AdminUserInvitations::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
     {
         dirtyFlag_[9] = true;
@@ -754,6 +872,7 @@ void AdminUserInvitations::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[9]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -772,10 +891,12 @@ void AdminUserInvitations::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
 }
 
 void AdminUserInvitations::updateByJson(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         if(!pJson["id"].isNull())
@@ -783,6 +904,7 @@ void AdminUserInvitations::updateByJson(const Json::Value &pJson) noexcept(false
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("email"))
     {
         dirtyFlag_[1] = true;
@@ -791,6 +913,7 @@ void AdminUserInvitations::updateByJson(const Json::Value &pJson) noexcept(false
             email_=std::make_shared<std::string>(pJson["email"].asString());
         }
     }
+
     if(pJson.isMember("token_hash"))
     {
         dirtyFlag_[2] = true;
@@ -799,6 +922,7 @@ void AdminUserInvitations::updateByJson(const Json::Value &pJson) noexcept(false
             tokenHash_=std::make_shared<std::string>(pJson["token_hash"].asString());
         }
     }
+
     if(pJson.isMember("partner_id"))
     {
         dirtyFlag_[3] = true;
@@ -807,6 +931,7 @@ void AdminUserInvitations::updateByJson(const Json::Value &pJson) noexcept(false
             partnerId_=std::make_shared<std::string>(pJson["partner_id"].asString());
         }
     }
+
     if(pJson.isMember("user_id"))
     {
         dirtyFlag_[4] = true;
@@ -815,6 +940,7 @@ void AdminUserInvitations::updateByJson(const Json::Value &pJson) noexcept(false
             userId_=std::make_shared<std::string>(pJson["user_id"].asString());
         }
     }
+
     if(pJson.isMember("status"))
     {
         dirtyFlag_[5] = true;
@@ -823,6 +949,7 @@ void AdminUserInvitations::updateByJson(const Json::Value &pJson) noexcept(false
             status_=std::make_shared<std::string>(pJson["status"].asString());
         }
     }
+
     if(pJson.isMember("expires_at"))
     {
         dirtyFlag_[6] = true;
@@ -831,6 +958,7 @@ void AdminUserInvitations::updateByJson(const Json::Value &pJson) noexcept(false
             auto timeStr = pJson["expires_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -849,6 +977,7 @@ void AdminUserInvitations::updateByJson(const Json::Value &pJson) noexcept(false
             }
         }
     }
+
     if(pJson.isMember("accepted_at"))
     {
         dirtyFlag_[7] = true;
@@ -857,6 +986,7 @@ void AdminUserInvitations::updateByJson(const Json::Value &pJson) noexcept(false
             auto timeStr = pJson["accepted_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -875,6 +1005,7 @@ void AdminUserInvitations::updateByJson(const Json::Value &pJson) noexcept(false
             }
         }
     }
+
     if(pJson.isMember("created_at"))
     {
         dirtyFlag_[8] = true;
@@ -883,6 +1014,7 @@ void AdminUserInvitations::updateByJson(const Json::Value &pJson) noexcept(false
             auto timeStr = pJson["created_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -901,6 +1033,7 @@ void AdminUserInvitations::updateByJson(const Json::Value &pJson) noexcept(false
             }
         }
     }
+
     if(pJson.isMember("updated_at"))
     {
         dirtyFlag_[9] = true;
@@ -909,6 +1042,7 @@ void AdminUserInvitations::updateByJson(const Json::Value &pJson) noexcept(false
             auto timeStr = pJson["updated_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -927,6 +1061,7 @@ void AdminUserInvitations::updateByJson(const Json::Value &pJson) noexcept(false
             }
         }
     }
+
 }
 
 const std::string &AdminUserInvitations::getValueOfId() const noexcept
@@ -1158,6 +1293,7 @@ void AdminUserInvitations::updateId(const uint64_t id)
 {
 }
 
+
 const std::vector<std::string> &AdminUserInvitations::insertColumns() noexcept
 {
     static const std::vector<std::string> inCols={
@@ -1171,12 +1307,14 @@ const std::vector<std::string> &AdminUserInvitations::insertColumns() noexcept
         "accepted_at",
         "created_at",
         "updated_at"
+
     };
     return inCols;
 }
 
 void AdminUserInvitations::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -1188,6 +1326,7 @@ void AdminUserInvitations::outputArgs(drogon::orm::internal::SqlBinder &binder) 
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getEmail())
@@ -1199,6 +1338,7 @@ void AdminUserInvitations::outputArgs(drogon::orm::internal::SqlBinder &binder) 
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getTokenHash())
@@ -1210,6 +1350,7 @@ void AdminUserInvitations::outputArgs(drogon::orm::internal::SqlBinder &binder) 
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getPartnerId())
@@ -1221,6 +1362,7 @@ void AdminUserInvitations::outputArgs(drogon::orm::internal::SqlBinder &binder) 
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getUserId())
@@ -1232,6 +1374,7 @@ void AdminUserInvitations::outputArgs(drogon::orm::internal::SqlBinder &binder) 
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getStatus())
@@ -1243,6 +1386,7 @@ void AdminUserInvitations::outputArgs(drogon::orm::internal::SqlBinder &binder) 
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getExpiresAt())
@@ -1254,6 +1398,7 @@ void AdminUserInvitations::outputArgs(drogon::orm::internal::SqlBinder &binder) 
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getAcceptedAt())
@@ -1265,6 +1410,7 @@ void AdminUserInvitations::outputArgs(drogon::orm::internal::SqlBinder &binder) 
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[8])
     {
         if(getCreatedAt())
@@ -1276,6 +1422,7 @@ void AdminUserInvitations::outputArgs(drogon::orm::internal::SqlBinder &binder) 
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[9])
     {
         if(getUpdatedAt())
@@ -1287,56 +1434,69 @@ void AdminUserInvitations::outputArgs(drogon::orm::internal::SqlBinder &binder) 
             binder << nullptr;
         }
     }
+
 }
 
 const std::vector<std::string> AdminUserInvitations::updateColumns() const
 {
     std::vector<std::string> ret;
+
     if(dirtyFlag_[0])
     {
         ret.push_back(getColumnName(0));
     }
+
     if(dirtyFlag_[1])
     {
         ret.push_back(getColumnName(1));
     }
+
     if(dirtyFlag_[2])
     {
         ret.push_back(getColumnName(2));
     }
+
     if(dirtyFlag_[3])
     {
         ret.push_back(getColumnName(3));
     }
+
     if(dirtyFlag_[4])
     {
         ret.push_back(getColumnName(4));
     }
+
     if(dirtyFlag_[5])
     {
         ret.push_back(getColumnName(5));
     }
+
     if(dirtyFlag_[6])
     {
         ret.push_back(getColumnName(6));
     }
+
     if(dirtyFlag_[7])
     {
         ret.push_back(getColumnName(7));
     }
+
     if(dirtyFlag_[8])
     {
         ret.push_back(getColumnName(8));
     }
+
     if(dirtyFlag_[9])
     {
         ret.push_back(getColumnName(9));
     }
+
     return ret;
 }
 
 void AdminUserInvitations::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -1348,6 +1508,7 @@ void AdminUserInvitations::updateArgs(drogon::orm::internal::SqlBinder &binder) 
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getEmail())
@@ -1359,6 +1520,7 @@ void AdminUserInvitations::updateArgs(drogon::orm::internal::SqlBinder &binder) 
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getTokenHash())
@@ -1370,6 +1532,7 @@ void AdminUserInvitations::updateArgs(drogon::orm::internal::SqlBinder &binder) 
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getPartnerId())
@@ -1381,6 +1544,7 @@ void AdminUserInvitations::updateArgs(drogon::orm::internal::SqlBinder &binder) 
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getUserId())
@@ -1392,6 +1556,7 @@ void AdminUserInvitations::updateArgs(drogon::orm::internal::SqlBinder &binder) 
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getStatus())
@@ -1403,6 +1568,7 @@ void AdminUserInvitations::updateArgs(drogon::orm::internal::SqlBinder &binder) 
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getExpiresAt())
@@ -1414,6 +1580,7 @@ void AdminUserInvitations::updateArgs(drogon::orm::internal::SqlBinder &binder) 
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getAcceptedAt())
@@ -1425,6 +1592,7 @@ void AdminUserInvitations::updateArgs(drogon::orm::internal::SqlBinder &binder) 
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[8])
     {
         if(getCreatedAt())
@@ -1436,6 +1604,7 @@ void AdminUserInvitations::updateArgs(drogon::orm::internal::SqlBinder &binder) 
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[9])
     {
         if(getUpdatedAt())
@@ -1447,90 +1616,122 @@ void AdminUserInvitations::updateArgs(drogon::orm::internal::SqlBinder &binder) 
             binder << nullptr;
         }
     }
+
 }
 Json::Value AdminUserInvitations::toJson() const
 {
     Json::Value ret;
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getEmail())
     {
+
         ret["email"]=getValueOfEmail();
+
     }
     else
     {
         ret["email"]=Json::Value();
     }
+
     if(getTokenHash())
     {
+
         ret["token_hash"]=getValueOfTokenHash();
+
     }
     else
     {
         ret["token_hash"]=Json::Value();
     }
+
     if(getPartnerId())
     {
+
         ret["partner_id"]=getValueOfPartnerId();
+
     }
     else
     {
         ret["partner_id"]=Json::Value();
     }
+
     if(getUserId())
     {
+
         ret["user_id"]=getValueOfUserId();
+
     }
     else
     {
         ret["user_id"]=Json::Value();
     }
+
     if(getStatus())
     {
+
         ret["status"]=getValueOfStatus();
+
     }
     else
     {
         ret["status"]=Json::Value();
     }
+
     if(getExpiresAt())
     {
+
         ret["expires_at"]=getExpiresAt()->toDbStringLocal();
+
     }
     else
     {
         ret["expires_at"]=Json::Value();
     }
+
     if(getAcceptedAt())
     {
+
         ret["accepted_at"]=getAcceptedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["accepted_at"]=Json::Value();
     }
+
     if(getCreatedAt())
     {
+
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["created_at"]=Json::Value();
     }
+
     if(getUpdatedAt())
     {
+
         ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["updated_at"]=Json::Value();
     }
+
     return ret;
 }
 
@@ -1545,269 +1746,345 @@ Json::Value AdminUserInvitations::toMasqueradedJson(
     Json::Value ret;
     if(pMasqueradingVector.size() == 10)
     {
+
         if(!pMasqueradingVector[0].empty())
         {
             if(getId())
             {
+
                 ret[pMasqueradingVector[0]]=getValueOfId();
+
             }
             else
             {
                 ret[pMasqueradingVector[0]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[1].empty())
         {
             if(getEmail())
             {
+
                 ret[pMasqueradingVector[1]]=getValueOfEmail();
+
             }
             else
             {
                 ret[pMasqueradingVector[1]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[2].empty())
         {
             if(getTokenHash())
             {
+
                 ret[pMasqueradingVector[2]]=getValueOfTokenHash();
+
             }
             else
             {
                 ret[pMasqueradingVector[2]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[3].empty())
         {
             if(getPartnerId())
             {
+
                 ret[pMasqueradingVector[3]]=getValueOfPartnerId();
+
             }
             else
             {
                 ret[pMasqueradingVector[3]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[4].empty())
         {
             if(getUserId())
             {
+
                 ret[pMasqueradingVector[4]]=getValueOfUserId();
+
             }
             else
             {
                 ret[pMasqueradingVector[4]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[5].empty())
         {
             if(getStatus())
             {
+
                 ret[pMasqueradingVector[5]]=getValueOfStatus();
+
             }
             else
             {
                 ret[pMasqueradingVector[5]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[6].empty())
         {
             if(getExpiresAt())
             {
+
                 ret[pMasqueradingVector[6]]=getExpiresAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[6]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[7].empty())
         {
             if(getAcceptedAt())
             {
+
                 ret[pMasqueradingVector[7]]=getAcceptedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[7]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[8].empty())
         {
             if(getCreatedAt())
             {
+
                 ret[pMasqueradingVector[8]]=getCreatedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[8]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[9].empty())
         {
             if(getUpdatedAt())
             {
+
                 ret[pMasqueradingVector[9]]=getUpdatedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[9]]=Json::Value();
             }
         }
+
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getEmail())
     {
+
         ret["email"]=getValueOfEmail();
+
     }
     else
     {
         ret["email"]=Json::Value();
     }
+
     if(getTokenHash())
     {
+
         ret["token_hash"]=getValueOfTokenHash();
+
     }
     else
     {
         ret["token_hash"]=Json::Value();
     }
+
     if(getPartnerId())
     {
+
         ret["partner_id"]=getValueOfPartnerId();
+
     }
     else
     {
         ret["partner_id"]=Json::Value();
     }
+
     if(getUserId())
     {
+
         ret["user_id"]=getValueOfUserId();
+
     }
     else
     {
         ret["user_id"]=Json::Value();
     }
+
     if(getStatus())
     {
+
         ret["status"]=getValueOfStatus();
+
     }
     else
     {
         ret["status"]=Json::Value();
     }
+
     if(getExpiresAt())
     {
+
         ret["expires_at"]=getExpiresAt()->toDbStringLocal();
+
     }
     else
     {
         ret["expires_at"]=Json::Value();
     }
+
     if(getAcceptedAt())
     {
+
         ret["accepted_at"]=getAcceptedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["accepted_at"]=Json::Value();
     }
+
     if(getCreatedAt())
     {
+
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["created_at"]=Json::Value();
     }
+
     if(getUpdatedAt())
     {
+
         ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["updated_at"]=Json::Value();
     }
+
     return ret;
 }
 
 bool AdminUserInvitations::validateJsonForCreation(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, true))
             return false;
     }
+
     if(pJson.isMember("email"))
     {
         if(!validJsonOfField(1, "email", pJson["email"], err, true))
             return false;
     }
+
     else
     {
         err="The email column cannot be null";
         return false;
     }
+
     if(pJson.isMember("token_hash"))
     {
         if(!validJsonOfField(2, "token_hash", pJson["token_hash"], err, true))
             return false;
     }
+
     else
     {
         err="The token_hash column cannot be null";
         return false;
     }
+
     if(pJson.isMember("partner_id"))
     {
         if(!validJsonOfField(3, "partner_id", pJson["partner_id"], err, true))
             return false;
     }
+
     if(pJson.isMember("user_id"))
     {
         if(!validJsonOfField(4, "user_id", pJson["user_id"], err, true))
             return false;
     }
+
     if(pJson.isMember("status"))
     {
         if(!validJsonOfField(5, "status", pJson["status"], err, true))
             return false;
     }
+
     if(pJson.isMember("expires_at"))
     {
         if(!validJsonOfField(6, "expires_at", pJson["expires_at"], err, true))
             return false;
     }
+
     else
     {
         err="The expires_at column cannot be null";
         return false;
     }
+
     if(pJson.isMember("accepted_at"))
     {
         if(!validJsonOfField(7, "accepted_at", pJson["accepted_at"], err, true))
             return false;
     }
+
     if(pJson.isMember("created_at"))
     {
         if(!validJsonOfField(8, "created_at", pJson["created_at"], err, true))
             return false;
     }
+
     if(pJson.isMember("updated_at"))
     {
         if(!validJsonOfField(9, "updated_at", pJson["updated_at"], err, true))
             return false;
     }
+
     return true;
 }
 bool AdminUserInvitations::validateMasqueradedJsonForCreation(const Json::Value &pJson,
@@ -1820,6 +2097,7 @@ bool AdminUserInvitations::validateMasqueradedJsonForCreation(const Json::Value 
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty())
       {
           if(pJson.isMember(pMasqueradingVector[0]))
@@ -1827,7 +2105,9 @@ bool AdminUserInvitations::validateMasqueradedJsonForCreation(const Json::Value 
               if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[1].empty())
       {
           if(pJson.isMember(pMasqueradingVector[1]))
@@ -1835,12 +2115,15 @@ bool AdminUserInvitations::validateMasqueradedJsonForCreation(const Json::Value 
               if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[1] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[2].empty())
       {
           if(pJson.isMember(pMasqueradingVector[2]))
@@ -1848,12 +2131,15 @@ bool AdminUserInvitations::validateMasqueradedJsonForCreation(const Json::Value 
               if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[2] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[3].empty())
       {
           if(pJson.isMember(pMasqueradingVector[3]))
@@ -1861,7 +2147,9 @@ bool AdminUserInvitations::validateMasqueradedJsonForCreation(const Json::Value 
               if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[4].empty())
       {
           if(pJson.isMember(pMasqueradingVector[4]))
@@ -1869,7 +2157,9 @@ bool AdminUserInvitations::validateMasqueradedJsonForCreation(const Json::Value 
               if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[5].empty())
       {
           if(pJson.isMember(pMasqueradingVector[5]))
@@ -1877,7 +2167,9 @@ bool AdminUserInvitations::validateMasqueradedJsonForCreation(const Json::Value 
               if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[6].empty())
       {
           if(pJson.isMember(pMasqueradingVector[6]))
@@ -1885,12 +2177,15 @@ bool AdminUserInvitations::validateMasqueradedJsonForCreation(const Json::Value 
               if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[6] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[7].empty())
       {
           if(pJson.isMember(pMasqueradingVector[7]))
@@ -1898,7 +2193,9 @@ bool AdminUserInvitations::validateMasqueradedJsonForCreation(const Json::Value 
               if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[8].empty())
       {
           if(pJson.isMember(pMasqueradingVector[8]))
@@ -1906,7 +2203,9 @@ bool AdminUserInvitations::validateMasqueradedJsonForCreation(const Json::Value 
               if(!validJsonOfField(8, pMasqueradingVector[8], pJson[pMasqueradingVector[8]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[9].empty())
       {
           if(pJson.isMember(pMasqueradingVector[9]))
@@ -1914,7 +2213,9 @@ bool AdminUserInvitations::validateMasqueradedJsonForCreation(const Json::Value 
               if(!validJsonOfField(9, pMasqueradingVector[9], pJson[pMasqueradingVector[9]], err, true))
                   return false;
           }
+
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -1925,61 +2226,73 @@ bool AdminUserInvitations::validateMasqueradedJsonForCreation(const Json::Value 
 }
 bool AdminUserInvitations::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, false))
             return false;
     }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
     if(pJson.isMember("email"))
     {
         if(!validJsonOfField(1, "email", pJson["email"], err, false))
             return false;
     }
+
     if(pJson.isMember("token_hash"))
     {
         if(!validJsonOfField(2, "token_hash", pJson["token_hash"], err, false))
             return false;
     }
+
     if(pJson.isMember("partner_id"))
     {
         if(!validJsonOfField(3, "partner_id", pJson["partner_id"], err, false))
             return false;
     }
+
     if(pJson.isMember("user_id"))
     {
         if(!validJsonOfField(4, "user_id", pJson["user_id"], err, false))
             return false;
     }
+
     if(pJson.isMember("status"))
     {
         if(!validJsonOfField(5, "status", pJson["status"], err, false))
             return false;
     }
+
     if(pJson.isMember("expires_at"))
     {
         if(!validJsonOfField(6, "expires_at", pJson["expires_at"], err, false))
             return false;
     }
+
     if(pJson.isMember("accepted_at"))
     {
         if(!validJsonOfField(7, "accepted_at", pJson["accepted_at"], err, false))
             return false;
     }
+
     if(pJson.isMember("created_at"))
     {
         if(!validJsonOfField(8, "created_at", pJson["created_at"], err, false))
             return false;
     }
+
     if(pJson.isMember("updated_at"))
     {
         if(!validJsonOfField(9, "updated_at", pJson["updated_at"], err, false))
             return false;
     }
+
     return true;
 }
 bool AdminUserInvitations::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
@@ -1992,61 +2305,73 @@ bool AdminUserInvitations::validateMasqueradedJsonForUpdate(const Json::Value &p
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
       {
           if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
               return false;
       }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
       if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
       {
           if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
       {
           if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
       {
           if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
       {
           if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
       {
           if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
       {
           if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
       {
           if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
       {
           if(!validJsonOfField(8, pMasqueradingVector[8], pJson[pMasqueradingVector[8]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
       {
           if(!validJsonOfField(9, pMasqueradingVector[9], pJson[pMasqueradingVector[9]], err, false))
               return false;
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -2063,141 +2388,183 @@ bool AdminUserInvitations::validJsonOfField(size_t index,
 {
     switch(index)
     {
+
         case 0:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 1:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 250)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 250)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 250)";
                 return false;
             }
+
             break;
+
         case 2:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 300)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 300)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 300)";
                 return false;
             }
+
             break;
+
         case 3:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 4:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 5:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 6:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 7:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 8:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 9:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         default:
             err="Internal error in the server";
             return false;
     }
     return true;
 }
+

@@ -1,3 +1,4 @@
+
 /**
  *
  *  Payments.h
@@ -39,6 +40,18 @@ namespace drogon_model
 namespace Gnp
 {
 
+
+class Affiliates;
+
+class CommercialPartners;
+
+class Coupons;
+
+class Newspapers;
+
+class SubscriptionPlans;
+
+
 class Payments
 {
   public:
@@ -55,14 +68,32 @@ class Payments
         static const std::string _status;
         static const std::string _created_at;
         static const std::string _updated_at;
+        static const std::string _payment_type;
+        static const std::string _payment_channel;
+        static const std::string _payment_provider;
+        static const std::string _currency;
+        static const std::string _gross_amount;
+        static const std::string _discount_amount;
+        static const std::string _gateway_fee;
+        static const std::string _net_amount;
+        static const std::string _subscription_plan_id;
+        static const std::string _newspaper_id;
+        static const std::string _partner_id;
+        static const std::string _affiliate_id;
+        static const std::string _coupon_id;
+
     };
 
     static const int primaryKeyNumber;
     static const std::string tableName;
     static const bool hasPrimaryKey;
+
     static const std::string primaryKeyName;
+
     using PrimaryKeyType = std::string;
     const PrimaryKeyType &getPrimaryKey() const;
+
+
 
     /**
      * @brief constructor
@@ -210,14 +241,167 @@ class Payments
     void setUpdatedAt(const ::trantor::Date &pUpdatedAt) noexcept;
     void setUpdatedAtToNull() noexcept;
 
+    /**  For column payment_type  */
+    ///Get the value of the column payment_type, returns the default value if the column is null
+    const std::string &getValueOfPaymentType() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getPaymentType() const noexcept;
+    ///Set the value of the column payment_type
+    void setPaymentType(const std::string &pPaymentType) noexcept;
+    void setPaymentType(std::string &&pPaymentType) noexcept;
 
-    static size_t getColumnNumber() noexcept {  return 11;  }
+    /**  For column payment_channel  */
+    ///Get the value of the column payment_channel, returns the default value if the column is null
+    const std::string &getValueOfPaymentChannel() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getPaymentChannel() const noexcept;
+    ///Set the value of the column payment_channel
+    void setPaymentChannel(const std::string &pPaymentChannel) noexcept;
+    void setPaymentChannel(std::string &&pPaymentChannel) noexcept;
+    void setPaymentChannelToNull() noexcept;
+
+    /**  For column payment_provider  */
+    ///Get the value of the column payment_provider, returns the default value if the column is null
+    const std::string &getValueOfPaymentProvider() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getPaymentProvider() const noexcept;
+    ///Set the value of the column payment_provider
+    void setPaymentProvider(const std::string &pPaymentProvider) noexcept;
+    void setPaymentProvider(std::string &&pPaymentProvider) noexcept;
+    void setPaymentProviderToNull() noexcept;
+
+    /**  For column currency  */
+    ///Get the value of the column currency, returns the default value if the column is null
+    const std::string &getValueOfCurrency() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getCurrency() const noexcept;
+    ///Set the value of the column currency
+    void setCurrency(const std::string &pCurrency) noexcept;
+    void setCurrency(std::string &&pCurrency) noexcept;
+
+    /**  For column gross_amount  */
+    ///Get the value of the column gross_amount, returns the default value if the column is null
+    const std::string &getValueOfGrossAmount() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getGrossAmount() const noexcept;
+    ///Set the value of the column gross_amount
+    void setGrossAmount(const std::string &pGrossAmount) noexcept;
+    void setGrossAmount(std::string &&pGrossAmount) noexcept;
+    void setGrossAmountToNull() noexcept;
+
+    /**  For column discount_amount  */
+    ///Get the value of the column discount_amount, returns the default value if the column is null
+    const std::string &getValueOfDiscountAmount() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getDiscountAmount() const noexcept;
+    ///Set the value of the column discount_amount
+    void setDiscountAmount(const std::string &pDiscountAmount) noexcept;
+    void setDiscountAmount(std::string &&pDiscountAmount) noexcept;
+
+    /**  For column gateway_fee  */
+    ///Get the value of the column gateway_fee, returns the default value if the column is null
+    const std::string &getValueOfGatewayFee() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getGatewayFee() const noexcept;
+    ///Set the value of the column gateway_fee
+    void setGatewayFee(const std::string &pGatewayFee) noexcept;
+    void setGatewayFee(std::string &&pGatewayFee) noexcept;
+
+    /**  For column net_amount  */
+    ///Get the value of the column net_amount, returns the default value if the column is null
+    const std::string &getValueOfNetAmount() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getNetAmount() const noexcept;
+    ///Set the value of the column net_amount
+    void setNetAmount(const std::string &pNetAmount) noexcept;
+    void setNetAmount(std::string &&pNetAmount) noexcept;
+    void setNetAmountToNull() noexcept;
+
+    /**  For column subscription_plan_id  */
+    ///Get the value of the column subscription_plan_id, returns the default value if the column is null
+    const std::string &getValueOfSubscriptionPlanId() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getSubscriptionPlanId() const noexcept;
+    ///Set the value of the column subscription_plan_id
+    void setSubscriptionPlanId(const std::string &pSubscriptionPlanId) noexcept;
+    void setSubscriptionPlanId(std::string &&pSubscriptionPlanId) noexcept;
+    void setSubscriptionPlanIdToNull() noexcept;
+
+    /**  For column newspaper_id  */
+    ///Get the value of the column newspaper_id, returns the default value if the column is null
+    const std::string &getValueOfNewspaperId() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getNewspaperId() const noexcept;
+    ///Set the value of the column newspaper_id
+    void setNewspaperId(const std::string &pNewspaperId) noexcept;
+    void setNewspaperId(std::string &&pNewspaperId) noexcept;
+    void setNewspaperIdToNull() noexcept;
+
+    /**  For column partner_id  */
+    ///Get the value of the column partner_id, returns the default value if the column is null
+    const std::string &getValueOfPartnerId() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getPartnerId() const noexcept;
+    ///Set the value of the column partner_id
+    void setPartnerId(const std::string &pPartnerId) noexcept;
+    void setPartnerId(std::string &&pPartnerId) noexcept;
+    void setPartnerIdToNull() noexcept;
+
+    /**  For column affiliate_id  */
+    ///Get the value of the column affiliate_id, returns the default value if the column is null
+    const std::string &getValueOfAffiliateId() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getAffiliateId() const noexcept;
+    ///Set the value of the column affiliate_id
+    void setAffiliateId(const std::string &pAffiliateId) noexcept;
+    void setAffiliateId(std::string &&pAffiliateId) noexcept;
+    void setAffiliateIdToNull() noexcept;
+
+    /**  For column coupon_id  */
+    ///Get the value of the column coupon_id, returns the default value if the column is null
+    const std::string &getValueOfCouponId() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getCouponId() const noexcept;
+    ///Set the value of the column coupon_id
+    void setCouponId(const std::string &pCouponId) noexcept;
+    void setCouponId(std::string &&pCouponId) noexcept;
+    void setCouponIdToNull() noexcept;
+
+
+
+    static size_t getColumnNumber() noexcept {  return 24;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
     std::string toString() const;
     Json::Value toMasqueradedJson(const std::vector<std::string> &pMasqueradingVector) const;
     /// Relationship interfaces
+
+    CommercialPartners getCommercialPartners(const drogon::orm::DbClientPtr &clientPtr) const;
+    void getCommercialPartners(const drogon::orm::DbClientPtr &clientPtr,
+                               const std::function<void(CommercialPartners)> &rcb,
+                               const drogon::orm::ExceptionCallback &ecb) const;
+
+    Newspapers getNewspapers(const drogon::orm::DbClientPtr &clientPtr) const;
+    void getNewspapers(const drogon::orm::DbClientPtr &clientPtr,
+                       const std::function<void(Newspapers)> &rcb,
+                       const drogon::orm::ExceptionCallback &ecb) const;
+
+    SubscriptionPlans getSubscriptionPlans(const drogon::orm::DbClientPtr &clientPtr) const;
+    void getSubscriptionPlans(const drogon::orm::DbClientPtr &clientPtr,
+                              const std::function<void(SubscriptionPlans)> &rcb,
+                              const drogon::orm::ExceptionCallback &ecb) const;
+
+    Affiliates getAffiliates(const drogon::orm::DbClientPtr &clientPtr) const;
+    void getAffiliates(const drogon::orm::DbClientPtr &clientPtr,
+                       const std::function<void(Affiliates)> &rcb,
+                       const drogon::orm::ExceptionCallback &ecb) const;
+
+    Coupons getCoupons(const drogon::orm::DbClientPtr &clientPtr) const;
+    void getCoupons(const drogon::orm::DbClientPtr &clientPtr,
+                    const std::function<void(Coupons)> &rcb,
+                    const drogon::orm::ExceptionCallback &ecb) const;
+
   private:
     friend drogon::orm::Mapper<Payments>;
     friend drogon::orm::BaseBuilder<Payments, true, true>;
@@ -244,6 +428,20 @@ class Payments
     std::shared_ptr<std::string> status_;
     std::shared_ptr<::trantor::Date> createdAt_;
     std::shared_ptr<::trantor::Date> updatedAt_;
+    std::shared_ptr<std::string> paymentType_;
+    std::shared_ptr<std::string> paymentChannel_;
+    std::shared_ptr<std::string> paymentProvider_;
+    std::shared_ptr<std::string> currency_;
+    std::shared_ptr<std::string> grossAmount_;
+    std::shared_ptr<std::string> discountAmount_;
+    std::shared_ptr<std::string> gatewayFee_;
+    std::shared_ptr<std::string> netAmount_;
+    std::shared_ptr<std::string> subscriptionPlanId_;
+    std::shared_ptr<std::string> newspaperId_;
+    std::shared_ptr<std::string> partnerId_;
+    std::shared_ptr<std::string> affiliateId_;
+    std::shared_ptr<std::string> couponId_;
+
     struct MetaData
     {
         const std::string colName_;
@@ -255,17 +453,23 @@ class Payments
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[11]={ false };
+    bool dirtyFlag_[24]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
+
         static const std::string sql="select * from " + tableName + " where id = $1";
+
+
         return sql;
     }
 
     static const std::string &sqlForDeletingByPrimaryKey()
     {
+
         static const std::string sql="delete from " + tableName + " where id = $1";
+
+
         return sql;
     }
     std::string sqlForInserting(bool &needSelection) const
@@ -275,45 +479,54 @@ class Payments
         needSelection = false;
         sql += "id,";
         ++parametersCount;
+
         if(!dirtyFlag_[0])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[1])
         {
             sql += "user_id,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[2])
         {
             sql += "user_name,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[3])
         {
             sql += "user_email,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[4])
         {
             sql += "package_name,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[5])
         {
             sql += "amount_paid,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[6])
         {
             sql += "receipt_no,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[7])
         {
             sql += "transaction_reference,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[8])
         {
             sql += "status,";
@@ -321,15 +534,100 @@ class Payments
         }
         sql += "created_at,";
         ++parametersCount;
+
         if(!dirtyFlag_[9])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[10])
         {
             sql += "updated_at,";
             ++parametersCount;
         }
+        sql += "payment_type,";
+        ++parametersCount;
+
+        if(!dirtyFlag_[11])
+        {
+            needSelection=true;
+        }
+
+        if(dirtyFlag_[12])
+        {
+            sql += "payment_channel,";
+            ++parametersCount;
+        }
+
+        if(dirtyFlag_[13])
+        {
+            sql += "payment_provider,";
+            ++parametersCount;
+        }
+        sql += "currency,";
+        ++parametersCount;
+
+        if(!dirtyFlag_[14])
+        {
+            needSelection=true;
+        }
+
+        if(dirtyFlag_[15])
+        {
+            sql += "gross_amount,";
+            ++parametersCount;
+        }
+        sql += "discount_amount,";
+        ++parametersCount;
+
+        if(!dirtyFlag_[16])
+        {
+            needSelection=true;
+        }
+        sql += "gateway_fee,";
+        ++parametersCount;
+
+        if(!dirtyFlag_[17])
+        {
+            needSelection=true;
+        }
+
+        if(dirtyFlag_[18])
+        {
+            sql += "net_amount,";
+            ++parametersCount;
+        }
+
+        if(dirtyFlag_[19])
+        {
+            sql += "subscription_plan_id,";
+            ++parametersCount;
+        }
+
+        if(dirtyFlag_[20])
+        {
+            sql += "newspaper_id,";
+            ++parametersCount;
+        }
+
+        if(dirtyFlag_[21])
+        {
+            sql += "partner_id,";
+            ++parametersCount;
+        }
+
+        if(dirtyFlag_[22])
+        {
+            sql += "affiliate_id,";
+            ++parametersCount;
+        }
+
+        if(dirtyFlag_[23])
+        {
+            sql += "coupon_id,";
+            ++parametersCount;
+        }
+
         if(parametersCount > 0)
         {
             sql[sql.length()-1]=')';
@@ -338,76 +636,238 @@ class Payments
         else
             sql += ") values (";
 
+
         int placeholder=1;
         char placeholderStr[64];
         size_t n=0;
+
         if(dirtyFlag_[0])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[1])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[2])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[3])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[4])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[5])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[6])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[7])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[8])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[9])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[10])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
+        if(dirtyFlag_[11])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
+        else
+        {
+            sql +="default,";
+        }
+
+        if(dirtyFlag_[12])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
+        if(dirtyFlag_[13])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
+        if(dirtyFlag_[14])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
+        else
+        {
+            sql +="default,";
+        }
+
+        if(dirtyFlag_[15])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
+        if(dirtyFlag_[16])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
+        else
+        {
+            sql +="default,";
+        }
+
+        if(dirtyFlag_[17])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
+        else
+        {
+            sql +="default,";
+        }
+
+        if(dirtyFlag_[18])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
+        if(dirtyFlag_[19])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
+        if(dirtyFlag_[20])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
+        if(dirtyFlag_[21])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
+        if(dirtyFlag_[22])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
+        if(dirtyFlag_[23])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
         if(parametersCount > 0)
         {
             sql.resize(sql.length() - 1);
         }
+
         if(needSelection)
         {
             sql.append(") returning *");
@@ -416,9 +876,11 @@ class Payments
         {
             sql.append(1, ')');
         }
+
         LOG_TRACE << sql;
         return sql;
     }
 };
 } // namespace Gnp
+
 } // namespace drogon_model

@@ -1,3 +1,4 @@
+
 /**
  *
  *  UserGameStats.cc
@@ -6,28 +7,50 @@
  */
 
 #include "UserGameStats.h"
+
 #include <drogon/utils/Utilities.h>
+
 #include <string>
+
 
 using namespace drogon;
 using namespace drogon::orm;
 using namespace drogon_model::Gnp;
 
+
+
 const std::string UserGameStats::Cols::_id = "\"id\"";
+
 const std::string UserGameStats::Cols::_total_points = "\"total_points\"";
+
 const std::string UserGameStats::Cols::_games_played = "\"games_played\"";
+
 const std::string UserGameStats::Cols::_games_won = "\"games_won\"";
+
 const std::string UserGameStats::Cols::_games_lost = "\"games_lost\"";
+
 const std::string UserGameStats::Cols::_games_draw = "\"games_draw\"";
+
 const std::string UserGameStats::Cols::_user_id = "\"user_id\"";
+
 const std::string UserGameStats::Cols::_game_type = "\"game_type\"";
+
 const std::string UserGameStats::Cols::_current_streak = "\"current_streak\"";
+
 const std::string UserGameStats::Cols::_longest_streak = "\"longest_streak\"";
+
 const std::string UserGameStats::Cols::_win_rate = "\"win_rate\"";
+
 const std::string UserGameStats::Cols::_last_played = "\"last_played\"";
+
 const std::string UserGameStats::Cols::_updated_at = "\"updated_at\"";
+
+
 const std::string UserGameStats::primaryKeyName = "id";
+
+
 const bool UserGameStats::hasPrimaryKey = true;
+
 const std::string UserGameStats::tableName = "\"user_game_stats\"";
 
 const std::vector<typename UserGameStats::MetaData> UserGameStats::metaData_={
@@ -44,6 +67,7 @@ const std::vector<typename UserGameStats::MetaData> UserGameStats::metaData_={
 {"win_rate","std::string","numeric",0,0,0,0},
 {"last_played","::trantor::Date","timestamp without time zone",0,0,0,0},
 {"updated_at","::trantor::Date","timestamp without time zone",0,0,0,0}
+
 };
 const std::string &UserGameStats::getColumnName(size_t index) noexcept(false)
 {
@@ -54,55 +78,90 @@ UserGameStats::UserGameStats(const Row &r, const ssize_t indexOffset) noexcept
 {
     if(indexOffset < 0)
     {
+
         if(!r["id"].isNull())
         {
+
             id_=std::make_shared<std::string>(r["id"].as<std::string>());
+
         }
+
         if(!r["total_points"].isNull())
         {
+
             totalPoints_=std::make_shared<int32_t>(r["total_points"].as<int32_t>());
+
         }
+
         if(!r["games_played"].isNull())
         {
+
             gamesPlayed_=std::make_shared<int32_t>(r["games_played"].as<int32_t>());
+
         }
+
         if(!r["games_won"].isNull())
         {
+
             gamesWon_=std::make_shared<int32_t>(r["games_won"].as<int32_t>());
+
         }
+
         if(!r["games_lost"].isNull())
         {
+
             gamesLost_=std::make_shared<int32_t>(r["games_lost"].as<int32_t>());
+
         }
+
         if(!r["games_draw"].isNull())
         {
+
             gamesDraw_=std::make_shared<int32_t>(r["games_draw"].as<int32_t>());
+
         }
+
         if(!r["user_id"].isNull())
         {
+
             userId_=std::make_shared<std::string>(r["user_id"].as<std::string>());
+
         }
+
         if(!r["game_type"].isNull())
         {
+
             gameType_=std::make_shared<int32_t>(r["game_type"].as<int32_t>());
+
         }
+
         if(!r["current_streak"].isNull())
         {
+
             currentStreak_=std::make_shared<int32_t>(r["current_streak"].as<int32_t>());
+
         }
+
         if(!r["longest_streak"].isNull())
         {
+
             longestStreak_=std::make_shared<int32_t>(r["longest_streak"].as<int32_t>());
+
         }
+
         if(!r["win_rate"].isNull())
         {
+
             winRate_=std::make_shared<std::string>(r["win_rate"].as<std::string>());
+
         }
+
         if(!r["last_played"].isNull())
         {
             auto timeStr = r["last_played"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -120,11 +179,13 @@ UserGameStats::UserGameStats(const Row &r, const ssize_t indexOffset) noexcept
                 lastPlayed_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         if(!r["updated_at"].isNull())
         {
             auto timeStr = r["updated_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -142,6 +203,7 @@ UserGameStats::UserGameStats(const Row &r, const ssize_t indexOffset) noexcept
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
     }
     else
     {
@@ -152,67 +214,102 @@ UserGameStats::UserGameStats(const Row &r, const ssize_t indexOffset) noexcept
             return;
         }
         size_t index;
+
         index = offset + 0;
         if(!r[index].isNull())
         {
+
             id_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 1;
         if(!r[index].isNull())
         {
+
             totalPoints_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 2;
         if(!r[index].isNull())
         {
+
             gamesPlayed_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 3;
         if(!r[index].isNull())
         {
+
             gamesWon_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 4;
         if(!r[index].isNull())
         {
+
             gamesLost_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 5;
         if(!r[index].isNull())
         {
+
             gamesDraw_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 6;
         if(!r[index].isNull())
         {
+
             userId_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 7;
         if(!r[index].isNull())
         {
+
             gameType_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 8;
         if(!r[index].isNull())
         {
+
             currentStreak_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 9;
         if(!r[index].isNull())
         {
+
             longestStreak_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 10;
         if(!r[index].isNull())
         {
+
             winRate_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 11;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -230,12 +327,14 @@ UserGameStats::UserGameStats(const Row &r, const ssize_t indexOffset) noexcept
                 lastPlayed_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         index = offset + 12;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -253,6 +352,7 @@ UserGameStats::UserGameStats(const Row &r, const ssize_t indexOffset) noexcept
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
     }
 
 }
@@ -264,6 +364,7 @@ UserGameStats::UserGameStats(const Json::Value &pJson, const std::vector<std::st
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         dirtyFlag_[0] = true;
@@ -272,6 +373,7 @@ UserGameStats::UserGameStats(const Json::Value &pJson, const std::vector<std::st
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -280,6 +382,7 @@ UserGameStats::UserGameStats(const Json::Value &pJson, const std::vector<std::st
             totalPoints_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[1]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -288,6 +391,7 @@ UserGameStats::UserGameStats(const Json::Value &pJson, const std::vector<std::st
             gamesPlayed_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[2]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -296,6 +400,7 @@ UserGameStats::UserGameStats(const Json::Value &pJson, const std::vector<std::st
             gamesWon_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[3]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -304,6 +409,7 @@ UserGameStats::UserGameStats(const Json::Value &pJson, const std::vector<std::st
             gamesLost_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[4]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -312,6 +418,7 @@ UserGameStats::UserGameStats(const Json::Value &pJson, const std::vector<std::st
             gamesDraw_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[5]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -320,6 +427,7 @@ UserGameStats::UserGameStats(const Json::Value &pJson, const std::vector<std::st
             userId_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -328,6 +436,7 @@ UserGameStats::UserGameStats(const Json::Value &pJson, const std::vector<std::st
             gameType_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[7]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
     {
         dirtyFlag_[8] = true;
@@ -336,6 +445,7 @@ UserGameStats::UserGameStats(const Json::Value &pJson, const std::vector<std::st
             currentStreak_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[8]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
     {
         dirtyFlag_[9] = true;
@@ -344,6 +454,7 @@ UserGameStats::UserGameStats(const Json::Value &pJson, const std::vector<std::st
             longestStreak_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[9]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
     {
         dirtyFlag_[10] = true;
@@ -352,6 +463,7 @@ UserGameStats::UserGameStats(const Json::Value &pJson, const std::vector<std::st
             winRate_=std::make_shared<std::string>(pJson[pMasqueradingVector[10]].asString());
         }
     }
+
     if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
     {
         dirtyFlag_[11] = true;
@@ -360,6 +472,7 @@ UserGameStats::UserGameStats(const Json::Value &pJson, const std::vector<std::st
             auto timeStr = pJson[pMasqueradingVector[11]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -378,6 +491,7 @@ UserGameStats::UserGameStats(const Json::Value &pJson, const std::vector<std::st
             }
         }
     }
+
     if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
     {
         dirtyFlag_[12] = true;
@@ -386,6 +500,7 @@ UserGameStats::UserGameStats(const Json::Value &pJson, const std::vector<std::st
             auto timeStr = pJson[pMasqueradingVector[12]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -404,10 +519,12 @@ UserGameStats::UserGameStats(const Json::Value &pJson, const std::vector<std::st
             }
         }
     }
+
 }
 
 UserGameStats::UserGameStats(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         dirtyFlag_[0]=true;
@@ -416,6 +533,7 @@ UserGameStats::UserGameStats(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("total_points"))
     {
         dirtyFlag_[1]=true;
@@ -424,6 +542,7 @@ UserGameStats::UserGameStats(const Json::Value &pJson) noexcept(false)
             totalPoints_=std::make_shared<int32_t>((int32_t)pJson["total_points"].asInt64());
         }
     }
+
     if(pJson.isMember("games_played"))
     {
         dirtyFlag_[2]=true;
@@ -432,6 +551,7 @@ UserGameStats::UserGameStats(const Json::Value &pJson) noexcept(false)
             gamesPlayed_=std::make_shared<int32_t>((int32_t)pJson["games_played"].asInt64());
         }
     }
+
     if(pJson.isMember("games_won"))
     {
         dirtyFlag_[3]=true;
@@ -440,6 +560,7 @@ UserGameStats::UserGameStats(const Json::Value &pJson) noexcept(false)
             gamesWon_=std::make_shared<int32_t>((int32_t)pJson["games_won"].asInt64());
         }
     }
+
     if(pJson.isMember("games_lost"))
     {
         dirtyFlag_[4]=true;
@@ -448,6 +569,7 @@ UserGameStats::UserGameStats(const Json::Value &pJson) noexcept(false)
             gamesLost_=std::make_shared<int32_t>((int32_t)pJson["games_lost"].asInt64());
         }
     }
+
     if(pJson.isMember("games_draw"))
     {
         dirtyFlag_[5]=true;
@@ -456,6 +578,7 @@ UserGameStats::UserGameStats(const Json::Value &pJson) noexcept(false)
             gamesDraw_=std::make_shared<int32_t>((int32_t)pJson["games_draw"].asInt64());
         }
     }
+
     if(pJson.isMember("user_id"))
     {
         dirtyFlag_[6]=true;
@@ -464,6 +587,7 @@ UserGameStats::UserGameStats(const Json::Value &pJson) noexcept(false)
             userId_=std::make_shared<std::string>(pJson["user_id"].asString());
         }
     }
+
     if(pJson.isMember("game_type"))
     {
         dirtyFlag_[7]=true;
@@ -472,6 +596,7 @@ UserGameStats::UserGameStats(const Json::Value &pJson) noexcept(false)
             gameType_=std::make_shared<int32_t>((int32_t)pJson["game_type"].asInt64());
         }
     }
+
     if(pJson.isMember("current_streak"))
     {
         dirtyFlag_[8]=true;
@@ -480,6 +605,7 @@ UserGameStats::UserGameStats(const Json::Value &pJson) noexcept(false)
             currentStreak_=std::make_shared<int32_t>((int32_t)pJson["current_streak"].asInt64());
         }
     }
+
     if(pJson.isMember("longest_streak"))
     {
         dirtyFlag_[9]=true;
@@ -488,6 +614,7 @@ UserGameStats::UserGameStats(const Json::Value &pJson) noexcept(false)
             longestStreak_=std::make_shared<int32_t>((int32_t)pJson["longest_streak"].asInt64());
         }
     }
+
     if(pJson.isMember("win_rate"))
     {
         dirtyFlag_[10]=true;
@@ -496,6 +623,7 @@ UserGameStats::UserGameStats(const Json::Value &pJson) noexcept(false)
             winRate_=std::make_shared<std::string>(pJson["win_rate"].asString());
         }
     }
+
     if(pJson.isMember("last_played"))
     {
         dirtyFlag_[11]=true;
@@ -504,6 +632,7 @@ UserGameStats::UserGameStats(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["last_played"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -522,6 +651,7 @@ UserGameStats::UserGameStats(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("updated_at"))
     {
         dirtyFlag_[12]=true;
@@ -530,6 +660,7 @@ UserGameStats::UserGameStats(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["updated_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -548,6 +679,7 @@ UserGameStats::UserGameStats(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
 }
 
 void UserGameStats::updateByMasqueradedJson(const Json::Value &pJson,
@@ -558,6 +690,7 @@ void UserGameStats::updateByMasqueradedJson(const Json::Value &pJson,
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         if(!pJson[pMasqueradingVector[0]].isNull())
@@ -565,6 +698,7 @@ void UserGameStats::updateByMasqueradedJson(const Json::Value &pJson,
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -573,6 +707,7 @@ void UserGameStats::updateByMasqueradedJson(const Json::Value &pJson,
             totalPoints_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[1]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -581,6 +716,7 @@ void UserGameStats::updateByMasqueradedJson(const Json::Value &pJson,
             gamesPlayed_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[2]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -589,6 +725,7 @@ void UserGameStats::updateByMasqueradedJson(const Json::Value &pJson,
             gamesWon_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[3]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -597,6 +734,7 @@ void UserGameStats::updateByMasqueradedJson(const Json::Value &pJson,
             gamesLost_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[4]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -605,6 +743,7 @@ void UserGameStats::updateByMasqueradedJson(const Json::Value &pJson,
             gamesDraw_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[5]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -613,6 +752,7 @@ void UserGameStats::updateByMasqueradedJson(const Json::Value &pJson,
             userId_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -621,6 +761,7 @@ void UserGameStats::updateByMasqueradedJson(const Json::Value &pJson,
             gameType_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[7]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
     {
         dirtyFlag_[8] = true;
@@ -629,6 +770,7 @@ void UserGameStats::updateByMasqueradedJson(const Json::Value &pJson,
             currentStreak_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[8]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
     {
         dirtyFlag_[9] = true;
@@ -637,6 +779,7 @@ void UserGameStats::updateByMasqueradedJson(const Json::Value &pJson,
             longestStreak_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[9]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
     {
         dirtyFlag_[10] = true;
@@ -645,6 +788,7 @@ void UserGameStats::updateByMasqueradedJson(const Json::Value &pJson,
             winRate_=std::make_shared<std::string>(pJson[pMasqueradingVector[10]].asString());
         }
     }
+
     if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
     {
         dirtyFlag_[11] = true;
@@ -653,6 +797,7 @@ void UserGameStats::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[11]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -671,6 +816,7 @@ void UserGameStats::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
     if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
     {
         dirtyFlag_[12] = true;
@@ -679,6 +825,7 @@ void UserGameStats::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[12]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -697,10 +844,12 @@ void UserGameStats::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
 }
 
 void UserGameStats::updateByJson(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         if(!pJson["id"].isNull())
@@ -708,6 +857,7 @@ void UserGameStats::updateByJson(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("total_points"))
     {
         dirtyFlag_[1] = true;
@@ -716,6 +866,7 @@ void UserGameStats::updateByJson(const Json::Value &pJson) noexcept(false)
             totalPoints_=std::make_shared<int32_t>((int32_t)pJson["total_points"].asInt64());
         }
     }
+
     if(pJson.isMember("games_played"))
     {
         dirtyFlag_[2] = true;
@@ -724,6 +875,7 @@ void UserGameStats::updateByJson(const Json::Value &pJson) noexcept(false)
             gamesPlayed_=std::make_shared<int32_t>((int32_t)pJson["games_played"].asInt64());
         }
     }
+
     if(pJson.isMember("games_won"))
     {
         dirtyFlag_[3] = true;
@@ -732,6 +884,7 @@ void UserGameStats::updateByJson(const Json::Value &pJson) noexcept(false)
             gamesWon_=std::make_shared<int32_t>((int32_t)pJson["games_won"].asInt64());
         }
     }
+
     if(pJson.isMember("games_lost"))
     {
         dirtyFlag_[4] = true;
@@ -740,6 +893,7 @@ void UserGameStats::updateByJson(const Json::Value &pJson) noexcept(false)
             gamesLost_=std::make_shared<int32_t>((int32_t)pJson["games_lost"].asInt64());
         }
     }
+
     if(pJson.isMember("games_draw"))
     {
         dirtyFlag_[5] = true;
@@ -748,6 +902,7 @@ void UserGameStats::updateByJson(const Json::Value &pJson) noexcept(false)
             gamesDraw_=std::make_shared<int32_t>((int32_t)pJson["games_draw"].asInt64());
         }
     }
+
     if(pJson.isMember("user_id"))
     {
         dirtyFlag_[6] = true;
@@ -756,6 +911,7 @@ void UserGameStats::updateByJson(const Json::Value &pJson) noexcept(false)
             userId_=std::make_shared<std::string>(pJson["user_id"].asString());
         }
     }
+
     if(pJson.isMember("game_type"))
     {
         dirtyFlag_[7] = true;
@@ -764,6 +920,7 @@ void UserGameStats::updateByJson(const Json::Value &pJson) noexcept(false)
             gameType_=std::make_shared<int32_t>((int32_t)pJson["game_type"].asInt64());
         }
     }
+
     if(pJson.isMember("current_streak"))
     {
         dirtyFlag_[8] = true;
@@ -772,6 +929,7 @@ void UserGameStats::updateByJson(const Json::Value &pJson) noexcept(false)
             currentStreak_=std::make_shared<int32_t>((int32_t)pJson["current_streak"].asInt64());
         }
     }
+
     if(pJson.isMember("longest_streak"))
     {
         dirtyFlag_[9] = true;
@@ -780,6 +938,7 @@ void UserGameStats::updateByJson(const Json::Value &pJson) noexcept(false)
             longestStreak_=std::make_shared<int32_t>((int32_t)pJson["longest_streak"].asInt64());
         }
     }
+
     if(pJson.isMember("win_rate"))
     {
         dirtyFlag_[10] = true;
@@ -788,6 +947,7 @@ void UserGameStats::updateByJson(const Json::Value &pJson) noexcept(false)
             winRate_=std::make_shared<std::string>(pJson["win_rate"].asString());
         }
     }
+
     if(pJson.isMember("last_played"))
     {
         dirtyFlag_[11] = true;
@@ -796,6 +956,7 @@ void UserGameStats::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["last_played"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -814,6 +975,7 @@ void UserGameStats::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("updated_at"))
     {
         dirtyFlag_[12] = true;
@@ -822,6 +984,7 @@ void UserGameStats::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["updated_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -840,6 +1003,7 @@ void UserGameStats::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
 }
 
 const std::string &UserGameStats::getValueOfId() const noexcept
@@ -1147,6 +1311,7 @@ void UserGameStats::updateId(const uint64_t id)
 {
 }
 
+
 const std::vector<std::string> &UserGameStats::insertColumns() noexcept
 {
     static const std::vector<std::string> inCols={
@@ -1163,12 +1328,14 @@ const std::vector<std::string> &UserGameStats::insertColumns() noexcept
         "win_rate",
         "last_played",
         "updated_at"
+
     };
     return inCols;
 }
 
 void UserGameStats::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -1180,6 +1347,7 @@ void UserGameStats::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getTotalPoints())
@@ -1191,6 +1359,7 @@ void UserGameStats::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getGamesPlayed())
@@ -1202,6 +1371,7 @@ void UserGameStats::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getGamesWon())
@@ -1213,6 +1383,7 @@ void UserGameStats::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getGamesLost())
@@ -1224,6 +1395,7 @@ void UserGameStats::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getGamesDraw())
@@ -1235,6 +1407,7 @@ void UserGameStats::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getUserId())
@@ -1246,6 +1419,7 @@ void UserGameStats::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getGameType())
@@ -1257,6 +1431,7 @@ void UserGameStats::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[8])
     {
         if(getCurrentStreak())
@@ -1268,6 +1443,7 @@ void UserGameStats::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[9])
     {
         if(getLongestStreak())
@@ -1279,6 +1455,7 @@ void UserGameStats::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[10])
     {
         if(getWinRate())
@@ -1290,6 +1467,7 @@ void UserGameStats::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[11])
     {
         if(getLastPlayed())
@@ -1301,6 +1479,7 @@ void UserGameStats::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[12])
     {
         if(getUpdatedAt())
@@ -1312,68 +1491,84 @@ void UserGameStats::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
 }
 
 const std::vector<std::string> UserGameStats::updateColumns() const
 {
     std::vector<std::string> ret;
+
     if(dirtyFlag_[0])
     {
         ret.push_back(getColumnName(0));
     }
+
     if(dirtyFlag_[1])
     {
         ret.push_back(getColumnName(1));
     }
+
     if(dirtyFlag_[2])
     {
         ret.push_back(getColumnName(2));
     }
+
     if(dirtyFlag_[3])
     {
         ret.push_back(getColumnName(3));
     }
+
     if(dirtyFlag_[4])
     {
         ret.push_back(getColumnName(4));
     }
+
     if(dirtyFlag_[5])
     {
         ret.push_back(getColumnName(5));
     }
+
     if(dirtyFlag_[6])
     {
         ret.push_back(getColumnName(6));
     }
+
     if(dirtyFlag_[7])
     {
         ret.push_back(getColumnName(7));
     }
+
     if(dirtyFlag_[8])
     {
         ret.push_back(getColumnName(8));
     }
+
     if(dirtyFlag_[9])
     {
         ret.push_back(getColumnName(9));
     }
+
     if(dirtyFlag_[10])
     {
         ret.push_back(getColumnName(10));
     }
+
     if(dirtyFlag_[11])
     {
         ret.push_back(getColumnName(11));
     }
+
     if(dirtyFlag_[12])
     {
         ret.push_back(getColumnName(12));
     }
+
     return ret;
 }
 
 void UserGameStats::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -1385,6 +1580,7 @@ void UserGameStats::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getTotalPoints())
@@ -1396,6 +1592,7 @@ void UserGameStats::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getGamesPlayed())
@@ -1407,6 +1604,7 @@ void UserGameStats::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getGamesWon())
@@ -1418,6 +1616,7 @@ void UserGameStats::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getGamesLost())
@@ -1429,6 +1628,7 @@ void UserGameStats::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getGamesDraw())
@@ -1440,6 +1640,7 @@ void UserGameStats::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getUserId())
@@ -1451,6 +1652,7 @@ void UserGameStats::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getGameType())
@@ -1462,6 +1664,7 @@ void UserGameStats::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[8])
     {
         if(getCurrentStreak())
@@ -1473,6 +1676,7 @@ void UserGameStats::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[9])
     {
         if(getLongestStreak())
@@ -1484,6 +1688,7 @@ void UserGameStats::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[10])
     {
         if(getWinRate())
@@ -1495,6 +1700,7 @@ void UserGameStats::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[11])
     {
         if(getLastPlayed())
@@ -1506,6 +1712,7 @@ void UserGameStats::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[12])
     {
         if(getUpdatedAt())
@@ -1517,114 +1724,155 @@ void UserGameStats::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
 }
 Json::Value UserGameStats::toJson() const
 {
     Json::Value ret;
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getTotalPoints())
     {
+
         ret["total_points"]=getValueOfTotalPoints();
+
     }
     else
     {
         ret["total_points"]=Json::Value();
     }
+
     if(getGamesPlayed())
     {
+
         ret["games_played"]=getValueOfGamesPlayed();
+
     }
     else
     {
         ret["games_played"]=Json::Value();
     }
+
     if(getGamesWon())
     {
+
         ret["games_won"]=getValueOfGamesWon();
+
     }
     else
     {
         ret["games_won"]=Json::Value();
     }
+
     if(getGamesLost())
     {
+
         ret["games_lost"]=getValueOfGamesLost();
+
     }
     else
     {
         ret["games_lost"]=Json::Value();
     }
+
     if(getGamesDraw())
     {
+
         ret["games_draw"]=getValueOfGamesDraw();
+
     }
     else
     {
         ret["games_draw"]=Json::Value();
     }
+
     if(getUserId())
     {
+
         ret["user_id"]=getValueOfUserId();
+
     }
     else
     {
         ret["user_id"]=Json::Value();
     }
+
     if(getGameType())
     {
+
         ret["game_type"]=getValueOfGameType();
+
     }
     else
     {
         ret["game_type"]=Json::Value();
     }
+
     if(getCurrentStreak())
     {
+
         ret["current_streak"]=getValueOfCurrentStreak();
+
     }
     else
     {
         ret["current_streak"]=Json::Value();
     }
+
     if(getLongestStreak())
     {
+
         ret["longest_streak"]=getValueOfLongestStreak();
+
     }
     else
     {
         ret["longest_streak"]=Json::Value();
     }
+
     if(getWinRate())
     {
+
         ret["win_rate"]=getValueOfWinRate();
+
     }
     else
     {
         ret["win_rate"]=Json::Value();
     }
+
     if(getLastPlayed())
     {
+
         ret["last_played"]=getLastPlayed()->toDbStringLocal();
+
     }
     else
     {
         ret["last_played"]=Json::Value();
     }
+
     if(getUpdatedAt())
     {
+
         ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["updated_at"]=Json::Value();
     }
+
     return ret;
 }
 
@@ -1639,326 +1887,420 @@ Json::Value UserGameStats::toMasqueradedJson(
     Json::Value ret;
     if(pMasqueradingVector.size() == 13)
     {
+
         if(!pMasqueradingVector[0].empty())
         {
             if(getId())
             {
+
                 ret[pMasqueradingVector[0]]=getValueOfId();
+
             }
             else
             {
                 ret[pMasqueradingVector[0]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[1].empty())
         {
             if(getTotalPoints())
             {
+
                 ret[pMasqueradingVector[1]]=getValueOfTotalPoints();
+
             }
             else
             {
                 ret[pMasqueradingVector[1]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[2].empty())
         {
             if(getGamesPlayed())
             {
+
                 ret[pMasqueradingVector[2]]=getValueOfGamesPlayed();
+
             }
             else
             {
                 ret[pMasqueradingVector[2]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[3].empty())
         {
             if(getGamesWon())
             {
+
                 ret[pMasqueradingVector[3]]=getValueOfGamesWon();
+
             }
             else
             {
                 ret[pMasqueradingVector[3]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[4].empty())
         {
             if(getGamesLost())
             {
+
                 ret[pMasqueradingVector[4]]=getValueOfGamesLost();
+
             }
             else
             {
                 ret[pMasqueradingVector[4]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[5].empty())
         {
             if(getGamesDraw())
             {
+
                 ret[pMasqueradingVector[5]]=getValueOfGamesDraw();
+
             }
             else
             {
                 ret[pMasqueradingVector[5]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[6].empty())
         {
             if(getUserId())
             {
+
                 ret[pMasqueradingVector[6]]=getValueOfUserId();
+
             }
             else
             {
                 ret[pMasqueradingVector[6]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[7].empty())
         {
             if(getGameType())
             {
+
                 ret[pMasqueradingVector[7]]=getValueOfGameType();
+
             }
             else
             {
                 ret[pMasqueradingVector[7]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[8].empty())
         {
             if(getCurrentStreak())
             {
+
                 ret[pMasqueradingVector[8]]=getValueOfCurrentStreak();
+
             }
             else
             {
                 ret[pMasqueradingVector[8]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[9].empty())
         {
             if(getLongestStreak())
             {
+
                 ret[pMasqueradingVector[9]]=getValueOfLongestStreak();
+
             }
             else
             {
                 ret[pMasqueradingVector[9]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[10].empty())
         {
             if(getWinRate())
             {
+
                 ret[pMasqueradingVector[10]]=getValueOfWinRate();
+
             }
             else
             {
                 ret[pMasqueradingVector[10]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[11].empty())
         {
             if(getLastPlayed())
             {
+
                 ret[pMasqueradingVector[11]]=getLastPlayed()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[11]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[12].empty())
         {
             if(getUpdatedAt())
             {
+
                 ret[pMasqueradingVector[12]]=getUpdatedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[12]]=Json::Value();
             }
         }
+
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getTotalPoints())
     {
+
         ret["total_points"]=getValueOfTotalPoints();
+
     }
     else
     {
         ret["total_points"]=Json::Value();
     }
+
     if(getGamesPlayed())
     {
+
         ret["games_played"]=getValueOfGamesPlayed();
+
     }
     else
     {
         ret["games_played"]=Json::Value();
     }
+
     if(getGamesWon())
     {
+
         ret["games_won"]=getValueOfGamesWon();
+
     }
     else
     {
         ret["games_won"]=Json::Value();
     }
+
     if(getGamesLost())
     {
+
         ret["games_lost"]=getValueOfGamesLost();
+
     }
     else
     {
         ret["games_lost"]=Json::Value();
     }
+
     if(getGamesDraw())
     {
+
         ret["games_draw"]=getValueOfGamesDraw();
+
     }
     else
     {
         ret["games_draw"]=Json::Value();
     }
+
     if(getUserId())
     {
+
         ret["user_id"]=getValueOfUserId();
+
     }
     else
     {
         ret["user_id"]=Json::Value();
     }
+
     if(getGameType())
     {
+
         ret["game_type"]=getValueOfGameType();
+
     }
     else
     {
         ret["game_type"]=Json::Value();
     }
+
     if(getCurrentStreak())
     {
+
         ret["current_streak"]=getValueOfCurrentStreak();
+
     }
     else
     {
         ret["current_streak"]=Json::Value();
     }
+
     if(getLongestStreak())
     {
+
         ret["longest_streak"]=getValueOfLongestStreak();
+
     }
     else
     {
         ret["longest_streak"]=Json::Value();
     }
+
     if(getWinRate())
     {
+
         ret["win_rate"]=getValueOfWinRate();
+
     }
     else
     {
         ret["win_rate"]=Json::Value();
     }
+
     if(getLastPlayed())
     {
+
         ret["last_played"]=getLastPlayed()->toDbStringLocal();
+
     }
     else
     {
         ret["last_played"]=Json::Value();
     }
+
     if(getUpdatedAt())
     {
+
         ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["updated_at"]=Json::Value();
     }
+
     return ret;
 }
 
 bool UserGameStats::validateJsonForCreation(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, true))
             return false;
     }
+
     if(pJson.isMember("total_points"))
     {
         if(!validJsonOfField(1, "total_points", pJson["total_points"], err, true))
             return false;
     }
+
     if(pJson.isMember("games_played"))
     {
         if(!validJsonOfField(2, "games_played", pJson["games_played"], err, true))
             return false;
     }
+
     if(pJson.isMember("games_won"))
     {
         if(!validJsonOfField(3, "games_won", pJson["games_won"], err, true))
             return false;
     }
+
     if(pJson.isMember("games_lost"))
     {
         if(!validJsonOfField(4, "games_lost", pJson["games_lost"], err, true))
             return false;
     }
+
     if(pJson.isMember("games_draw"))
     {
         if(!validJsonOfField(5, "games_draw", pJson["games_draw"], err, true))
             return false;
     }
+
     if(pJson.isMember("user_id"))
     {
         if(!validJsonOfField(6, "user_id", pJson["user_id"], err, true))
             return false;
     }
+
     if(pJson.isMember("game_type"))
     {
         if(!validJsonOfField(7, "game_type", pJson["game_type"], err, true))
             return false;
     }
+
     if(pJson.isMember("current_streak"))
     {
         if(!validJsonOfField(8, "current_streak", pJson["current_streak"], err, true))
             return false;
     }
+
     if(pJson.isMember("longest_streak"))
     {
         if(!validJsonOfField(9, "longest_streak", pJson["longest_streak"], err, true))
             return false;
     }
+
     if(pJson.isMember("win_rate"))
     {
         if(!validJsonOfField(10, "win_rate", pJson["win_rate"], err, true))
             return false;
     }
+
     if(pJson.isMember("last_played"))
     {
         if(!validJsonOfField(11, "last_played", pJson["last_played"], err, true))
             return false;
     }
+
     if(pJson.isMember("updated_at"))
     {
         if(!validJsonOfField(12, "updated_at", pJson["updated_at"], err, true))
             return false;
     }
+
     return true;
 }
 bool UserGameStats::validateMasqueradedJsonForCreation(const Json::Value &pJson,
@@ -1971,6 +2313,7 @@ bool UserGameStats::validateMasqueradedJsonForCreation(const Json::Value &pJson,
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty())
       {
           if(pJson.isMember(pMasqueradingVector[0]))
@@ -1978,7 +2321,9 @@ bool UserGameStats::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[1].empty())
       {
           if(pJson.isMember(pMasqueradingVector[1]))
@@ -1986,7 +2331,9 @@ bool UserGameStats::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[2].empty())
       {
           if(pJson.isMember(pMasqueradingVector[2]))
@@ -1994,7 +2341,9 @@ bool UserGameStats::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[3].empty())
       {
           if(pJson.isMember(pMasqueradingVector[3]))
@@ -2002,7 +2351,9 @@ bool UserGameStats::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[4].empty())
       {
           if(pJson.isMember(pMasqueradingVector[4]))
@@ -2010,7 +2361,9 @@ bool UserGameStats::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[5].empty())
       {
           if(pJson.isMember(pMasqueradingVector[5]))
@@ -2018,7 +2371,9 @@ bool UserGameStats::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[6].empty())
       {
           if(pJson.isMember(pMasqueradingVector[6]))
@@ -2026,7 +2381,9 @@ bool UserGameStats::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[7].empty())
       {
           if(pJson.isMember(pMasqueradingVector[7]))
@@ -2034,7 +2391,9 @@ bool UserGameStats::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[8].empty())
       {
           if(pJson.isMember(pMasqueradingVector[8]))
@@ -2042,7 +2401,9 @@ bool UserGameStats::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(8, pMasqueradingVector[8], pJson[pMasqueradingVector[8]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[9].empty())
       {
           if(pJson.isMember(pMasqueradingVector[9]))
@@ -2050,7 +2411,9 @@ bool UserGameStats::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(9, pMasqueradingVector[9], pJson[pMasqueradingVector[9]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[10].empty())
       {
           if(pJson.isMember(pMasqueradingVector[10]))
@@ -2058,7 +2421,9 @@ bool UserGameStats::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(10, pMasqueradingVector[10], pJson[pMasqueradingVector[10]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[11].empty())
       {
           if(pJson.isMember(pMasqueradingVector[11]))
@@ -2066,7 +2431,9 @@ bool UserGameStats::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(11, pMasqueradingVector[11], pJson[pMasqueradingVector[11]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[12].empty())
       {
           if(pJson.isMember(pMasqueradingVector[12]))
@@ -2074,7 +2441,9 @@ bool UserGameStats::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(12, pMasqueradingVector[12], pJson[pMasqueradingVector[12]], err, true))
                   return false;
           }
+
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -2085,76 +2454,91 @@ bool UserGameStats::validateMasqueradedJsonForCreation(const Json::Value &pJson,
 }
 bool UserGameStats::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, false))
             return false;
     }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
     if(pJson.isMember("total_points"))
     {
         if(!validJsonOfField(1, "total_points", pJson["total_points"], err, false))
             return false;
     }
+
     if(pJson.isMember("games_played"))
     {
         if(!validJsonOfField(2, "games_played", pJson["games_played"], err, false))
             return false;
     }
+
     if(pJson.isMember("games_won"))
     {
         if(!validJsonOfField(3, "games_won", pJson["games_won"], err, false))
             return false;
     }
+
     if(pJson.isMember("games_lost"))
     {
         if(!validJsonOfField(4, "games_lost", pJson["games_lost"], err, false))
             return false;
     }
+
     if(pJson.isMember("games_draw"))
     {
         if(!validJsonOfField(5, "games_draw", pJson["games_draw"], err, false))
             return false;
     }
+
     if(pJson.isMember("user_id"))
     {
         if(!validJsonOfField(6, "user_id", pJson["user_id"], err, false))
             return false;
     }
+
     if(pJson.isMember("game_type"))
     {
         if(!validJsonOfField(7, "game_type", pJson["game_type"], err, false))
             return false;
     }
+
     if(pJson.isMember("current_streak"))
     {
         if(!validJsonOfField(8, "current_streak", pJson["current_streak"], err, false))
             return false;
     }
+
     if(pJson.isMember("longest_streak"))
     {
         if(!validJsonOfField(9, "longest_streak", pJson["longest_streak"], err, false))
             return false;
     }
+
     if(pJson.isMember("win_rate"))
     {
         if(!validJsonOfField(10, "win_rate", pJson["win_rate"], err, false))
             return false;
     }
+
     if(pJson.isMember("last_played"))
     {
         if(!validJsonOfField(11, "last_played", pJson["last_played"], err, false))
             return false;
     }
+
     if(pJson.isMember("updated_at"))
     {
         if(!validJsonOfField(12, "updated_at", pJson["updated_at"], err, false))
             return false;
     }
+
     return true;
 }
 bool UserGameStats::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
@@ -2167,76 +2551,91 @@ bool UserGameStats::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
       {
           if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
               return false;
       }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
       if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
       {
           if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
       {
           if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
       {
           if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
       {
           if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
       {
           if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
       {
           if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
       {
           if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
       {
           if(!validJsonOfField(8, pMasqueradingVector[8], pJson[pMasqueradingVector[8]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
       {
           if(!validJsonOfField(9, pMasqueradingVector[9], pJson[pMasqueradingVector[9]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
       {
           if(!validJsonOfField(10, pMasqueradingVector[10], pJson[pMasqueradingVector[10]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
       {
           if(!validJsonOfField(11, pMasqueradingVector[11], pJson[pMasqueradingVector[11]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
       {
           if(!validJsonOfField(12, pMasqueradingVector[12], pJson[pMasqueradingVector[12]], err, false))
               return false;
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -2253,153 +2652,207 @@ bool UserGameStats::validJsonOfField(size_t index,
 {
     switch(index)
     {
+
         case 0:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 1:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 2:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 3:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 4:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 5:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 6:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 7:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 8:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 9:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 10:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 11:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 12:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         default:
             err="Internal error in the server";
             return false;
     }
     return true;
 }
+

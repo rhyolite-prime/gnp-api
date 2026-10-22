@@ -1,3 +1,4 @@
+
 /**
  *
  *  NewspaperDetails.cc
@@ -6,40 +7,74 @@
  */
 
 #include "NewspaperDetails.h"
+
 #include <drogon/utils/Utilities.h>
+
 #include <string>
+
 
 using namespace drogon;
 using namespace drogon::orm;
 using namespace drogon_model::Gnp;
 
+
+
 const std::string NewspaperDetails::Cols::_id = "\"id\"";
+
 const std::string NewspaperDetails::Cols::_newspaper_id = "\"newspaper_id\"";
+
 const std::string NewspaperDetails::Cols::_page_text = "\"page_text\"";
+
 const std::string NewspaperDetails::Cols::_page_number = "\"page_number\"";
+
 const std::string NewspaperDetails::Cols::_edition_number = "\"edition_number\"";
+
 const std::string NewspaperDetails::Cols::_file_type = "\"file_type\"";
+
 const std::string NewspaperDetails::Cols::_content_type = "\"content_type\"";
+
 const std::string NewspaperDetails::Cols::_published_date = "\"published_date\"";
+
 const std::string NewspaperDetails::Cols::_publication_id = "\"publication_id\"";
+
 const std::string NewspaperDetails::Cols::_publication_name = "\"publication_name\"";
+
 const std::string NewspaperDetails::Cols::_tags = "\"tags\"";
+
 const std::string NewspaperDetails::Cols::_categories = "\"categories\"";
+
 const std::string NewspaperDetails::Cols::_supporting_text = "\"supporting_text\"";
+
 const std::string NewspaperDetails::Cols::_views = "\"views\"";
+
 const std::string NewspaperDetails::Cols::_sales = "\"sales\"";
+
 const std::string NewspaperDetails::Cols::_publication_date = "\"publication_date\"";
+
 const std::string NewspaperDetails::Cols::_is_free = "\"is_free\"";
+
 const std::string NewspaperDetails::Cols::_created_by = "\"created_by\"";
+
 const std::string NewspaperDetails::Cols::_creator_name = "\"creator_name\"";
+
 const std::string NewspaperDetails::Cols::_created_at = "\"created_at\"";
+
 const std::string NewspaperDetails::Cols::_modified_by = "\"modified_by\"";
+
 const std::string NewspaperDetails::Cols::_modifier_name = "\"modifier_name\"";
+
 const std::string NewspaperDetails::Cols::_modified_at = "\"modified_at\"";
+
 const std::string NewspaperDetails::Cols::_thumbnail_id = "\"thumbnail_id\"";
+
 const std::string NewspaperDetails::Cols::_document_id = "\"document_id\"";
+
+
 const std::string NewspaperDetails::primaryKeyName = "id";
+
+
 const bool NewspaperDetails::hasPrimaryKey = true;
+
 const std::string NewspaperDetails::tableName = "\"newspaper_details\"";
 
 const std::vector<typename NewspaperDetails::MetaData> NewspaperDetails::metaData_={
@@ -68,6 +103,7 @@ const std::vector<typename NewspaperDetails::MetaData> NewspaperDetails::metaDat
 {"modified_at","::trantor::Date","timestamp with time zone",0,0,0,0},
 {"thumbnail_id","std::string","character varying",255,0,0,0},
 {"document_id","std::string","character varying",255,0,0,0}
+
 };
 const std::string &NewspaperDetails::getColumnName(size_t index) noexcept(false)
 {
@@ -78,97 +114,154 @@ NewspaperDetails::NewspaperDetails(const Row &r, const ssize_t indexOffset) noex
 {
     if(indexOffset < 0)
     {
+
         if(!r["id"].isNull())
         {
+
             id_=std::make_shared<std::string>(r["id"].as<std::string>());
+
         }
+
         if(!r["newspaper_id"].isNull())
         {
+
             newspaperId_=std::make_shared<std::string>(r["newspaper_id"].as<std::string>());
+
         }
+
         if(!r["page_text"].isNull())
         {
+
             pageText_=std::make_shared<std::string>(r["page_text"].as<std::string>());
+
         }
+
         if(!r["page_number"].isNull())
         {
+
             pageNumber_=std::make_shared<int32_t>(r["page_number"].as<int32_t>());
+
         }
+
         if(!r["edition_number"].isNull())
         {
+
             editionNumber_=std::make_shared<std::string>(r["edition_number"].as<std::string>());
+
         }
+
         if(!r["file_type"].isNull())
         {
+
             fileType_=std::make_shared<int32_t>(r["file_type"].as<int32_t>());
+
         }
+
         if(!r["content_type"].isNull())
         {
+
             contentType_=std::make_shared<std::string>(r["content_type"].as<std::string>());
+
         }
+
         if(!r["published_date"].isNull())
         {
             auto daysStr = r["published_date"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
             time_t t = mktime(&stm);
             publishedDate_=std::make_shared<::trantor::Date>(t*1000000);
         }
+
         if(!r["publication_id"].isNull())
         {
+
             publicationId_=std::make_shared<std::string>(r["publication_id"].as<std::string>());
+
         }
+
         if(!r["publication_name"].isNull())
         {
+
             publicationName_=std::make_shared<std::string>(r["publication_name"].as<std::string>());
+
         }
+
         if(!r["tags"].isNull())
         {
+
             tags_=std::make_shared<std::string>(r["tags"].as<std::string>());
+
         }
+
         if(!r["categories"].isNull())
         {
+
             categories_=std::make_shared<std::string>(r["categories"].as<std::string>());
+
         }
+
         if(!r["supporting_text"].isNull())
         {
+
             supportingText_=std::make_shared<std::string>(r["supporting_text"].as<std::string>());
+
         }
+
         if(!r["views"].isNull())
         {
+
             views_=std::make_shared<int32_t>(r["views"].as<int32_t>());
+
         }
+
         if(!r["sales"].isNull())
         {
+
             sales_=std::make_shared<std::string>(r["sales"].as<std::string>());
+
         }
+
         if(!r["publication_date"].isNull())
         {
             auto daysStr = r["publication_date"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
             time_t t = mktime(&stm);
             publicationDate_=std::make_shared<::trantor::Date>(t*1000000);
         }
+
         if(!r["is_free"].isNull())
         {
+
             isFree_=std::make_shared<bool>(r["is_free"].as<bool>());
+
         }
+
         if(!r["created_by"].isNull())
         {
+
             createdBy_=std::make_shared<std::string>(r["created_by"].as<std::string>());
+
         }
+
         if(!r["creator_name"].isNull())
         {
+
             creatorName_=std::make_shared<std::string>(r["creator_name"].as<std::string>());
+
         }
+
         if(!r["created_at"].isNull())
         {
             auto timeStr = r["created_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -186,19 +279,27 @@ NewspaperDetails::NewspaperDetails(const Row &r, const ssize_t indexOffset) noex
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         if(!r["modified_by"].isNull())
         {
+
             modifiedBy_=std::make_shared<std::string>(r["modified_by"].as<std::string>());
+
         }
+
         if(!r["modifier_name"].isNull())
         {
+
             modifierName_=std::make_shared<std::string>(r["modifier_name"].as<std::string>());
+
         }
+
         if(!r["modified_at"].isNull())
         {
             auto timeStr = r["modified_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -216,14 +317,21 @@ NewspaperDetails::NewspaperDetails(const Row &r, const ssize_t indexOffset) noex
                 modifiedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         if(!r["thumbnail_id"].isNull())
         {
+
             thumbnailId_=std::make_shared<std::string>(r["thumbnail_id"].as<std::string>());
+
         }
+
         if(!r["document_id"].isNull())
         {
+
             documentId_=std::make_shared<std::string>(r["document_id"].as<std::string>());
+
         }
+
     }
     else
     {
@@ -234,117 +342,174 @@ NewspaperDetails::NewspaperDetails(const Row &r, const ssize_t indexOffset) noex
             return;
         }
         size_t index;
+
         index = offset + 0;
         if(!r[index].isNull())
         {
+
             id_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 1;
         if(!r[index].isNull())
         {
+
             newspaperId_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 2;
         if(!r[index].isNull())
         {
+
             pageText_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 3;
         if(!r[index].isNull())
         {
+
             pageNumber_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 4;
         if(!r[index].isNull())
         {
+
             editionNumber_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 5;
         if(!r[index].isNull())
         {
+
             fileType_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 6;
         if(!r[index].isNull())
         {
+
             contentType_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 7;
         if(!r[index].isNull())
         {
             auto daysStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
             time_t t = mktime(&stm);
             publishedDate_=std::make_shared<::trantor::Date>(t*1000000);
         }
+
         index = offset + 8;
         if(!r[index].isNull())
         {
+
             publicationId_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 9;
         if(!r[index].isNull())
         {
+
             publicationName_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 10;
         if(!r[index].isNull())
         {
+
             tags_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 11;
         if(!r[index].isNull())
         {
+
             categories_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 12;
         if(!r[index].isNull())
         {
+
             supportingText_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 13;
         if(!r[index].isNull())
         {
+
             views_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 14;
         if(!r[index].isNull())
         {
+
             sales_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 15;
         if(!r[index].isNull())
         {
             auto daysStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
             time_t t = mktime(&stm);
             publicationDate_=std::make_shared<::trantor::Date>(t*1000000);
         }
+
         index = offset + 16;
         if(!r[index].isNull())
         {
+
             isFree_=std::make_shared<bool>(r[index].as<bool>());
+
         }
+
         index = offset + 17;
         if(!r[index].isNull())
         {
+
             createdBy_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 18;
         if(!r[index].isNull())
         {
+
             creatorName_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 19;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -362,22 +527,30 @@ NewspaperDetails::NewspaperDetails(const Row &r, const ssize_t indexOffset) noex
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         index = offset + 20;
         if(!r[index].isNull())
         {
+
             modifiedBy_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 21;
         if(!r[index].isNull())
         {
+
             modifierName_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 22;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -395,16 +568,23 @@ NewspaperDetails::NewspaperDetails(const Row &r, const ssize_t indexOffset) noex
                 modifiedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         index = offset + 23;
         if(!r[index].isNull())
         {
+
             thumbnailId_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 24;
         if(!r[index].isNull())
         {
+
             documentId_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
     }
 
 }
@@ -416,6 +596,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson, const std::vector<s
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         dirtyFlag_[0] = true;
@@ -424,6 +605,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson, const std::vector<s
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -432,6 +614,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson, const std::vector<s
             newspaperId_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -440,6 +623,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson, const std::vector<s
             pageText_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -448,6 +632,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson, const std::vector<s
             pageNumber_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[3]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -456,6 +641,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson, const std::vector<s
             editionNumber_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -464,6 +650,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson, const std::vector<s
             fileType_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[5]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -472,6 +659,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson, const std::vector<s
             contentType_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -480,11 +668,13 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson, const std::vector<s
             auto daysStr = pJson[pMasqueradingVector[7]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
             time_t t = mktime(&stm);
             publishedDate_=std::make_shared<::trantor::Date>(t*1000000);
         }
     }
+
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
     {
         dirtyFlag_[8] = true;
@@ -493,6 +683,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson, const std::vector<s
             publicationId_=std::make_shared<std::string>(pJson[pMasqueradingVector[8]].asString());
         }
     }
+
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
     {
         dirtyFlag_[9] = true;
@@ -501,6 +692,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson, const std::vector<s
             publicationName_=std::make_shared<std::string>(pJson[pMasqueradingVector[9]].asString());
         }
     }
+
     if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
     {
         dirtyFlag_[10] = true;
@@ -509,6 +701,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson, const std::vector<s
             tags_=std::make_shared<std::string>(pJson[pMasqueradingVector[10]].asString());
         }
     }
+
     if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
     {
         dirtyFlag_[11] = true;
@@ -517,6 +710,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson, const std::vector<s
             categories_=std::make_shared<std::string>(pJson[pMasqueradingVector[11]].asString());
         }
     }
+
     if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
     {
         dirtyFlag_[12] = true;
@@ -525,6 +719,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson, const std::vector<s
             supportingText_=std::make_shared<std::string>(pJson[pMasqueradingVector[12]].asString());
         }
     }
+
     if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
     {
         dirtyFlag_[13] = true;
@@ -533,6 +728,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson, const std::vector<s
             views_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[13]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
     {
         dirtyFlag_[14] = true;
@@ -541,6 +737,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson, const std::vector<s
             sales_=std::make_shared<std::string>(pJson[pMasqueradingVector[14]].asString());
         }
     }
+
     if(!pMasqueradingVector[15].empty() && pJson.isMember(pMasqueradingVector[15]))
     {
         dirtyFlag_[15] = true;
@@ -549,11 +746,13 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson, const std::vector<s
             auto daysStr = pJson[pMasqueradingVector[15]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
             time_t t = mktime(&stm);
             publicationDate_=std::make_shared<::trantor::Date>(t*1000000);
         }
     }
+
     if(!pMasqueradingVector[16].empty() && pJson.isMember(pMasqueradingVector[16]))
     {
         dirtyFlag_[16] = true;
@@ -562,6 +761,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson, const std::vector<s
             isFree_=std::make_shared<bool>(pJson[pMasqueradingVector[16]].asBool());
         }
     }
+
     if(!pMasqueradingVector[17].empty() && pJson.isMember(pMasqueradingVector[17]))
     {
         dirtyFlag_[17] = true;
@@ -570,6 +770,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson, const std::vector<s
             createdBy_=std::make_shared<std::string>(pJson[pMasqueradingVector[17]].asString());
         }
     }
+
     if(!pMasqueradingVector[18].empty() && pJson.isMember(pMasqueradingVector[18]))
     {
         dirtyFlag_[18] = true;
@@ -578,6 +779,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson, const std::vector<s
             creatorName_=std::make_shared<std::string>(pJson[pMasqueradingVector[18]].asString());
         }
     }
+
     if(!pMasqueradingVector[19].empty() && pJson.isMember(pMasqueradingVector[19]))
     {
         dirtyFlag_[19] = true;
@@ -586,6 +788,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson, const std::vector<s
             auto timeStr = pJson[pMasqueradingVector[19]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -604,6 +807,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson, const std::vector<s
             }
         }
     }
+
     if(!pMasqueradingVector[20].empty() && pJson.isMember(pMasqueradingVector[20]))
     {
         dirtyFlag_[20] = true;
@@ -612,6 +816,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson, const std::vector<s
             modifiedBy_=std::make_shared<std::string>(pJson[pMasqueradingVector[20]].asString());
         }
     }
+
     if(!pMasqueradingVector[21].empty() && pJson.isMember(pMasqueradingVector[21]))
     {
         dirtyFlag_[21] = true;
@@ -620,6 +825,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson, const std::vector<s
             modifierName_=std::make_shared<std::string>(pJson[pMasqueradingVector[21]].asString());
         }
     }
+
     if(!pMasqueradingVector[22].empty() && pJson.isMember(pMasqueradingVector[22]))
     {
         dirtyFlag_[22] = true;
@@ -628,6 +834,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson, const std::vector<s
             auto timeStr = pJson[pMasqueradingVector[22]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -646,6 +853,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson, const std::vector<s
             }
         }
     }
+
     if(!pMasqueradingVector[23].empty() && pJson.isMember(pMasqueradingVector[23]))
     {
         dirtyFlag_[23] = true;
@@ -654,6 +862,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson, const std::vector<s
             thumbnailId_=std::make_shared<std::string>(pJson[pMasqueradingVector[23]].asString());
         }
     }
+
     if(!pMasqueradingVector[24].empty() && pJson.isMember(pMasqueradingVector[24]))
     {
         dirtyFlag_[24] = true;
@@ -662,10 +871,12 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson, const std::vector<s
             documentId_=std::make_shared<std::string>(pJson[pMasqueradingVector[24]].asString());
         }
     }
+
 }
 
 NewspaperDetails::NewspaperDetails(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         dirtyFlag_[0]=true;
@@ -674,6 +885,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("newspaper_id"))
     {
         dirtyFlag_[1]=true;
@@ -682,6 +894,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson) noexcept(false)
             newspaperId_=std::make_shared<std::string>(pJson["newspaper_id"].asString());
         }
     }
+
     if(pJson.isMember("page_text"))
     {
         dirtyFlag_[2]=true;
@@ -690,6 +903,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson) noexcept(false)
             pageText_=std::make_shared<std::string>(pJson["page_text"].asString());
         }
     }
+
     if(pJson.isMember("page_number"))
     {
         dirtyFlag_[3]=true;
@@ -698,6 +912,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson) noexcept(false)
             pageNumber_=std::make_shared<int32_t>((int32_t)pJson["page_number"].asInt64());
         }
     }
+
     if(pJson.isMember("edition_number"))
     {
         dirtyFlag_[4]=true;
@@ -706,6 +921,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson) noexcept(false)
             editionNumber_=std::make_shared<std::string>(pJson["edition_number"].asString());
         }
     }
+
     if(pJson.isMember("file_type"))
     {
         dirtyFlag_[5]=true;
@@ -714,6 +930,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson) noexcept(false)
             fileType_=std::make_shared<int32_t>((int32_t)pJson["file_type"].asInt64());
         }
     }
+
     if(pJson.isMember("content_type"))
     {
         dirtyFlag_[6]=true;
@@ -722,6 +939,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson) noexcept(false)
             contentType_=std::make_shared<std::string>(pJson["content_type"].asString());
         }
     }
+
     if(pJson.isMember("published_date"))
     {
         dirtyFlag_[7]=true;
@@ -730,11 +948,13 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson) noexcept(false)
             auto daysStr = pJson["published_date"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
             time_t t = mktime(&stm);
             publishedDate_=std::make_shared<::trantor::Date>(t*1000000);
         }
     }
+
     if(pJson.isMember("publication_id"))
     {
         dirtyFlag_[8]=true;
@@ -743,6 +963,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson) noexcept(false)
             publicationId_=std::make_shared<std::string>(pJson["publication_id"].asString());
         }
     }
+
     if(pJson.isMember("publication_name"))
     {
         dirtyFlag_[9]=true;
@@ -751,6 +972,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson) noexcept(false)
             publicationName_=std::make_shared<std::string>(pJson["publication_name"].asString());
         }
     }
+
     if(pJson.isMember("tags"))
     {
         dirtyFlag_[10]=true;
@@ -759,6 +981,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson) noexcept(false)
             tags_=std::make_shared<std::string>(pJson["tags"].asString());
         }
     }
+
     if(pJson.isMember("categories"))
     {
         dirtyFlag_[11]=true;
@@ -767,6 +990,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson) noexcept(false)
             categories_=std::make_shared<std::string>(pJson["categories"].asString());
         }
     }
+
     if(pJson.isMember("supporting_text"))
     {
         dirtyFlag_[12]=true;
@@ -775,6 +999,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson) noexcept(false)
             supportingText_=std::make_shared<std::string>(pJson["supporting_text"].asString());
         }
     }
+
     if(pJson.isMember("views"))
     {
         dirtyFlag_[13]=true;
@@ -783,6 +1008,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson) noexcept(false)
             views_=std::make_shared<int32_t>((int32_t)pJson["views"].asInt64());
         }
     }
+
     if(pJson.isMember("sales"))
     {
         dirtyFlag_[14]=true;
@@ -791,6 +1017,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson) noexcept(false)
             sales_=std::make_shared<std::string>(pJson["sales"].asString());
         }
     }
+
     if(pJson.isMember("publication_date"))
     {
         dirtyFlag_[15]=true;
@@ -799,11 +1026,13 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson) noexcept(false)
             auto daysStr = pJson["publication_date"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
             time_t t = mktime(&stm);
             publicationDate_=std::make_shared<::trantor::Date>(t*1000000);
         }
     }
+
     if(pJson.isMember("is_free"))
     {
         dirtyFlag_[16]=true;
@@ -812,6 +1041,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson) noexcept(false)
             isFree_=std::make_shared<bool>(pJson["is_free"].asBool());
         }
     }
+
     if(pJson.isMember("created_by"))
     {
         dirtyFlag_[17]=true;
@@ -820,6 +1050,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson) noexcept(false)
             createdBy_=std::make_shared<std::string>(pJson["created_by"].asString());
         }
     }
+
     if(pJson.isMember("creator_name"))
     {
         dirtyFlag_[18]=true;
@@ -828,6 +1059,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson) noexcept(false)
             creatorName_=std::make_shared<std::string>(pJson["creator_name"].asString());
         }
     }
+
     if(pJson.isMember("created_at"))
     {
         dirtyFlag_[19]=true;
@@ -836,6 +1068,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["created_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -854,6 +1087,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("modified_by"))
     {
         dirtyFlag_[20]=true;
@@ -862,6 +1096,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson) noexcept(false)
             modifiedBy_=std::make_shared<std::string>(pJson["modified_by"].asString());
         }
     }
+
     if(pJson.isMember("modifier_name"))
     {
         dirtyFlag_[21]=true;
@@ -870,6 +1105,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson) noexcept(false)
             modifierName_=std::make_shared<std::string>(pJson["modifier_name"].asString());
         }
     }
+
     if(pJson.isMember("modified_at"))
     {
         dirtyFlag_[22]=true;
@@ -878,6 +1114,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["modified_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -896,6 +1133,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("thumbnail_id"))
     {
         dirtyFlag_[23]=true;
@@ -904,6 +1142,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson) noexcept(false)
             thumbnailId_=std::make_shared<std::string>(pJson["thumbnail_id"].asString());
         }
     }
+
     if(pJson.isMember("document_id"))
     {
         dirtyFlag_[24]=true;
@@ -912,6 +1151,7 @@ NewspaperDetails::NewspaperDetails(const Json::Value &pJson) noexcept(false)
             documentId_=std::make_shared<std::string>(pJson["document_id"].asString());
         }
     }
+
 }
 
 void NewspaperDetails::updateByMasqueradedJson(const Json::Value &pJson,
@@ -922,6 +1162,7 @@ void NewspaperDetails::updateByMasqueradedJson(const Json::Value &pJson,
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         if(!pJson[pMasqueradingVector[0]].isNull())
@@ -929,6 +1170,7 @@ void NewspaperDetails::updateByMasqueradedJson(const Json::Value &pJson,
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -937,6 +1179,7 @@ void NewspaperDetails::updateByMasqueradedJson(const Json::Value &pJson,
             newspaperId_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -945,6 +1188,7 @@ void NewspaperDetails::updateByMasqueradedJson(const Json::Value &pJson,
             pageText_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -953,6 +1197,7 @@ void NewspaperDetails::updateByMasqueradedJson(const Json::Value &pJson,
             pageNumber_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[3]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -961,6 +1206,7 @@ void NewspaperDetails::updateByMasqueradedJson(const Json::Value &pJson,
             editionNumber_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -969,6 +1215,7 @@ void NewspaperDetails::updateByMasqueradedJson(const Json::Value &pJson,
             fileType_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[5]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -977,6 +1224,7 @@ void NewspaperDetails::updateByMasqueradedJson(const Json::Value &pJson,
             contentType_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -985,11 +1233,13 @@ void NewspaperDetails::updateByMasqueradedJson(const Json::Value &pJson,
             auto daysStr = pJson[pMasqueradingVector[7]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
             time_t t = mktime(&stm);
             publishedDate_=std::make_shared<::trantor::Date>(t*1000000);
         }
     }
+
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
     {
         dirtyFlag_[8] = true;
@@ -998,6 +1248,7 @@ void NewspaperDetails::updateByMasqueradedJson(const Json::Value &pJson,
             publicationId_=std::make_shared<std::string>(pJson[pMasqueradingVector[8]].asString());
         }
     }
+
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
     {
         dirtyFlag_[9] = true;
@@ -1006,6 +1257,7 @@ void NewspaperDetails::updateByMasqueradedJson(const Json::Value &pJson,
             publicationName_=std::make_shared<std::string>(pJson[pMasqueradingVector[9]].asString());
         }
     }
+
     if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
     {
         dirtyFlag_[10] = true;
@@ -1014,6 +1266,7 @@ void NewspaperDetails::updateByMasqueradedJson(const Json::Value &pJson,
             tags_=std::make_shared<std::string>(pJson[pMasqueradingVector[10]].asString());
         }
     }
+
     if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
     {
         dirtyFlag_[11] = true;
@@ -1022,6 +1275,7 @@ void NewspaperDetails::updateByMasqueradedJson(const Json::Value &pJson,
             categories_=std::make_shared<std::string>(pJson[pMasqueradingVector[11]].asString());
         }
     }
+
     if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
     {
         dirtyFlag_[12] = true;
@@ -1030,6 +1284,7 @@ void NewspaperDetails::updateByMasqueradedJson(const Json::Value &pJson,
             supportingText_=std::make_shared<std::string>(pJson[pMasqueradingVector[12]].asString());
         }
     }
+
     if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
     {
         dirtyFlag_[13] = true;
@@ -1038,6 +1293,7 @@ void NewspaperDetails::updateByMasqueradedJson(const Json::Value &pJson,
             views_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[13]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
     {
         dirtyFlag_[14] = true;
@@ -1046,6 +1302,7 @@ void NewspaperDetails::updateByMasqueradedJson(const Json::Value &pJson,
             sales_=std::make_shared<std::string>(pJson[pMasqueradingVector[14]].asString());
         }
     }
+
     if(!pMasqueradingVector[15].empty() && pJson.isMember(pMasqueradingVector[15]))
     {
         dirtyFlag_[15] = true;
@@ -1054,11 +1311,13 @@ void NewspaperDetails::updateByMasqueradedJson(const Json::Value &pJson,
             auto daysStr = pJson[pMasqueradingVector[15]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
             time_t t = mktime(&stm);
             publicationDate_=std::make_shared<::trantor::Date>(t*1000000);
         }
     }
+
     if(!pMasqueradingVector[16].empty() && pJson.isMember(pMasqueradingVector[16]))
     {
         dirtyFlag_[16] = true;
@@ -1067,6 +1326,7 @@ void NewspaperDetails::updateByMasqueradedJson(const Json::Value &pJson,
             isFree_=std::make_shared<bool>(pJson[pMasqueradingVector[16]].asBool());
         }
     }
+
     if(!pMasqueradingVector[17].empty() && pJson.isMember(pMasqueradingVector[17]))
     {
         dirtyFlag_[17] = true;
@@ -1075,6 +1335,7 @@ void NewspaperDetails::updateByMasqueradedJson(const Json::Value &pJson,
             createdBy_=std::make_shared<std::string>(pJson[pMasqueradingVector[17]].asString());
         }
     }
+
     if(!pMasqueradingVector[18].empty() && pJson.isMember(pMasqueradingVector[18]))
     {
         dirtyFlag_[18] = true;
@@ -1083,6 +1344,7 @@ void NewspaperDetails::updateByMasqueradedJson(const Json::Value &pJson,
             creatorName_=std::make_shared<std::string>(pJson[pMasqueradingVector[18]].asString());
         }
     }
+
     if(!pMasqueradingVector[19].empty() && pJson.isMember(pMasqueradingVector[19]))
     {
         dirtyFlag_[19] = true;
@@ -1091,6 +1353,7 @@ void NewspaperDetails::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[19]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -1109,6 +1372,7 @@ void NewspaperDetails::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
     if(!pMasqueradingVector[20].empty() && pJson.isMember(pMasqueradingVector[20]))
     {
         dirtyFlag_[20] = true;
@@ -1117,6 +1381,7 @@ void NewspaperDetails::updateByMasqueradedJson(const Json::Value &pJson,
             modifiedBy_=std::make_shared<std::string>(pJson[pMasqueradingVector[20]].asString());
         }
     }
+
     if(!pMasqueradingVector[21].empty() && pJson.isMember(pMasqueradingVector[21]))
     {
         dirtyFlag_[21] = true;
@@ -1125,6 +1390,7 @@ void NewspaperDetails::updateByMasqueradedJson(const Json::Value &pJson,
             modifierName_=std::make_shared<std::string>(pJson[pMasqueradingVector[21]].asString());
         }
     }
+
     if(!pMasqueradingVector[22].empty() && pJson.isMember(pMasqueradingVector[22]))
     {
         dirtyFlag_[22] = true;
@@ -1133,6 +1399,7 @@ void NewspaperDetails::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[22]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -1151,6 +1418,7 @@ void NewspaperDetails::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
     if(!pMasqueradingVector[23].empty() && pJson.isMember(pMasqueradingVector[23]))
     {
         dirtyFlag_[23] = true;
@@ -1159,6 +1427,7 @@ void NewspaperDetails::updateByMasqueradedJson(const Json::Value &pJson,
             thumbnailId_=std::make_shared<std::string>(pJson[pMasqueradingVector[23]].asString());
         }
     }
+
     if(!pMasqueradingVector[24].empty() && pJson.isMember(pMasqueradingVector[24]))
     {
         dirtyFlag_[24] = true;
@@ -1167,10 +1436,12 @@ void NewspaperDetails::updateByMasqueradedJson(const Json::Value &pJson,
             documentId_=std::make_shared<std::string>(pJson[pMasqueradingVector[24]].asString());
         }
     }
+
 }
 
 void NewspaperDetails::updateByJson(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         if(!pJson["id"].isNull())
@@ -1178,6 +1449,7 @@ void NewspaperDetails::updateByJson(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("newspaper_id"))
     {
         dirtyFlag_[1] = true;
@@ -1186,6 +1458,7 @@ void NewspaperDetails::updateByJson(const Json::Value &pJson) noexcept(false)
             newspaperId_=std::make_shared<std::string>(pJson["newspaper_id"].asString());
         }
     }
+
     if(pJson.isMember("page_text"))
     {
         dirtyFlag_[2] = true;
@@ -1194,6 +1467,7 @@ void NewspaperDetails::updateByJson(const Json::Value &pJson) noexcept(false)
             pageText_=std::make_shared<std::string>(pJson["page_text"].asString());
         }
     }
+
     if(pJson.isMember("page_number"))
     {
         dirtyFlag_[3] = true;
@@ -1202,6 +1476,7 @@ void NewspaperDetails::updateByJson(const Json::Value &pJson) noexcept(false)
             pageNumber_=std::make_shared<int32_t>((int32_t)pJson["page_number"].asInt64());
         }
     }
+
     if(pJson.isMember("edition_number"))
     {
         dirtyFlag_[4] = true;
@@ -1210,6 +1485,7 @@ void NewspaperDetails::updateByJson(const Json::Value &pJson) noexcept(false)
             editionNumber_=std::make_shared<std::string>(pJson["edition_number"].asString());
         }
     }
+
     if(pJson.isMember("file_type"))
     {
         dirtyFlag_[5] = true;
@@ -1218,6 +1494,7 @@ void NewspaperDetails::updateByJson(const Json::Value &pJson) noexcept(false)
             fileType_=std::make_shared<int32_t>((int32_t)pJson["file_type"].asInt64());
         }
     }
+
     if(pJson.isMember("content_type"))
     {
         dirtyFlag_[6] = true;
@@ -1226,6 +1503,7 @@ void NewspaperDetails::updateByJson(const Json::Value &pJson) noexcept(false)
             contentType_=std::make_shared<std::string>(pJson["content_type"].asString());
         }
     }
+
     if(pJson.isMember("published_date"))
     {
         dirtyFlag_[7] = true;
@@ -1234,11 +1512,13 @@ void NewspaperDetails::updateByJson(const Json::Value &pJson) noexcept(false)
             auto daysStr = pJson["published_date"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
             time_t t = mktime(&stm);
             publishedDate_=std::make_shared<::trantor::Date>(t*1000000);
         }
     }
+
     if(pJson.isMember("publication_id"))
     {
         dirtyFlag_[8] = true;
@@ -1247,6 +1527,7 @@ void NewspaperDetails::updateByJson(const Json::Value &pJson) noexcept(false)
             publicationId_=std::make_shared<std::string>(pJson["publication_id"].asString());
         }
     }
+
     if(pJson.isMember("publication_name"))
     {
         dirtyFlag_[9] = true;
@@ -1255,6 +1536,7 @@ void NewspaperDetails::updateByJson(const Json::Value &pJson) noexcept(false)
             publicationName_=std::make_shared<std::string>(pJson["publication_name"].asString());
         }
     }
+
     if(pJson.isMember("tags"))
     {
         dirtyFlag_[10] = true;
@@ -1263,6 +1545,7 @@ void NewspaperDetails::updateByJson(const Json::Value &pJson) noexcept(false)
             tags_=std::make_shared<std::string>(pJson["tags"].asString());
         }
     }
+
     if(pJson.isMember("categories"))
     {
         dirtyFlag_[11] = true;
@@ -1271,6 +1554,7 @@ void NewspaperDetails::updateByJson(const Json::Value &pJson) noexcept(false)
             categories_=std::make_shared<std::string>(pJson["categories"].asString());
         }
     }
+
     if(pJson.isMember("supporting_text"))
     {
         dirtyFlag_[12] = true;
@@ -1279,6 +1563,7 @@ void NewspaperDetails::updateByJson(const Json::Value &pJson) noexcept(false)
             supportingText_=std::make_shared<std::string>(pJson["supporting_text"].asString());
         }
     }
+
     if(pJson.isMember("views"))
     {
         dirtyFlag_[13] = true;
@@ -1287,6 +1572,7 @@ void NewspaperDetails::updateByJson(const Json::Value &pJson) noexcept(false)
             views_=std::make_shared<int32_t>((int32_t)pJson["views"].asInt64());
         }
     }
+
     if(pJson.isMember("sales"))
     {
         dirtyFlag_[14] = true;
@@ -1295,6 +1581,7 @@ void NewspaperDetails::updateByJson(const Json::Value &pJson) noexcept(false)
             sales_=std::make_shared<std::string>(pJson["sales"].asString());
         }
     }
+
     if(pJson.isMember("publication_date"))
     {
         dirtyFlag_[15] = true;
@@ -1303,11 +1590,13 @@ void NewspaperDetails::updateByJson(const Json::Value &pJson) noexcept(false)
             auto daysStr = pJson["publication_date"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
             time_t t = mktime(&stm);
             publicationDate_=std::make_shared<::trantor::Date>(t*1000000);
         }
     }
+
     if(pJson.isMember("is_free"))
     {
         dirtyFlag_[16] = true;
@@ -1316,6 +1605,7 @@ void NewspaperDetails::updateByJson(const Json::Value &pJson) noexcept(false)
             isFree_=std::make_shared<bool>(pJson["is_free"].asBool());
         }
     }
+
     if(pJson.isMember("created_by"))
     {
         dirtyFlag_[17] = true;
@@ -1324,6 +1614,7 @@ void NewspaperDetails::updateByJson(const Json::Value &pJson) noexcept(false)
             createdBy_=std::make_shared<std::string>(pJson["created_by"].asString());
         }
     }
+
     if(pJson.isMember("creator_name"))
     {
         dirtyFlag_[18] = true;
@@ -1332,6 +1623,7 @@ void NewspaperDetails::updateByJson(const Json::Value &pJson) noexcept(false)
             creatorName_=std::make_shared<std::string>(pJson["creator_name"].asString());
         }
     }
+
     if(pJson.isMember("created_at"))
     {
         dirtyFlag_[19] = true;
@@ -1340,6 +1632,7 @@ void NewspaperDetails::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["created_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -1358,6 +1651,7 @@ void NewspaperDetails::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("modified_by"))
     {
         dirtyFlag_[20] = true;
@@ -1366,6 +1660,7 @@ void NewspaperDetails::updateByJson(const Json::Value &pJson) noexcept(false)
             modifiedBy_=std::make_shared<std::string>(pJson["modified_by"].asString());
         }
     }
+
     if(pJson.isMember("modifier_name"))
     {
         dirtyFlag_[21] = true;
@@ -1374,6 +1669,7 @@ void NewspaperDetails::updateByJson(const Json::Value &pJson) noexcept(false)
             modifierName_=std::make_shared<std::string>(pJson["modifier_name"].asString());
         }
     }
+
     if(pJson.isMember("modified_at"))
     {
         dirtyFlag_[22] = true;
@@ -1382,6 +1678,7 @@ void NewspaperDetails::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["modified_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -1400,6 +1697,7 @@ void NewspaperDetails::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("thumbnail_id"))
     {
         dirtyFlag_[23] = true;
@@ -1408,6 +1706,7 @@ void NewspaperDetails::updateByJson(const Json::Value &pJson) noexcept(false)
             thumbnailId_=std::make_shared<std::string>(pJson["thumbnail_id"].asString());
         }
     }
+
     if(pJson.isMember("document_id"))
     {
         dirtyFlag_[24] = true;
@@ -1416,6 +1715,7 @@ void NewspaperDetails::updateByJson(const Json::Value &pJson) noexcept(false)
             documentId_=std::make_shared<std::string>(pJson["document_id"].asString());
         }
     }
+
 }
 
 const std::string &NewspaperDetails::getValueOfId() const noexcept
@@ -2027,6 +2327,7 @@ void NewspaperDetails::updateId(const uint64_t id)
 {
 }
 
+
 const std::vector<std::string> &NewspaperDetails::insertColumns() noexcept
 {
     static const std::vector<std::string> inCols={
@@ -2055,12 +2356,14 @@ const std::vector<std::string> &NewspaperDetails::insertColumns() noexcept
         "modified_at",
         "thumbnail_id",
         "document_id"
+
     };
     return inCols;
 }
 
 void NewspaperDetails::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -2072,6 +2375,7 @@ void NewspaperDetails::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getNewspaperId())
@@ -2083,6 +2387,7 @@ void NewspaperDetails::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getPageText())
@@ -2094,6 +2399,7 @@ void NewspaperDetails::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getPageNumber())
@@ -2105,6 +2411,7 @@ void NewspaperDetails::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getEditionNumber())
@@ -2116,6 +2423,7 @@ void NewspaperDetails::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getFileType())
@@ -2127,6 +2435,7 @@ void NewspaperDetails::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getContentType())
@@ -2138,6 +2447,7 @@ void NewspaperDetails::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getPublishedDate())
@@ -2149,6 +2459,7 @@ void NewspaperDetails::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[8])
     {
         if(getPublicationId())
@@ -2160,6 +2471,7 @@ void NewspaperDetails::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[9])
     {
         if(getPublicationName())
@@ -2171,6 +2483,7 @@ void NewspaperDetails::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[10])
     {
         if(getTags())
@@ -2182,6 +2495,7 @@ void NewspaperDetails::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[11])
     {
         if(getCategories())
@@ -2193,6 +2507,7 @@ void NewspaperDetails::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[12])
     {
         if(getSupportingText())
@@ -2204,6 +2519,7 @@ void NewspaperDetails::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[13])
     {
         if(getViews())
@@ -2215,6 +2531,7 @@ void NewspaperDetails::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[14])
     {
         if(getSales())
@@ -2226,6 +2543,7 @@ void NewspaperDetails::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[15])
     {
         if(getPublicationDate())
@@ -2237,6 +2555,7 @@ void NewspaperDetails::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[16])
     {
         if(getIsFree())
@@ -2248,6 +2567,7 @@ void NewspaperDetails::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[17])
     {
         if(getCreatedBy())
@@ -2259,6 +2579,7 @@ void NewspaperDetails::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[18])
     {
         if(getCreatorName())
@@ -2270,6 +2591,7 @@ void NewspaperDetails::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[19])
     {
         if(getCreatedAt())
@@ -2281,6 +2603,7 @@ void NewspaperDetails::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[20])
     {
         if(getModifiedBy())
@@ -2292,6 +2615,7 @@ void NewspaperDetails::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[21])
     {
         if(getModifierName())
@@ -2303,6 +2627,7 @@ void NewspaperDetails::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[22])
     {
         if(getModifiedAt())
@@ -2314,6 +2639,7 @@ void NewspaperDetails::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[23])
     {
         if(getThumbnailId())
@@ -2325,6 +2651,7 @@ void NewspaperDetails::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[24])
     {
         if(getDocumentId())
@@ -2336,116 +2663,144 @@ void NewspaperDetails::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
 }
 
 const std::vector<std::string> NewspaperDetails::updateColumns() const
 {
     std::vector<std::string> ret;
+
     if(dirtyFlag_[0])
     {
         ret.push_back(getColumnName(0));
     }
+
     if(dirtyFlag_[1])
     {
         ret.push_back(getColumnName(1));
     }
+
     if(dirtyFlag_[2])
     {
         ret.push_back(getColumnName(2));
     }
+
     if(dirtyFlag_[3])
     {
         ret.push_back(getColumnName(3));
     }
+
     if(dirtyFlag_[4])
     {
         ret.push_back(getColumnName(4));
     }
+
     if(dirtyFlag_[5])
     {
         ret.push_back(getColumnName(5));
     }
+
     if(dirtyFlag_[6])
     {
         ret.push_back(getColumnName(6));
     }
+
     if(dirtyFlag_[7])
     {
         ret.push_back(getColumnName(7));
     }
+
     if(dirtyFlag_[8])
     {
         ret.push_back(getColumnName(8));
     }
+
     if(dirtyFlag_[9])
     {
         ret.push_back(getColumnName(9));
     }
+
     if(dirtyFlag_[10])
     {
         ret.push_back(getColumnName(10));
     }
+
     if(dirtyFlag_[11])
     {
         ret.push_back(getColumnName(11));
     }
+
     if(dirtyFlag_[12])
     {
         ret.push_back(getColumnName(12));
     }
+
     if(dirtyFlag_[13])
     {
         ret.push_back(getColumnName(13));
     }
+
     if(dirtyFlag_[14])
     {
         ret.push_back(getColumnName(14));
     }
+
     if(dirtyFlag_[15])
     {
         ret.push_back(getColumnName(15));
     }
+
     if(dirtyFlag_[16])
     {
         ret.push_back(getColumnName(16));
     }
+
     if(dirtyFlag_[17])
     {
         ret.push_back(getColumnName(17));
     }
+
     if(dirtyFlag_[18])
     {
         ret.push_back(getColumnName(18));
     }
+
     if(dirtyFlag_[19])
     {
         ret.push_back(getColumnName(19));
     }
+
     if(dirtyFlag_[20])
     {
         ret.push_back(getColumnName(20));
     }
+
     if(dirtyFlag_[21])
     {
         ret.push_back(getColumnName(21));
     }
+
     if(dirtyFlag_[22])
     {
         ret.push_back(getColumnName(22));
     }
+
     if(dirtyFlag_[23])
     {
         ret.push_back(getColumnName(23));
     }
+
     if(dirtyFlag_[24])
     {
         ret.push_back(getColumnName(24));
     }
+
     return ret;
 }
 
 void NewspaperDetails::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -2457,6 +2812,7 @@ void NewspaperDetails::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getNewspaperId())
@@ -2468,6 +2824,7 @@ void NewspaperDetails::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getPageText())
@@ -2479,6 +2836,7 @@ void NewspaperDetails::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getPageNumber())
@@ -2490,6 +2848,7 @@ void NewspaperDetails::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getEditionNumber())
@@ -2501,6 +2860,7 @@ void NewspaperDetails::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getFileType())
@@ -2512,6 +2872,7 @@ void NewspaperDetails::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getContentType())
@@ -2523,6 +2884,7 @@ void NewspaperDetails::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getPublishedDate())
@@ -2534,6 +2896,7 @@ void NewspaperDetails::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[8])
     {
         if(getPublicationId())
@@ -2545,6 +2908,7 @@ void NewspaperDetails::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[9])
     {
         if(getPublicationName())
@@ -2556,6 +2920,7 @@ void NewspaperDetails::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[10])
     {
         if(getTags())
@@ -2567,6 +2932,7 @@ void NewspaperDetails::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[11])
     {
         if(getCategories())
@@ -2578,6 +2944,7 @@ void NewspaperDetails::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[12])
     {
         if(getSupportingText())
@@ -2589,6 +2956,7 @@ void NewspaperDetails::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[13])
     {
         if(getViews())
@@ -2600,6 +2968,7 @@ void NewspaperDetails::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[14])
     {
         if(getSales())
@@ -2611,6 +2980,7 @@ void NewspaperDetails::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[15])
     {
         if(getPublicationDate())
@@ -2622,6 +2992,7 @@ void NewspaperDetails::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[16])
     {
         if(getIsFree())
@@ -2633,6 +3004,7 @@ void NewspaperDetails::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[17])
     {
         if(getCreatedBy())
@@ -2644,6 +3016,7 @@ void NewspaperDetails::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[18])
     {
         if(getCreatorName())
@@ -2655,6 +3028,7 @@ void NewspaperDetails::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[19])
     {
         if(getCreatedAt())
@@ -2666,6 +3040,7 @@ void NewspaperDetails::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[20])
     {
         if(getModifiedBy())
@@ -2677,6 +3052,7 @@ void NewspaperDetails::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[21])
     {
         if(getModifierName())
@@ -2688,6 +3064,7 @@ void NewspaperDetails::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[22])
     {
         if(getModifiedAt())
@@ -2699,6 +3076,7 @@ void NewspaperDetails::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[23])
     {
         if(getThumbnailId())
@@ -2710,6 +3088,7 @@ void NewspaperDetails::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[24])
     {
         if(getDocumentId())
@@ -2721,210 +3100,287 @@ void NewspaperDetails::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
 }
 Json::Value NewspaperDetails::toJson() const
 {
     Json::Value ret;
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getNewspaperId())
     {
+
         ret["newspaper_id"]=getValueOfNewspaperId();
+
     }
     else
     {
         ret["newspaper_id"]=Json::Value();
     }
+
     if(getPageText())
     {
+
         ret["page_text"]=getValueOfPageText();
+
     }
     else
     {
         ret["page_text"]=Json::Value();
     }
+
     if(getPageNumber())
     {
+
         ret["page_number"]=getValueOfPageNumber();
+
     }
     else
     {
         ret["page_number"]=Json::Value();
     }
+
     if(getEditionNumber())
     {
+
         ret["edition_number"]=getValueOfEditionNumber();
+
     }
     else
     {
         ret["edition_number"]=Json::Value();
     }
+
     if(getFileType())
     {
+
         ret["file_type"]=getValueOfFileType();
+
     }
     else
     {
         ret["file_type"]=Json::Value();
     }
+
     if(getContentType())
     {
+
         ret["content_type"]=getValueOfContentType();
+
     }
     else
     {
         ret["content_type"]=Json::Value();
     }
+
     if(getPublishedDate())
     {
+
         ret["published_date"]=getPublishedDate()->toDbStringLocal();
+
     }
     else
     {
         ret["published_date"]=Json::Value();
     }
+
     if(getPublicationId())
     {
+
         ret["publication_id"]=getValueOfPublicationId();
+
     }
     else
     {
         ret["publication_id"]=Json::Value();
     }
+
     if(getPublicationName())
     {
+
         ret["publication_name"]=getValueOfPublicationName();
+
     }
     else
     {
         ret["publication_name"]=Json::Value();
     }
+
     if(getTags())
     {
+
         ret["tags"]=getValueOfTags();
+
     }
     else
     {
         ret["tags"]=Json::Value();
     }
+
     if(getCategories())
     {
+
         ret["categories"]=getValueOfCategories();
+
     }
     else
     {
         ret["categories"]=Json::Value();
     }
+
     if(getSupportingText())
     {
+
         ret["supporting_text"]=getValueOfSupportingText();
+
     }
     else
     {
         ret["supporting_text"]=Json::Value();
     }
+
     if(getViews())
     {
+
         ret["views"]=getValueOfViews();
+
     }
     else
     {
         ret["views"]=Json::Value();
     }
+
     if(getSales())
     {
+
         ret["sales"]=getValueOfSales();
+
     }
     else
     {
         ret["sales"]=Json::Value();
     }
+
     if(getPublicationDate())
     {
+
         ret["publication_date"]=getPublicationDate()->toDbStringLocal();
+
     }
     else
     {
         ret["publication_date"]=Json::Value();
     }
+
     if(getIsFree())
     {
+
         ret["is_free"]=getValueOfIsFree();
+
     }
     else
     {
         ret["is_free"]=Json::Value();
     }
+
     if(getCreatedBy())
     {
+
         ret["created_by"]=getValueOfCreatedBy();
+
     }
     else
     {
         ret["created_by"]=Json::Value();
     }
+
     if(getCreatorName())
     {
+
         ret["creator_name"]=getValueOfCreatorName();
+
     }
     else
     {
         ret["creator_name"]=Json::Value();
     }
+
     if(getCreatedAt())
     {
+
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["created_at"]=Json::Value();
     }
+
     if(getModifiedBy())
     {
+
         ret["modified_by"]=getValueOfModifiedBy();
+
     }
     else
     {
         ret["modified_by"]=Json::Value();
     }
+
     if(getModifierName())
     {
+
         ret["modifier_name"]=getValueOfModifierName();
+
     }
     else
     {
         ret["modifier_name"]=Json::Value();
     }
+
     if(getModifiedAt())
     {
+
         ret["modified_at"]=getModifiedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["modified_at"]=Json::Value();
     }
+
     if(getThumbnailId())
     {
+
         ret["thumbnail_id"]=getValueOfThumbnailId();
+
     }
     else
     {
         ret["thumbnail_id"]=Json::Value();
     }
+
     if(getDocumentId())
     {
+
         ret["document_id"]=getValueOfDocumentId();
+
     }
     else
     {
         ret["document_id"]=Json::Value();
     }
+
     return ret;
 }
 
@@ -2939,629 +3395,810 @@ Json::Value NewspaperDetails::toMasqueradedJson(
     Json::Value ret;
     if(pMasqueradingVector.size() == 25)
     {
+
         if(!pMasqueradingVector[0].empty())
         {
             if(getId())
             {
+
                 ret[pMasqueradingVector[0]]=getValueOfId();
+
             }
             else
             {
                 ret[pMasqueradingVector[0]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[1].empty())
         {
             if(getNewspaperId())
             {
+
                 ret[pMasqueradingVector[1]]=getValueOfNewspaperId();
+
             }
             else
             {
                 ret[pMasqueradingVector[1]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[2].empty())
         {
             if(getPageText())
             {
+
                 ret[pMasqueradingVector[2]]=getValueOfPageText();
+
             }
             else
             {
                 ret[pMasqueradingVector[2]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[3].empty())
         {
             if(getPageNumber())
             {
+
                 ret[pMasqueradingVector[3]]=getValueOfPageNumber();
+
             }
             else
             {
                 ret[pMasqueradingVector[3]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[4].empty())
         {
             if(getEditionNumber())
             {
+
                 ret[pMasqueradingVector[4]]=getValueOfEditionNumber();
+
             }
             else
             {
                 ret[pMasqueradingVector[4]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[5].empty())
         {
             if(getFileType())
             {
+
                 ret[pMasqueradingVector[5]]=getValueOfFileType();
+
             }
             else
             {
                 ret[pMasqueradingVector[5]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[6].empty())
         {
             if(getContentType())
             {
+
                 ret[pMasqueradingVector[6]]=getValueOfContentType();
+
             }
             else
             {
                 ret[pMasqueradingVector[6]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[7].empty())
         {
             if(getPublishedDate())
             {
+
                 ret[pMasqueradingVector[7]]=getPublishedDate()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[7]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[8].empty())
         {
             if(getPublicationId())
             {
+
                 ret[pMasqueradingVector[8]]=getValueOfPublicationId();
+
             }
             else
             {
                 ret[pMasqueradingVector[8]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[9].empty())
         {
             if(getPublicationName())
             {
+
                 ret[pMasqueradingVector[9]]=getValueOfPublicationName();
+
             }
             else
             {
                 ret[pMasqueradingVector[9]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[10].empty())
         {
             if(getTags())
             {
+
                 ret[pMasqueradingVector[10]]=getValueOfTags();
+
             }
             else
             {
                 ret[pMasqueradingVector[10]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[11].empty())
         {
             if(getCategories())
             {
+
                 ret[pMasqueradingVector[11]]=getValueOfCategories();
+
             }
             else
             {
                 ret[pMasqueradingVector[11]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[12].empty())
         {
             if(getSupportingText())
             {
+
                 ret[pMasqueradingVector[12]]=getValueOfSupportingText();
+
             }
             else
             {
                 ret[pMasqueradingVector[12]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[13].empty())
         {
             if(getViews())
             {
+
                 ret[pMasqueradingVector[13]]=getValueOfViews();
+
             }
             else
             {
                 ret[pMasqueradingVector[13]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[14].empty())
         {
             if(getSales())
             {
+
                 ret[pMasqueradingVector[14]]=getValueOfSales();
+
             }
             else
             {
                 ret[pMasqueradingVector[14]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[15].empty())
         {
             if(getPublicationDate())
             {
+
                 ret[pMasqueradingVector[15]]=getPublicationDate()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[15]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[16].empty())
         {
             if(getIsFree())
             {
+
                 ret[pMasqueradingVector[16]]=getValueOfIsFree();
+
             }
             else
             {
                 ret[pMasqueradingVector[16]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[17].empty())
         {
             if(getCreatedBy())
             {
+
                 ret[pMasqueradingVector[17]]=getValueOfCreatedBy();
+
             }
             else
             {
                 ret[pMasqueradingVector[17]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[18].empty())
         {
             if(getCreatorName())
             {
+
                 ret[pMasqueradingVector[18]]=getValueOfCreatorName();
+
             }
             else
             {
                 ret[pMasqueradingVector[18]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[19].empty())
         {
             if(getCreatedAt())
             {
+
                 ret[pMasqueradingVector[19]]=getCreatedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[19]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[20].empty())
         {
             if(getModifiedBy())
             {
+
                 ret[pMasqueradingVector[20]]=getValueOfModifiedBy();
+
             }
             else
             {
                 ret[pMasqueradingVector[20]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[21].empty())
         {
             if(getModifierName())
             {
+
                 ret[pMasqueradingVector[21]]=getValueOfModifierName();
+
             }
             else
             {
                 ret[pMasqueradingVector[21]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[22].empty())
         {
             if(getModifiedAt())
             {
+
                 ret[pMasqueradingVector[22]]=getModifiedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[22]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[23].empty())
         {
             if(getThumbnailId())
             {
+
                 ret[pMasqueradingVector[23]]=getValueOfThumbnailId();
+
             }
             else
             {
                 ret[pMasqueradingVector[23]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[24].empty())
         {
             if(getDocumentId())
             {
+
                 ret[pMasqueradingVector[24]]=getValueOfDocumentId();
+
             }
             else
             {
                 ret[pMasqueradingVector[24]]=Json::Value();
             }
         }
+
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getNewspaperId())
     {
+
         ret["newspaper_id"]=getValueOfNewspaperId();
+
     }
     else
     {
         ret["newspaper_id"]=Json::Value();
     }
+
     if(getPageText())
     {
+
         ret["page_text"]=getValueOfPageText();
+
     }
     else
     {
         ret["page_text"]=Json::Value();
     }
+
     if(getPageNumber())
     {
+
         ret["page_number"]=getValueOfPageNumber();
+
     }
     else
     {
         ret["page_number"]=Json::Value();
     }
+
     if(getEditionNumber())
     {
+
         ret["edition_number"]=getValueOfEditionNumber();
+
     }
     else
     {
         ret["edition_number"]=Json::Value();
     }
+
     if(getFileType())
     {
+
         ret["file_type"]=getValueOfFileType();
+
     }
     else
     {
         ret["file_type"]=Json::Value();
     }
+
     if(getContentType())
     {
+
         ret["content_type"]=getValueOfContentType();
+
     }
     else
     {
         ret["content_type"]=Json::Value();
     }
+
     if(getPublishedDate())
     {
+
         ret["published_date"]=getPublishedDate()->toDbStringLocal();
+
     }
     else
     {
         ret["published_date"]=Json::Value();
     }
+
     if(getPublicationId())
     {
+
         ret["publication_id"]=getValueOfPublicationId();
+
     }
     else
     {
         ret["publication_id"]=Json::Value();
     }
+
     if(getPublicationName())
     {
+
         ret["publication_name"]=getValueOfPublicationName();
+
     }
     else
     {
         ret["publication_name"]=Json::Value();
     }
+
     if(getTags())
     {
+
         ret["tags"]=getValueOfTags();
+
     }
     else
     {
         ret["tags"]=Json::Value();
     }
+
     if(getCategories())
     {
+
         ret["categories"]=getValueOfCategories();
+
     }
     else
     {
         ret["categories"]=Json::Value();
     }
+
     if(getSupportingText())
     {
+
         ret["supporting_text"]=getValueOfSupportingText();
+
     }
     else
     {
         ret["supporting_text"]=Json::Value();
     }
+
     if(getViews())
     {
+
         ret["views"]=getValueOfViews();
+
     }
     else
     {
         ret["views"]=Json::Value();
     }
+
     if(getSales())
     {
+
         ret["sales"]=getValueOfSales();
+
     }
     else
     {
         ret["sales"]=Json::Value();
     }
+
     if(getPublicationDate())
     {
+
         ret["publication_date"]=getPublicationDate()->toDbStringLocal();
+
     }
     else
     {
         ret["publication_date"]=Json::Value();
     }
+
     if(getIsFree())
     {
+
         ret["is_free"]=getValueOfIsFree();
+
     }
     else
     {
         ret["is_free"]=Json::Value();
     }
+
     if(getCreatedBy())
     {
+
         ret["created_by"]=getValueOfCreatedBy();
+
     }
     else
     {
         ret["created_by"]=Json::Value();
     }
+
     if(getCreatorName())
     {
+
         ret["creator_name"]=getValueOfCreatorName();
+
     }
     else
     {
         ret["creator_name"]=Json::Value();
     }
+
     if(getCreatedAt())
     {
+
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["created_at"]=Json::Value();
     }
+
     if(getModifiedBy())
     {
+
         ret["modified_by"]=getValueOfModifiedBy();
+
     }
     else
     {
         ret["modified_by"]=Json::Value();
     }
+
     if(getModifierName())
     {
+
         ret["modifier_name"]=getValueOfModifierName();
+
     }
     else
     {
         ret["modifier_name"]=Json::Value();
     }
+
     if(getModifiedAt())
     {
+
         ret["modified_at"]=getModifiedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["modified_at"]=Json::Value();
     }
+
     if(getThumbnailId())
     {
+
         ret["thumbnail_id"]=getValueOfThumbnailId();
+
     }
     else
     {
         ret["thumbnail_id"]=Json::Value();
     }
+
     if(getDocumentId())
     {
+
         ret["document_id"]=getValueOfDocumentId();
+
     }
     else
     {
         ret["document_id"]=Json::Value();
     }
+
     return ret;
 }
 
 bool NewspaperDetails::validateJsonForCreation(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, true))
             return false;
     }
+
     if(pJson.isMember("newspaper_id"))
     {
         if(!validJsonOfField(1, "newspaper_id", pJson["newspaper_id"], err, true))
             return false;
     }
+
     if(pJson.isMember("page_text"))
     {
         if(!validJsonOfField(2, "page_text", pJson["page_text"], err, true))
             return false;
     }
+
     if(pJson.isMember("page_number"))
     {
         if(!validJsonOfField(3, "page_number", pJson["page_number"], err, true))
             return false;
     }
+
     else
     {
         err="The page_number column cannot be null";
         return false;
     }
+
     if(pJson.isMember("edition_number"))
     {
         if(!validJsonOfField(4, "edition_number", pJson["edition_number"], err, true))
             return false;
     }
+
     if(pJson.isMember("file_type"))
     {
         if(!validJsonOfField(5, "file_type", pJson["file_type"], err, true))
             return false;
     }
+
     if(pJson.isMember("content_type"))
     {
         if(!validJsonOfField(6, "content_type", pJson["content_type"], err, true))
             return false;
     }
+
     else
     {
         err="The content_type column cannot be null";
         return false;
     }
+
     if(pJson.isMember("published_date"))
     {
         if(!validJsonOfField(7, "published_date", pJson["published_date"], err, true))
             return false;
     }
+
     if(pJson.isMember("publication_id"))
     {
         if(!validJsonOfField(8, "publication_id", pJson["publication_id"], err, true))
             return false;
     }
+
     if(pJson.isMember("publication_name"))
     {
         if(!validJsonOfField(9, "publication_name", pJson["publication_name"], err, true))
             return false;
     }
+
     if(pJson.isMember("tags"))
     {
         if(!validJsonOfField(10, "tags", pJson["tags"], err, true))
             return false;
     }
+
     if(pJson.isMember("categories"))
     {
         if(!validJsonOfField(11, "categories", pJson["categories"], err, true))
             return false;
     }
+
     if(pJson.isMember("supporting_text"))
     {
         if(!validJsonOfField(12, "supporting_text", pJson["supporting_text"], err, true))
             return false;
     }
+
     if(pJson.isMember("views"))
     {
         if(!validJsonOfField(13, "views", pJson["views"], err, true))
             return false;
     }
+
     if(pJson.isMember("sales"))
     {
         if(!validJsonOfField(14, "sales", pJson["sales"], err, true))
             return false;
     }
+
     if(pJson.isMember("publication_date"))
     {
         if(!validJsonOfField(15, "publication_date", pJson["publication_date"], err, true))
             return false;
     }
+
     if(pJson.isMember("is_free"))
     {
         if(!validJsonOfField(16, "is_free", pJson["is_free"], err, true))
             return false;
     }
+
     if(pJson.isMember("created_by"))
     {
         if(!validJsonOfField(17, "created_by", pJson["created_by"], err, true))
             return false;
     }
+
     if(pJson.isMember("creator_name"))
     {
         if(!validJsonOfField(18, "creator_name", pJson["creator_name"], err, true))
             return false;
     }
+
     else
     {
         err="The creator_name column cannot be null";
         return false;
     }
+
     if(pJson.isMember("created_at"))
     {
         if(!validJsonOfField(19, "created_at", pJson["created_at"], err, true))
             return false;
     }
+
     if(pJson.isMember("modified_by"))
     {
         if(!validJsonOfField(20, "modified_by", pJson["modified_by"], err, true))
             return false;
     }
+
     if(pJson.isMember("modifier_name"))
     {
         if(!validJsonOfField(21, "modifier_name", pJson["modifier_name"], err, true))
             return false;
     }
+
     if(pJson.isMember("modified_at"))
     {
         if(!validJsonOfField(22, "modified_at", pJson["modified_at"], err, true))
             return false;
     }
+
     if(pJson.isMember("thumbnail_id"))
     {
         if(!validJsonOfField(23, "thumbnail_id", pJson["thumbnail_id"], err, true))
             return false;
     }
+
     if(pJson.isMember("document_id"))
     {
         if(!validJsonOfField(24, "document_id", pJson["document_id"], err, true))
             return false;
     }
+
     return true;
 }
 bool NewspaperDetails::validateMasqueradedJsonForCreation(const Json::Value &pJson,
@@ -3574,6 +4211,7 @@ bool NewspaperDetails::validateMasqueradedJsonForCreation(const Json::Value &pJs
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty())
       {
           if(pJson.isMember(pMasqueradingVector[0]))
@@ -3581,7 +4219,9 @@ bool NewspaperDetails::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[1].empty())
       {
           if(pJson.isMember(pMasqueradingVector[1]))
@@ -3589,7 +4229,9 @@ bool NewspaperDetails::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[2].empty())
       {
           if(pJson.isMember(pMasqueradingVector[2]))
@@ -3597,7 +4239,9 @@ bool NewspaperDetails::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[3].empty())
       {
           if(pJson.isMember(pMasqueradingVector[3]))
@@ -3605,12 +4249,15 @@ bool NewspaperDetails::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[3] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[4].empty())
       {
           if(pJson.isMember(pMasqueradingVector[4]))
@@ -3618,7 +4265,9 @@ bool NewspaperDetails::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[5].empty())
       {
           if(pJson.isMember(pMasqueradingVector[5]))
@@ -3626,7 +4275,9 @@ bool NewspaperDetails::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[6].empty())
       {
           if(pJson.isMember(pMasqueradingVector[6]))
@@ -3634,12 +4285,15 @@ bool NewspaperDetails::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[6] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[7].empty())
       {
           if(pJson.isMember(pMasqueradingVector[7]))
@@ -3647,7 +4301,9 @@ bool NewspaperDetails::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[8].empty())
       {
           if(pJson.isMember(pMasqueradingVector[8]))
@@ -3655,7 +4311,9 @@ bool NewspaperDetails::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(8, pMasqueradingVector[8], pJson[pMasqueradingVector[8]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[9].empty())
       {
           if(pJson.isMember(pMasqueradingVector[9]))
@@ -3663,7 +4321,9 @@ bool NewspaperDetails::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(9, pMasqueradingVector[9], pJson[pMasqueradingVector[9]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[10].empty())
       {
           if(pJson.isMember(pMasqueradingVector[10]))
@@ -3671,7 +4331,9 @@ bool NewspaperDetails::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(10, pMasqueradingVector[10], pJson[pMasqueradingVector[10]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[11].empty())
       {
           if(pJson.isMember(pMasqueradingVector[11]))
@@ -3679,7 +4341,9 @@ bool NewspaperDetails::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(11, pMasqueradingVector[11], pJson[pMasqueradingVector[11]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[12].empty())
       {
           if(pJson.isMember(pMasqueradingVector[12]))
@@ -3687,7 +4351,9 @@ bool NewspaperDetails::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(12, pMasqueradingVector[12], pJson[pMasqueradingVector[12]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[13].empty())
       {
           if(pJson.isMember(pMasqueradingVector[13]))
@@ -3695,7 +4361,9 @@ bool NewspaperDetails::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(13, pMasqueradingVector[13], pJson[pMasqueradingVector[13]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[14].empty())
       {
           if(pJson.isMember(pMasqueradingVector[14]))
@@ -3703,7 +4371,9 @@ bool NewspaperDetails::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(14, pMasqueradingVector[14], pJson[pMasqueradingVector[14]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[15].empty())
       {
           if(pJson.isMember(pMasqueradingVector[15]))
@@ -3711,7 +4381,9 @@ bool NewspaperDetails::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(15, pMasqueradingVector[15], pJson[pMasqueradingVector[15]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[16].empty())
       {
           if(pJson.isMember(pMasqueradingVector[16]))
@@ -3719,7 +4391,9 @@ bool NewspaperDetails::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(16, pMasqueradingVector[16], pJson[pMasqueradingVector[16]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[17].empty())
       {
           if(pJson.isMember(pMasqueradingVector[17]))
@@ -3727,7 +4401,9 @@ bool NewspaperDetails::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(17, pMasqueradingVector[17], pJson[pMasqueradingVector[17]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[18].empty())
       {
           if(pJson.isMember(pMasqueradingVector[18]))
@@ -3735,12 +4411,15 @@ bool NewspaperDetails::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(18, pMasqueradingVector[18], pJson[pMasqueradingVector[18]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[18] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[19].empty())
       {
           if(pJson.isMember(pMasqueradingVector[19]))
@@ -3748,7 +4427,9 @@ bool NewspaperDetails::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(19, pMasqueradingVector[19], pJson[pMasqueradingVector[19]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[20].empty())
       {
           if(pJson.isMember(pMasqueradingVector[20]))
@@ -3756,7 +4437,9 @@ bool NewspaperDetails::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(20, pMasqueradingVector[20], pJson[pMasqueradingVector[20]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[21].empty())
       {
           if(pJson.isMember(pMasqueradingVector[21]))
@@ -3764,7 +4447,9 @@ bool NewspaperDetails::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(21, pMasqueradingVector[21], pJson[pMasqueradingVector[21]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[22].empty())
       {
           if(pJson.isMember(pMasqueradingVector[22]))
@@ -3772,7 +4457,9 @@ bool NewspaperDetails::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(22, pMasqueradingVector[22], pJson[pMasqueradingVector[22]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[23].empty())
       {
           if(pJson.isMember(pMasqueradingVector[23]))
@@ -3780,7 +4467,9 @@ bool NewspaperDetails::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(23, pMasqueradingVector[23], pJson[pMasqueradingVector[23]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[24].empty())
       {
           if(pJson.isMember(pMasqueradingVector[24]))
@@ -3788,7 +4477,9 @@ bool NewspaperDetails::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(24, pMasqueradingVector[24], pJson[pMasqueradingVector[24]], err, true))
                   return false;
           }
+
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -3799,136 +4490,163 @@ bool NewspaperDetails::validateMasqueradedJsonForCreation(const Json::Value &pJs
 }
 bool NewspaperDetails::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, false))
             return false;
     }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
     if(pJson.isMember("newspaper_id"))
     {
         if(!validJsonOfField(1, "newspaper_id", pJson["newspaper_id"], err, false))
             return false;
     }
+
     if(pJson.isMember("page_text"))
     {
         if(!validJsonOfField(2, "page_text", pJson["page_text"], err, false))
             return false;
     }
+
     if(pJson.isMember("page_number"))
     {
         if(!validJsonOfField(3, "page_number", pJson["page_number"], err, false))
             return false;
     }
+
     if(pJson.isMember("edition_number"))
     {
         if(!validJsonOfField(4, "edition_number", pJson["edition_number"], err, false))
             return false;
     }
+
     if(pJson.isMember("file_type"))
     {
         if(!validJsonOfField(5, "file_type", pJson["file_type"], err, false))
             return false;
     }
+
     if(pJson.isMember("content_type"))
     {
         if(!validJsonOfField(6, "content_type", pJson["content_type"], err, false))
             return false;
     }
+
     if(pJson.isMember("published_date"))
     {
         if(!validJsonOfField(7, "published_date", pJson["published_date"], err, false))
             return false;
     }
+
     if(pJson.isMember("publication_id"))
     {
         if(!validJsonOfField(8, "publication_id", pJson["publication_id"], err, false))
             return false;
     }
+
     if(pJson.isMember("publication_name"))
     {
         if(!validJsonOfField(9, "publication_name", pJson["publication_name"], err, false))
             return false;
     }
+
     if(pJson.isMember("tags"))
     {
         if(!validJsonOfField(10, "tags", pJson["tags"], err, false))
             return false;
     }
+
     if(pJson.isMember("categories"))
     {
         if(!validJsonOfField(11, "categories", pJson["categories"], err, false))
             return false;
     }
+
     if(pJson.isMember("supporting_text"))
     {
         if(!validJsonOfField(12, "supporting_text", pJson["supporting_text"], err, false))
             return false;
     }
+
     if(pJson.isMember("views"))
     {
         if(!validJsonOfField(13, "views", pJson["views"], err, false))
             return false;
     }
+
     if(pJson.isMember("sales"))
     {
         if(!validJsonOfField(14, "sales", pJson["sales"], err, false))
             return false;
     }
+
     if(pJson.isMember("publication_date"))
     {
         if(!validJsonOfField(15, "publication_date", pJson["publication_date"], err, false))
             return false;
     }
+
     if(pJson.isMember("is_free"))
     {
         if(!validJsonOfField(16, "is_free", pJson["is_free"], err, false))
             return false;
     }
+
     if(pJson.isMember("created_by"))
     {
         if(!validJsonOfField(17, "created_by", pJson["created_by"], err, false))
             return false;
     }
+
     if(pJson.isMember("creator_name"))
     {
         if(!validJsonOfField(18, "creator_name", pJson["creator_name"], err, false))
             return false;
     }
+
     if(pJson.isMember("created_at"))
     {
         if(!validJsonOfField(19, "created_at", pJson["created_at"], err, false))
             return false;
     }
+
     if(pJson.isMember("modified_by"))
     {
         if(!validJsonOfField(20, "modified_by", pJson["modified_by"], err, false))
             return false;
     }
+
     if(pJson.isMember("modifier_name"))
     {
         if(!validJsonOfField(21, "modifier_name", pJson["modifier_name"], err, false))
             return false;
     }
+
     if(pJson.isMember("modified_at"))
     {
         if(!validJsonOfField(22, "modified_at", pJson["modified_at"], err, false))
             return false;
     }
+
     if(pJson.isMember("thumbnail_id"))
     {
         if(!validJsonOfField(23, "thumbnail_id", pJson["thumbnail_id"], err, false))
             return false;
     }
+
     if(pJson.isMember("document_id"))
     {
         if(!validJsonOfField(24, "document_id", pJson["document_id"], err, false))
             return false;
     }
+
     return true;
 }
 bool NewspaperDetails::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
@@ -3941,136 +4659,163 @@ bool NewspaperDetails::validateMasqueradedJsonForUpdate(const Json::Value &pJson
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
       {
           if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
               return false;
       }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
       if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
       {
           if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
       {
           if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
       {
           if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
       {
           if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
       {
           if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
       {
           if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
       {
           if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
       {
           if(!validJsonOfField(8, pMasqueradingVector[8], pJson[pMasqueradingVector[8]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
       {
           if(!validJsonOfField(9, pMasqueradingVector[9], pJson[pMasqueradingVector[9]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
       {
           if(!validJsonOfField(10, pMasqueradingVector[10], pJson[pMasqueradingVector[10]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
       {
           if(!validJsonOfField(11, pMasqueradingVector[11], pJson[pMasqueradingVector[11]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
       {
           if(!validJsonOfField(12, pMasqueradingVector[12], pJson[pMasqueradingVector[12]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
       {
           if(!validJsonOfField(13, pMasqueradingVector[13], pJson[pMasqueradingVector[13]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
       {
           if(!validJsonOfField(14, pMasqueradingVector[14], pJson[pMasqueradingVector[14]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[15].empty() && pJson.isMember(pMasqueradingVector[15]))
       {
           if(!validJsonOfField(15, pMasqueradingVector[15], pJson[pMasqueradingVector[15]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[16].empty() && pJson.isMember(pMasqueradingVector[16]))
       {
           if(!validJsonOfField(16, pMasqueradingVector[16], pJson[pMasqueradingVector[16]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[17].empty() && pJson.isMember(pMasqueradingVector[17]))
       {
           if(!validJsonOfField(17, pMasqueradingVector[17], pJson[pMasqueradingVector[17]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[18].empty() && pJson.isMember(pMasqueradingVector[18]))
       {
           if(!validJsonOfField(18, pMasqueradingVector[18], pJson[pMasqueradingVector[18]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[19].empty() && pJson.isMember(pMasqueradingVector[19]))
       {
           if(!validJsonOfField(19, pMasqueradingVector[19], pJson[pMasqueradingVector[19]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[20].empty() && pJson.isMember(pMasqueradingVector[20]))
       {
           if(!validJsonOfField(20, pMasqueradingVector[20], pJson[pMasqueradingVector[20]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[21].empty() && pJson.isMember(pMasqueradingVector[21]))
       {
           if(!validJsonOfField(21, pMasqueradingVector[21], pJson[pMasqueradingVector[21]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[22].empty() && pJson.isMember(pMasqueradingVector[22]))
       {
           if(!validJsonOfField(22, pMasqueradingVector[22], pJson[pMasqueradingVector[22]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[23].empty() && pJson.isMember(pMasqueradingVector[23]))
       {
           if(!validJsonOfField(23, pMasqueradingVector[23], pJson[pMasqueradingVector[23]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[24].empty() && pJson.isMember(pMasqueradingVector[24]))
       {
           if(!validJsonOfField(24, pMasqueradingVector[24], pJson[pMasqueradingVector[24]], err, false))
               return false;
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -4087,347 +4832,449 @@ bool NewspaperDetails::validJsonOfField(size_t index,
 {
     switch(index)
     {
+
         case 0:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 1:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 2:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 3:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 4:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 255)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 255)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 255)";
                 return false;
             }
+
             break;
+
         case 5:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 6:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 50)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 50)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 50)";
                 return false;
             }
+
             break;
+
         case 7:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 8:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 9:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 100)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 100)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 100)";
                 return false;
             }
+
             break;
+
         case 10:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 11:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 12:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 13:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 14:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 15:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 16:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isBool())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 17:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 18:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 255)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 255)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 255)";
                 return false;
             }
+
             break;
+
         case 19:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 20:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 21:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 255)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 255)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 255)";
                 return false;
             }
+
             break;
+
         case 22:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 23:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 255)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 255)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 255)";
                 return false;
             }
+
             break;
+
         case 24:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 255)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 255)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 255)";
                 return false;
             }
+
             break;
+
         default:
             err="Internal error in the server";
             return false;
     }
     return true;
 }
+

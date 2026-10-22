@@ -1,3 +1,4 @@
+
 /**
  *
  *  Games.h
@@ -39,6 +40,8 @@ namespace drogon_model
 namespace Gnp
 {
 
+
+
 class Games
 {
   public:
@@ -49,14 +52,19 @@ class Games
         static const std::string _description;
         static const std::string _is_active;
         static const std::string _game_logo;
+
     };
 
     static const int primaryKeyNumber;
     static const std::string tableName;
     static const bool hasPrimaryKey;
+
     static const std::string primaryKeyName;
+
     using PrimaryKeyType = std::string;
     const PrimaryKeyType &getPrimaryKey() const;
+
+
 
     /**
      * @brief constructor
@@ -148,6 +156,7 @@ class Games
     void setGameLogoToNull() noexcept;
 
 
+
     static size_t getColumnNumber() noexcept {  return 5;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
@@ -155,6 +164,7 @@ class Games
     std::string toString() const;
     Json::Value toMasqueradedJson(const std::vector<std::string> &pMasqueradingVector) const;
     /// Relationship interfaces
+
   private:
     friend drogon::orm::Mapper<Games>;
     friend drogon::orm::BaseBuilder<Games, true, true>;
@@ -175,6 +185,7 @@ class Games
     std::shared_ptr<std::string> description_;
     std::shared_ptr<bool> isActive_;
     std::shared_ptr<std::vector<char>> gameLogo_;
+
     struct MetaData
     {
         const std::string colName_;
@@ -190,13 +201,19 @@ class Games
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
+
         static const std::string sql="select * from " + tableName + " where id = $1";
+
+
         return sql;
     }
 
     static const std::string &sqlForDeletingByPrimaryKey()
     {
+
         static const std::string sql="delete from " + tableName + " where id = $1";
+
+
         return sql;
     }
     std::string sqlForInserting(bool &needSelection) const
@@ -206,15 +223,18 @@ class Games
         needSelection = false;
         sql += "id,";
         ++parametersCount;
+
         if(!dirtyFlag_[0])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[1])
         {
             sql += "title,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[2])
         {
             sql += "description,";
@@ -222,15 +242,18 @@ class Games
         }
         sql += "is_active,";
         ++parametersCount;
+
         if(!dirtyFlag_[3])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[4])
         {
             sql += "game_logo,";
             ++parametersCount;
         }
+
         if(parametersCount > 0)
         {
             sql[sql.length()-1]=')';
@@ -239,46 +262,66 @@ class Games
         else
             sql += ") values (";
 
+
         int placeholder=1;
         char placeholderStr[64];
         size_t n=0;
+
         if(dirtyFlag_[0])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[1])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[2])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[3])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[4])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(parametersCount > 0)
         {
             sql.resize(sql.length() - 1);
         }
+
         if(needSelection)
         {
             sql.append(") returning *");
@@ -287,9 +330,11 @@ class Games
         {
             sql.append(1, ')');
         }
+
         LOG_TRACE << sql;
         return sql;
     }
 };
 } // namespace Gnp
+
 } // namespace drogon_model

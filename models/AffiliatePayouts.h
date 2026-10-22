@@ -1,3 +1,4 @@
+
 /**
  *
  *  AffiliatePayouts.h
@@ -39,6 +40,8 @@ namespace drogon_model
 namespace Gnp
 {
 
+
+
 class AffiliatePayouts
 {
   public:
@@ -55,14 +58,19 @@ class AffiliatePayouts
         static const std::string _platforms;
         static const std::string _created_at;
         static const std::string _updated_at;
+
     };
 
     static const int primaryKeyNumber;
     static const std::string tableName;
     static const bool hasPrimaryKey;
+
     static const std::string primaryKeyName;
+
     using PrimaryKeyType = std::string;
     const PrimaryKeyType &getPrimaryKey() const;
+
+
 
     /**
      * @brief constructor
@@ -207,6 +215,7 @@ class AffiliatePayouts
     void setUpdatedAtToNull() noexcept;
 
 
+
     static size_t getColumnNumber() noexcept {  return 11;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
@@ -214,6 +223,7 @@ class AffiliatePayouts
     std::string toString() const;
     Json::Value toMasqueradedJson(const std::vector<std::string> &pMasqueradingVector) const;
     /// Relationship interfaces
+
   private:
     friend drogon::orm::Mapper<AffiliatePayouts>;
     friend drogon::orm::BaseBuilder<AffiliatePayouts, true, true>;
@@ -240,6 +250,7 @@ class AffiliatePayouts
     std::shared_ptr<std::string> platforms_;
     std::shared_ptr<::trantor::Date> createdAt_;
     std::shared_ptr<::trantor::Date> updatedAt_;
+
     struct MetaData
     {
         const std::string colName_;
@@ -255,13 +266,19 @@ class AffiliatePayouts
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
+
         static const std::string sql="select * from " + tableName + " where id = $1";
+
+
         return sql;
     }
 
     static const std::string &sqlForDeletingByPrimaryKey()
     {
+
         static const std::string sql="delete from " + tableName + " where id = $1";
+
+
         return sql;
     }
     std::string sqlForInserting(bool &needSelection) const
@@ -271,15 +288,18 @@ class AffiliatePayouts
         needSelection = false;
         sql += "id,";
         ++parametersCount;
+
         if(!dirtyFlag_[0])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[1])
         {
             sql += "affiliate_id,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[2])
         {
             sql += "affiliate_name,";
@@ -287,20 +307,24 @@ class AffiliatePayouts
         }
         sql += "total_amount,";
         ++parametersCount;
+
         if(!dirtyFlag_[3])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[4])
         {
             sql += "account_type,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[5])
         {
             sql += "account_name,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[6])
         {
             sql += "account_provider,";
@@ -308,10 +332,12 @@ class AffiliatePayouts
         }
         sql += "status,";
         ++parametersCount;
+
         if(!dirtyFlag_[7])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[8])
         {
             sql += "platforms,";
@@ -319,15 +345,18 @@ class AffiliatePayouts
         }
         sql += "created_at,";
         ++parametersCount;
+
         if(!dirtyFlag_[9])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[10])
         {
             sql += "updated_at,";
             ++parametersCount;
         }
+
         if(parametersCount > 0)
         {
             sql[sql.length()-1]=')';
@@ -336,84 +365,124 @@ class AffiliatePayouts
         else
             sql += ") values (";
 
+
         int placeholder=1;
         char placeholderStr[64];
         size_t n=0;
+
         if(dirtyFlag_[0])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[1])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[2])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[3])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[4])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[5])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[6])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[7])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[8])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[9])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[10])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(parametersCount > 0)
         {
             sql.resize(sql.length() - 1);
         }
+
         if(needSelection)
         {
             sql.append(") returning *");
@@ -422,9 +491,11 @@ class AffiliatePayouts
         {
             sql.append(1, ')');
         }
+
         LOG_TRACE << sql;
         return sql;
     }
 };
 } // namespace Gnp
+
 } // namespace drogon_model

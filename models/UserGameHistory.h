@@ -1,3 +1,4 @@
+
 /**
  *
  *  UserGameHistory.h
@@ -39,6 +40,8 @@ namespace drogon_model
 namespace Gnp
 {
 
+
+
 class UserGameHistory
 {
   public:
@@ -50,14 +53,19 @@ class UserGameHistory
         static const std::string _game_type;
         static const std::string _points_earned;
         static const std::string _completed_at;
+
     };
 
     static const int primaryKeyNumber;
     static const std::string tableName;
     static const bool hasPrimaryKey;
+
     static const std::string primaryKeyName;
+
     using PrimaryKeyType = std::string;
     const PrimaryKeyType &getPrimaryKey() const;
+
+
 
     /**
      * @brief constructor
@@ -156,6 +164,7 @@ class UserGameHistory
     void setCompletedAtToNull() noexcept;
 
 
+
     static size_t getColumnNumber() noexcept {  return 6;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
@@ -163,6 +172,7 @@ class UserGameHistory
     std::string toString() const;
     Json::Value toMasqueradedJson(const std::vector<std::string> &pMasqueradingVector) const;
     /// Relationship interfaces
+
   private:
     friend drogon::orm::Mapper<UserGameHistory>;
     friend drogon::orm::BaseBuilder<UserGameHistory, true, true>;
@@ -184,6 +194,7 @@ class UserGameHistory
     std::shared_ptr<int32_t> gameType_;
     std::shared_ptr<int32_t> pointsEarned_;
     std::shared_ptr<::trantor::Date> completedAt_;
+
     struct MetaData
     {
         const std::string colName_;
@@ -199,13 +210,19 @@ class UserGameHistory
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
+
         static const std::string sql="select * from " + tableName + " where id = $1";
+
+
         return sql;
     }
 
     static const std::string &sqlForDeletingByPrimaryKey()
     {
+
         static const std::string sql="delete from " + tableName + " where id = $1";
+
+
         return sql;
     }
     std::string sqlForInserting(bool &needSelection) const
@@ -215,15 +232,18 @@ class UserGameHistory
         needSelection = false;
         sql += "id,";
         ++parametersCount;
+
         if(!dirtyFlag_[0])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[1])
         {
             sql += "user_id,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[2])
         {
             sql += "session_id,";
@@ -231,22 +251,26 @@ class UserGameHistory
         }
         sql += "game_type,";
         ++parametersCount;
+
         if(!dirtyFlag_[3])
         {
             needSelection=true;
         }
         sql += "points_earned,";
         ++parametersCount;
+
         if(!dirtyFlag_[4])
         {
             needSelection=true;
         }
         sql += "completed_at,";
         ++parametersCount;
+
         if(!dirtyFlag_[5])
         {
             needSelection=true;
         }
+
         if(parametersCount > 0)
         {
             sql[sql.length()-1]=')';
@@ -255,59 +279,84 @@ class UserGameHistory
         else
             sql += ") values (";
 
+
         int placeholder=1;
         char placeholderStr[64];
         size_t n=0;
+
         if(dirtyFlag_[0])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[1])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[2])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[3])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[4])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[5])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(parametersCount > 0)
         {
             sql.resize(sql.length() - 1);
         }
+
         if(needSelection)
         {
             sql.append(") returning *");
@@ -316,9 +365,11 @@ class UserGameHistory
         {
             sql.append(1, ')');
         }
+
         LOG_TRACE << sql;
         return sql;
     }
 };
 } // namespace Gnp
+
 } // namespace drogon_model

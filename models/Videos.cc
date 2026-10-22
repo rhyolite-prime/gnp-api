@@ -1,3 +1,4 @@
+
 /**
  *
  *  Videos.cc
@@ -6,35 +7,64 @@
  */
 
 #include "Videos.h"
+
 #include <drogon/utils/Utilities.h>
+
 #include <string>
+
 
 using namespace drogon;
 using namespace drogon::orm;
 using namespace drogon_model::Gnp;
 
+
+
 const std::string Videos::Cols::_id = "\"id\"";
+
 const std::string Videos::Cols::_title = "\"title\"";
+
 const std::string Videos::Cols::_description = "\"description\"";
+
 const std::string Videos::Cols::_file_name = "\"file_name\"";
+
 const std::string Videos::Cols::_file_path = "\"file_path\"";
+
 const std::string Videos::Cols::_file_size = "\"file_size\"";
+
 const std::string Videos::Cols::_duration = "\"duration\"";
+
 const std::string Videos::Cols::_format = "\"format\"";
+
 const std::string Videos::Cols::_thumbnail_path = "\"thumbnail_path\"";
+
 const std::string Videos::Cols::_status = "\"status\"";
+
 const std::string Videos::Cols::_views = "\"views\"";
+
 const std::string Videos::Cols::_likes = "\"likes\"";
+
 const std::string Videos::Cols::_downloads = "\"downloads\"";
+
 const std::string Videos::Cols::_tags = "\"tags\"";
+
 const std::string Videos::Cols::_metadata = "\"metadata\"";
+
 const std::string Videos::Cols::_checksum = "\"checksum\"";
+
 const std::string Videos::Cols::_created_by = "\"created_by\"";
+
 const std::string Videos::Cols::_created_at = "\"created_at\"";
+
 const std::string Videos::Cols::_modified_by = "\"modified_by\"";
+
 const std::string Videos::Cols::_modified_at = "\"modified_at\"";
+
+
 const std::string Videos::primaryKeyName = "id";
+
+
 const bool Videos::hasPrimaryKey = true;
+
 const std::string Videos::tableName = "\"videos\"";
 
 const std::vector<typename Videos::MetaData> Videos::metaData_={
@@ -58,6 +88,7 @@ const std::vector<typename Videos::MetaData> Videos::metaData_={
 {"created_at","::trantor::Date","timestamp with time zone",0,0,0,0},
 {"modified_by","std::string","uuid",0,0,0,0},
 {"modified_at","::trantor::Date","timestamp with time zone",0,0,0,0}
+
 };
 const std::string &Videos::getColumnName(size_t index) noexcept(false)
 {
@@ -68,79 +99,132 @@ Videos::Videos(const Row &r, const ssize_t indexOffset) noexcept
 {
     if(indexOffset < 0)
     {
+
         if(!r["id"].isNull())
         {
+
             id_=std::make_shared<std::string>(r["id"].as<std::string>());
+
         }
+
         if(!r["title"].isNull())
         {
+
             title_=std::make_shared<std::string>(r["title"].as<std::string>());
+
         }
+
         if(!r["description"].isNull())
         {
+
             description_=std::make_shared<std::string>(r["description"].as<std::string>());
+
         }
+
         if(!r["file_name"].isNull())
         {
+
             fileName_=std::make_shared<std::string>(r["file_name"].as<std::string>());
+
         }
+
         if(!r["file_path"].isNull())
         {
+
             filePath_=std::make_shared<std::string>(r["file_path"].as<std::string>());
+
         }
+
         if(!r["file_size"].isNull())
         {
+
             fileSize_=std::make_shared<int64_t>(r["file_size"].as<int64_t>());
+
         }
+
         if(!r["duration"].isNull())
         {
+
             duration_=std::make_shared<int32_t>(r["duration"].as<int32_t>());
+
         }
+
         if(!r["format"].isNull())
         {
+
             format_=std::make_shared<std::string>(r["format"].as<std::string>());
+
         }
+
         if(!r["thumbnail_path"].isNull())
         {
+
             thumbnailPath_=std::make_shared<std::string>(r["thumbnail_path"].as<std::string>());
+
         }
+
         if(!r["status"].isNull())
         {
+
             status_=std::make_shared<int32_t>(r["status"].as<int32_t>());
+
         }
+
         if(!r["views"].isNull())
         {
+
             views_=std::make_shared<int32_t>(r["views"].as<int32_t>());
+
         }
+
         if(!r["likes"].isNull())
         {
+
             likes_=std::make_shared<int32_t>(r["likes"].as<int32_t>());
+
         }
+
         if(!r["downloads"].isNull())
         {
+
             downloads_=std::make_shared<int32_t>(r["downloads"].as<int32_t>());
+
         }
+
         if(!r["tags"].isNull())
         {
+
             tags_=std::make_shared<std::string>(r["tags"].as<std::string>());
+
         }
+
         if(!r["metadata"].isNull())
         {
+
             metadata_=std::make_shared<std::string>(r["metadata"].as<std::string>());
+
         }
+
         if(!r["checksum"].isNull())
         {
+
             checksum_=std::make_shared<std::string>(r["checksum"].as<std::string>());
+
         }
+
         if(!r["created_by"].isNull())
         {
+
             createdBy_=std::make_shared<std::string>(r["created_by"].as<std::string>());
+
         }
+
         if(!r["created_at"].isNull())
         {
             auto timeStr = r["created_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -158,15 +242,20 @@ Videos::Videos(const Row &r, const ssize_t indexOffset) noexcept
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         if(!r["modified_by"].isNull())
         {
+
             modifiedBy_=std::make_shared<std::string>(r["modified_by"].as<std::string>());
+
         }
+
         if(!r["modified_at"].isNull())
         {
             auto timeStr = r["modified_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -184,6 +273,7 @@ Videos::Videos(const Row &r, const ssize_t indexOffset) noexcept
                 modifiedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
     }
     else
     {
@@ -194,97 +284,150 @@ Videos::Videos(const Row &r, const ssize_t indexOffset) noexcept
             return;
         }
         size_t index;
+
         index = offset + 0;
         if(!r[index].isNull())
         {
+
             id_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 1;
         if(!r[index].isNull())
         {
+
             title_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 2;
         if(!r[index].isNull())
         {
+
             description_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 3;
         if(!r[index].isNull())
         {
+
             fileName_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 4;
         if(!r[index].isNull())
         {
+
             filePath_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 5;
         if(!r[index].isNull())
         {
+
             fileSize_=std::make_shared<int64_t>(r[index].as<int64_t>());
+
         }
+
         index = offset + 6;
         if(!r[index].isNull())
         {
+
             duration_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 7;
         if(!r[index].isNull())
         {
+
             format_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 8;
         if(!r[index].isNull())
         {
+
             thumbnailPath_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 9;
         if(!r[index].isNull())
         {
+
             status_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 10;
         if(!r[index].isNull())
         {
+
             views_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 11;
         if(!r[index].isNull())
         {
+
             likes_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 12;
         if(!r[index].isNull())
         {
+
             downloads_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 13;
         if(!r[index].isNull())
         {
+
             tags_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 14;
         if(!r[index].isNull())
         {
+
             metadata_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 15;
         if(!r[index].isNull())
         {
+
             checksum_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 16;
         if(!r[index].isNull())
         {
+
             createdBy_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 17;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -302,17 +445,22 @@ Videos::Videos(const Row &r, const ssize_t indexOffset) noexcept
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         index = offset + 18;
         if(!r[index].isNull())
         {
+
             modifiedBy_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 19;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -330,6 +478,7 @@ Videos::Videos(const Row &r, const ssize_t indexOffset) noexcept
                 modifiedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
     }
 
 }
@@ -341,6 +490,7 @@ Videos::Videos(const Json::Value &pJson, const std::vector<std::string> &pMasque
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         dirtyFlag_[0] = true;
@@ -349,6 +499,7 @@ Videos::Videos(const Json::Value &pJson, const std::vector<std::string> &pMasque
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -357,6 +508,7 @@ Videos::Videos(const Json::Value &pJson, const std::vector<std::string> &pMasque
             title_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -365,6 +517,7 @@ Videos::Videos(const Json::Value &pJson, const std::vector<std::string> &pMasque
             description_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -373,6 +526,7 @@ Videos::Videos(const Json::Value &pJson, const std::vector<std::string> &pMasque
             fileName_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -381,6 +535,7 @@ Videos::Videos(const Json::Value &pJson, const std::vector<std::string> &pMasque
             filePath_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -389,6 +544,7 @@ Videos::Videos(const Json::Value &pJson, const std::vector<std::string> &pMasque
             fileSize_=std::make_shared<int64_t>((int64_t)pJson[pMasqueradingVector[5]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -397,6 +553,7 @@ Videos::Videos(const Json::Value &pJson, const std::vector<std::string> &pMasque
             duration_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[6]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -405,6 +562,7 @@ Videos::Videos(const Json::Value &pJson, const std::vector<std::string> &pMasque
             format_=std::make_shared<std::string>(pJson[pMasqueradingVector[7]].asString());
         }
     }
+
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
     {
         dirtyFlag_[8] = true;
@@ -413,6 +571,7 @@ Videos::Videos(const Json::Value &pJson, const std::vector<std::string> &pMasque
             thumbnailPath_=std::make_shared<std::string>(pJson[pMasqueradingVector[8]].asString());
         }
     }
+
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
     {
         dirtyFlag_[9] = true;
@@ -421,6 +580,7 @@ Videos::Videos(const Json::Value &pJson, const std::vector<std::string> &pMasque
             status_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[9]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
     {
         dirtyFlag_[10] = true;
@@ -429,6 +589,7 @@ Videos::Videos(const Json::Value &pJson, const std::vector<std::string> &pMasque
             views_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[10]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
     {
         dirtyFlag_[11] = true;
@@ -437,6 +598,7 @@ Videos::Videos(const Json::Value &pJson, const std::vector<std::string> &pMasque
             likes_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[11]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
     {
         dirtyFlag_[12] = true;
@@ -445,6 +607,7 @@ Videos::Videos(const Json::Value &pJson, const std::vector<std::string> &pMasque
             downloads_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[12]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
     {
         dirtyFlag_[13] = true;
@@ -453,6 +616,7 @@ Videos::Videos(const Json::Value &pJson, const std::vector<std::string> &pMasque
             tags_=std::make_shared<std::string>(pJson[pMasqueradingVector[13]].asString());
         }
     }
+
     if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
     {
         dirtyFlag_[14] = true;
@@ -461,6 +625,7 @@ Videos::Videos(const Json::Value &pJson, const std::vector<std::string> &pMasque
             metadata_=std::make_shared<std::string>(pJson[pMasqueradingVector[14]].asString());
         }
     }
+
     if(!pMasqueradingVector[15].empty() && pJson.isMember(pMasqueradingVector[15]))
     {
         dirtyFlag_[15] = true;
@@ -469,6 +634,7 @@ Videos::Videos(const Json::Value &pJson, const std::vector<std::string> &pMasque
             checksum_=std::make_shared<std::string>(pJson[pMasqueradingVector[15]].asString());
         }
     }
+
     if(!pMasqueradingVector[16].empty() && pJson.isMember(pMasqueradingVector[16]))
     {
         dirtyFlag_[16] = true;
@@ -477,6 +643,7 @@ Videos::Videos(const Json::Value &pJson, const std::vector<std::string> &pMasque
             createdBy_=std::make_shared<std::string>(pJson[pMasqueradingVector[16]].asString());
         }
     }
+
     if(!pMasqueradingVector[17].empty() && pJson.isMember(pMasqueradingVector[17]))
     {
         dirtyFlag_[17] = true;
@@ -485,6 +652,7 @@ Videos::Videos(const Json::Value &pJson, const std::vector<std::string> &pMasque
             auto timeStr = pJson[pMasqueradingVector[17]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -503,6 +671,7 @@ Videos::Videos(const Json::Value &pJson, const std::vector<std::string> &pMasque
             }
         }
     }
+
     if(!pMasqueradingVector[18].empty() && pJson.isMember(pMasqueradingVector[18]))
     {
         dirtyFlag_[18] = true;
@@ -511,6 +680,7 @@ Videos::Videos(const Json::Value &pJson, const std::vector<std::string> &pMasque
             modifiedBy_=std::make_shared<std::string>(pJson[pMasqueradingVector[18]].asString());
         }
     }
+
     if(!pMasqueradingVector[19].empty() && pJson.isMember(pMasqueradingVector[19]))
     {
         dirtyFlag_[19] = true;
@@ -519,6 +689,7 @@ Videos::Videos(const Json::Value &pJson, const std::vector<std::string> &pMasque
             auto timeStr = pJson[pMasqueradingVector[19]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -537,10 +708,12 @@ Videos::Videos(const Json::Value &pJson, const std::vector<std::string> &pMasque
             }
         }
     }
+
 }
 
 Videos::Videos(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         dirtyFlag_[0]=true;
@@ -549,6 +722,7 @@ Videos::Videos(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("title"))
     {
         dirtyFlag_[1]=true;
@@ -557,6 +731,7 @@ Videos::Videos(const Json::Value &pJson) noexcept(false)
             title_=std::make_shared<std::string>(pJson["title"].asString());
         }
     }
+
     if(pJson.isMember("description"))
     {
         dirtyFlag_[2]=true;
@@ -565,6 +740,7 @@ Videos::Videos(const Json::Value &pJson) noexcept(false)
             description_=std::make_shared<std::string>(pJson["description"].asString());
         }
     }
+
     if(pJson.isMember("file_name"))
     {
         dirtyFlag_[3]=true;
@@ -573,6 +749,7 @@ Videos::Videos(const Json::Value &pJson) noexcept(false)
             fileName_=std::make_shared<std::string>(pJson["file_name"].asString());
         }
     }
+
     if(pJson.isMember("file_path"))
     {
         dirtyFlag_[4]=true;
@@ -581,6 +758,7 @@ Videos::Videos(const Json::Value &pJson) noexcept(false)
             filePath_=std::make_shared<std::string>(pJson["file_path"].asString());
         }
     }
+
     if(pJson.isMember("file_size"))
     {
         dirtyFlag_[5]=true;
@@ -589,6 +767,7 @@ Videos::Videos(const Json::Value &pJson) noexcept(false)
             fileSize_=std::make_shared<int64_t>((int64_t)pJson["file_size"].asInt64());
         }
     }
+
     if(pJson.isMember("duration"))
     {
         dirtyFlag_[6]=true;
@@ -597,6 +776,7 @@ Videos::Videos(const Json::Value &pJson) noexcept(false)
             duration_=std::make_shared<int32_t>((int32_t)pJson["duration"].asInt64());
         }
     }
+
     if(pJson.isMember("format"))
     {
         dirtyFlag_[7]=true;
@@ -605,6 +785,7 @@ Videos::Videos(const Json::Value &pJson) noexcept(false)
             format_=std::make_shared<std::string>(pJson["format"].asString());
         }
     }
+
     if(pJson.isMember("thumbnail_path"))
     {
         dirtyFlag_[8]=true;
@@ -613,6 +794,7 @@ Videos::Videos(const Json::Value &pJson) noexcept(false)
             thumbnailPath_=std::make_shared<std::string>(pJson["thumbnail_path"].asString());
         }
     }
+
     if(pJson.isMember("status"))
     {
         dirtyFlag_[9]=true;
@@ -621,6 +803,7 @@ Videos::Videos(const Json::Value &pJson) noexcept(false)
             status_=std::make_shared<int32_t>((int32_t)pJson["status"].asInt64());
         }
     }
+
     if(pJson.isMember("views"))
     {
         dirtyFlag_[10]=true;
@@ -629,6 +812,7 @@ Videos::Videos(const Json::Value &pJson) noexcept(false)
             views_=std::make_shared<int32_t>((int32_t)pJson["views"].asInt64());
         }
     }
+
     if(pJson.isMember("likes"))
     {
         dirtyFlag_[11]=true;
@@ -637,6 +821,7 @@ Videos::Videos(const Json::Value &pJson) noexcept(false)
             likes_=std::make_shared<int32_t>((int32_t)pJson["likes"].asInt64());
         }
     }
+
     if(pJson.isMember("downloads"))
     {
         dirtyFlag_[12]=true;
@@ -645,6 +830,7 @@ Videos::Videos(const Json::Value &pJson) noexcept(false)
             downloads_=std::make_shared<int32_t>((int32_t)pJson["downloads"].asInt64());
         }
     }
+
     if(pJson.isMember("tags"))
     {
         dirtyFlag_[13]=true;
@@ -653,6 +839,7 @@ Videos::Videos(const Json::Value &pJson) noexcept(false)
             tags_=std::make_shared<std::string>(pJson["tags"].asString());
         }
     }
+
     if(pJson.isMember("metadata"))
     {
         dirtyFlag_[14]=true;
@@ -661,6 +848,7 @@ Videos::Videos(const Json::Value &pJson) noexcept(false)
             metadata_=std::make_shared<std::string>(pJson["metadata"].asString());
         }
     }
+
     if(pJson.isMember("checksum"))
     {
         dirtyFlag_[15]=true;
@@ -669,6 +857,7 @@ Videos::Videos(const Json::Value &pJson) noexcept(false)
             checksum_=std::make_shared<std::string>(pJson["checksum"].asString());
         }
     }
+
     if(pJson.isMember("created_by"))
     {
         dirtyFlag_[16]=true;
@@ -677,6 +866,7 @@ Videos::Videos(const Json::Value &pJson) noexcept(false)
             createdBy_=std::make_shared<std::string>(pJson["created_by"].asString());
         }
     }
+
     if(pJson.isMember("created_at"))
     {
         dirtyFlag_[17]=true;
@@ -685,6 +875,7 @@ Videos::Videos(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["created_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -703,6 +894,7 @@ Videos::Videos(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("modified_by"))
     {
         dirtyFlag_[18]=true;
@@ -711,6 +903,7 @@ Videos::Videos(const Json::Value &pJson) noexcept(false)
             modifiedBy_=std::make_shared<std::string>(pJson["modified_by"].asString());
         }
     }
+
     if(pJson.isMember("modified_at"))
     {
         dirtyFlag_[19]=true;
@@ -719,6 +912,7 @@ Videos::Videos(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["modified_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -737,6 +931,7 @@ Videos::Videos(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
 }
 
 void Videos::updateByMasqueradedJson(const Json::Value &pJson,
@@ -747,6 +942,7 @@ void Videos::updateByMasqueradedJson(const Json::Value &pJson,
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         if(!pJson[pMasqueradingVector[0]].isNull())
@@ -754,6 +950,7 @@ void Videos::updateByMasqueradedJson(const Json::Value &pJson,
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -762,6 +959,7 @@ void Videos::updateByMasqueradedJson(const Json::Value &pJson,
             title_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -770,6 +968,7 @@ void Videos::updateByMasqueradedJson(const Json::Value &pJson,
             description_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -778,6 +977,7 @@ void Videos::updateByMasqueradedJson(const Json::Value &pJson,
             fileName_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -786,6 +986,7 @@ void Videos::updateByMasqueradedJson(const Json::Value &pJson,
             filePath_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -794,6 +995,7 @@ void Videos::updateByMasqueradedJson(const Json::Value &pJson,
             fileSize_=std::make_shared<int64_t>((int64_t)pJson[pMasqueradingVector[5]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -802,6 +1004,7 @@ void Videos::updateByMasqueradedJson(const Json::Value &pJson,
             duration_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[6]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -810,6 +1013,7 @@ void Videos::updateByMasqueradedJson(const Json::Value &pJson,
             format_=std::make_shared<std::string>(pJson[pMasqueradingVector[7]].asString());
         }
     }
+
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
     {
         dirtyFlag_[8] = true;
@@ -818,6 +1022,7 @@ void Videos::updateByMasqueradedJson(const Json::Value &pJson,
             thumbnailPath_=std::make_shared<std::string>(pJson[pMasqueradingVector[8]].asString());
         }
     }
+
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
     {
         dirtyFlag_[9] = true;
@@ -826,6 +1031,7 @@ void Videos::updateByMasqueradedJson(const Json::Value &pJson,
             status_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[9]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
     {
         dirtyFlag_[10] = true;
@@ -834,6 +1040,7 @@ void Videos::updateByMasqueradedJson(const Json::Value &pJson,
             views_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[10]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
     {
         dirtyFlag_[11] = true;
@@ -842,6 +1049,7 @@ void Videos::updateByMasqueradedJson(const Json::Value &pJson,
             likes_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[11]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
     {
         dirtyFlag_[12] = true;
@@ -850,6 +1058,7 @@ void Videos::updateByMasqueradedJson(const Json::Value &pJson,
             downloads_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[12]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
     {
         dirtyFlag_[13] = true;
@@ -858,6 +1067,7 @@ void Videos::updateByMasqueradedJson(const Json::Value &pJson,
             tags_=std::make_shared<std::string>(pJson[pMasqueradingVector[13]].asString());
         }
     }
+
     if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
     {
         dirtyFlag_[14] = true;
@@ -866,6 +1076,7 @@ void Videos::updateByMasqueradedJson(const Json::Value &pJson,
             metadata_=std::make_shared<std::string>(pJson[pMasqueradingVector[14]].asString());
         }
     }
+
     if(!pMasqueradingVector[15].empty() && pJson.isMember(pMasqueradingVector[15]))
     {
         dirtyFlag_[15] = true;
@@ -874,6 +1085,7 @@ void Videos::updateByMasqueradedJson(const Json::Value &pJson,
             checksum_=std::make_shared<std::string>(pJson[pMasqueradingVector[15]].asString());
         }
     }
+
     if(!pMasqueradingVector[16].empty() && pJson.isMember(pMasqueradingVector[16]))
     {
         dirtyFlag_[16] = true;
@@ -882,6 +1094,7 @@ void Videos::updateByMasqueradedJson(const Json::Value &pJson,
             createdBy_=std::make_shared<std::string>(pJson[pMasqueradingVector[16]].asString());
         }
     }
+
     if(!pMasqueradingVector[17].empty() && pJson.isMember(pMasqueradingVector[17]))
     {
         dirtyFlag_[17] = true;
@@ -890,6 +1103,7 @@ void Videos::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[17]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -908,6 +1122,7 @@ void Videos::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
     if(!pMasqueradingVector[18].empty() && pJson.isMember(pMasqueradingVector[18]))
     {
         dirtyFlag_[18] = true;
@@ -916,6 +1131,7 @@ void Videos::updateByMasqueradedJson(const Json::Value &pJson,
             modifiedBy_=std::make_shared<std::string>(pJson[pMasqueradingVector[18]].asString());
         }
     }
+
     if(!pMasqueradingVector[19].empty() && pJson.isMember(pMasqueradingVector[19]))
     {
         dirtyFlag_[19] = true;
@@ -924,6 +1140,7 @@ void Videos::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[19]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -942,10 +1159,12 @@ void Videos::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
 }
 
 void Videos::updateByJson(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         if(!pJson["id"].isNull())
@@ -953,6 +1172,7 @@ void Videos::updateByJson(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("title"))
     {
         dirtyFlag_[1] = true;
@@ -961,6 +1181,7 @@ void Videos::updateByJson(const Json::Value &pJson) noexcept(false)
             title_=std::make_shared<std::string>(pJson["title"].asString());
         }
     }
+
     if(pJson.isMember("description"))
     {
         dirtyFlag_[2] = true;
@@ -969,6 +1190,7 @@ void Videos::updateByJson(const Json::Value &pJson) noexcept(false)
             description_=std::make_shared<std::string>(pJson["description"].asString());
         }
     }
+
     if(pJson.isMember("file_name"))
     {
         dirtyFlag_[3] = true;
@@ -977,6 +1199,7 @@ void Videos::updateByJson(const Json::Value &pJson) noexcept(false)
             fileName_=std::make_shared<std::string>(pJson["file_name"].asString());
         }
     }
+
     if(pJson.isMember("file_path"))
     {
         dirtyFlag_[4] = true;
@@ -985,6 +1208,7 @@ void Videos::updateByJson(const Json::Value &pJson) noexcept(false)
             filePath_=std::make_shared<std::string>(pJson["file_path"].asString());
         }
     }
+
     if(pJson.isMember("file_size"))
     {
         dirtyFlag_[5] = true;
@@ -993,6 +1217,7 @@ void Videos::updateByJson(const Json::Value &pJson) noexcept(false)
             fileSize_=std::make_shared<int64_t>((int64_t)pJson["file_size"].asInt64());
         }
     }
+
     if(pJson.isMember("duration"))
     {
         dirtyFlag_[6] = true;
@@ -1001,6 +1226,7 @@ void Videos::updateByJson(const Json::Value &pJson) noexcept(false)
             duration_=std::make_shared<int32_t>((int32_t)pJson["duration"].asInt64());
         }
     }
+
     if(pJson.isMember("format"))
     {
         dirtyFlag_[7] = true;
@@ -1009,6 +1235,7 @@ void Videos::updateByJson(const Json::Value &pJson) noexcept(false)
             format_=std::make_shared<std::string>(pJson["format"].asString());
         }
     }
+
     if(pJson.isMember("thumbnail_path"))
     {
         dirtyFlag_[8] = true;
@@ -1017,6 +1244,7 @@ void Videos::updateByJson(const Json::Value &pJson) noexcept(false)
             thumbnailPath_=std::make_shared<std::string>(pJson["thumbnail_path"].asString());
         }
     }
+
     if(pJson.isMember("status"))
     {
         dirtyFlag_[9] = true;
@@ -1025,6 +1253,7 @@ void Videos::updateByJson(const Json::Value &pJson) noexcept(false)
             status_=std::make_shared<int32_t>((int32_t)pJson["status"].asInt64());
         }
     }
+
     if(pJson.isMember("views"))
     {
         dirtyFlag_[10] = true;
@@ -1033,6 +1262,7 @@ void Videos::updateByJson(const Json::Value &pJson) noexcept(false)
             views_=std::make_shared<int32_t>((int32_t)pJson["views"].asInt64());
         }
     }
+
     if(pJson.isMember("likes"))
     {
         dirtyFlag_[11] = true;
@@ -1041,6 +1271,7 @@ void Videos::updateByJson(const Json::Value &pJson) noexcept(false)
             likes_=std::make_shared<int32_t>((int32_t)pJson["likes"].asInt64());
         }
     }
+
     if(pJson.isMember("downloads"))
     {
         dirtyFlag_[12] = true;
@@ -1049,6 +1280,7 @@ void Videos::updateByJson(const Json::Value &pJson) noexcept(false)
             downloads_=std::make_shared<int32_t>((int32_t)pJson["downloads"].asInt64());
         }
     }
+
     if(pJson.isMember("tags"))
     {
         dirtyFlag_[13] = true;
@@ -1057,6 +1289,7 @@ void Videos::updateByJson(const Json::Value &pJson) noexcept(false)
             tags_=std::make_shared<std::string>(pJson["tags"].asString());
         }
     }
+
     if(pJson.isMember("metadata"))
     {
         dirtyFlag_[14] = true;
@@ -1065,6 +1298,7 @@ void Videos::updateByJson(const Json::Value &pJson) noexcept(false)
             metadata_=std::make_shared<std::string>(pJson["metadata"].asString());
         }
     }
+
     if(pJson.isMember("checksum"))
     {
         dirtyFlag_[15] = true;
@@ -1073,6 +1307,7 @@ void Videos::updateByJson(const Json::Value &pJson) noexcept(false)
             checksum_=std::make_shared<std::string>(pJson["checksum"].asString());
         }
     }
+
     if(pJson.isMember("created_by"))
     {
         dirtyFlag_[16] = true;
@@ -1081,6 +1316,7 @@ void Videos::updateByJson(const Json::Value &pJson) noexcept(false)
             createdBy_=std::make_shared<std::string>(pJson["created_by"].asString());
         }
     }
+
     if(pJson.isMember("created_at"))
     {
         dirtyFlag_[17] = true;
@@ -1089,6 +1325,7 @@ void Videos::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["created_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -1107,6 +1344,7 @@ void Videos::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("modified_by"))
     {
         dirtyFlag_[18] = true;
@@ -1115,6 +1353,7 @@ void Videos::updateByJson(const Json::Value &pJson) noexcept(false)
             modifiedBy_=std::make_shared<std::string>(pJson["modified_by"].asString());
         }
     }
+
     if(pJson.isMember("modified_at"))
     {
         dirtyFlag_[19] = true;
@@ -1123,6 +1362,7 @@ void Videos::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["modified_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -1141,6 +1381,7 @@ void Videos::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
 }
 
 const std::string &Videos::getValueOfId() const noexcept
@@ -1627,6 +1868,7 @@ void Videos::updateId(const uint64_t id)
 {
 }
 
+
 const std::vector<std::string> &Videos::insertColumns() noexcept
 {
     static const std::vector<std::string> inCols={
@@ -1650,12 +1892,14 @@ const std::vector<std::string> &Videos::insertColumns() noexcept
         "created_at",
         "modified_by",
         "modified_at"
+
     };
     return inCols;
 }
 
 void Videos::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -1667,6 +1911,7 @@ void Videos::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getTitle())
@@ -1678,6 +1923,7 @@ void Videos::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getDescription())
@@ -1689,6 +1935,7 @@ void Videos::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getFileName())
@@ -1700,6 +1947,7 @@ void Videos::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getFilePath())
@@ -1711,6 +1959,7 @@ void Videos::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getFileSize())
@@ -1722,6 +1971,7 @@ void Videos::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getDuration())
@@ -1733,6 +1983,7 @@ void Videos::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getFormat())
@@ -1744,6 +1995,7 @@ void Videos::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[8])
     {
         if(getThumbnailPath())
@@ -1755,6 +2007,7 @@ void Videos::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[9])
     {
         if(getStatus())
@@ -1766,6 +2019,7 @@ void Videos::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[10])
     {
         if(getViews())
@@ -1777,6 +2031,7 @@ void Videos::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[11])
     {
         if(getLikes())
@@ -1788,6 +2043,7 @@ void Videos::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[12])
     {
         if(getDownloads())
@@ -1799,6 +2055,7 @@ void Videos::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[13])
     {
         if(getTags())
@@ -1810,6 +2067,7 @@ void Videos::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[14])
     {
         if(getMetadata())
@@ -1821,6 +2079,7 @@ void Videos::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[15])
     {
         if(getChecksum())
@@ -1832,6 +2091,7 @@ void Videos::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[16])
     {
         if(getCreatedBy())
@@ -1843,6 +2103,7 @@ void Videos::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[17])
     {
         if(getCreatedAt())
@@ -1854,6 +2115,7 @@ void Videos::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[18])
     {
         if(getModifiedBy())
@@ -1865,6 +2127,7 @@ void Videos::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[19])
     {
         if(getModifiedAt())
@@ -1876,96 +2139,119 @@ void Videos::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
 }
 
 const std::vector<std::string> Videos::updateColumns() const
 {
     std::vector<std::string> ret;
+
     if(dirtyFlag_[0])
     {
         ret.push_back(getColumnName(0));
     }
+
     if(dirtyFlag_[1])
     {
         ret.push_back(getColumnName(1));
     }
+
     if(dirtyFlag_[2])
     {
         ret.push_back(getColumnName(2));
     }
+
     if(dirtyFlag_[3])
     {
         ret.push_back(getColumnName(3));
     }
+
     if(dirtyFlag_[4])
     {
         ret.push_back(getColumnName(4));
     }
+
     if(dirtyFlag_[5])
     {
         ret.push_back(getColumnName(5));
     }
+
     if(dirtyFlag_[6])
     {
         ret.push_back(getColumnName(6));
     }
+
     if(dirtyFlag_[7])
     {
         ret.push_back(getColumnName(7));
     }
+
     if(dirtyFlag_[8])
     {
         ret.push_back(getColumnName(8));
     }
+
     if(dirtyFlag_[9])
     {
         ret.push_back(getColumnName(9));
     }
+
     if(dirtyFlag_[10])
     {
         ret.push_back(getColumnName(10));
     }
+
     if(dirtyFlag_[11])
     {
         ret.push_back(getColumnName(11));
     }
+
     if(dirtyFlag_[12])
     {
         ret.push_back(getColumnName(12));
     }
+
     if(dirtyFlag_[13])
     {
         ret.push_back(getColumnName(13));
     }
+
     if(dirtyFlag_[14])
     {
         ret.push_back(getColumnName(14));
     }
+
     if(dirtyFlag_[15])
     {
         ret.push_back(getColumnName(15));
     }
+
     if(dirtyFlag_[16])
     {
         ret.push_back(getColumnName(16));
     }
+
     if(dirtyFlag_[17])
     {
         ret.push_back(getColumnName(17));
     }
+
     if(dirtyFlag_[18])
     {
         ret.push_back(getColumnName(18));
     }
+
     if(dirtyFlag_[19])
     {
         ret.push_back(getColumnName(19));
     }
+
     return ret;
 }
 
 void Videos::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -1977,6 +2263,7 @@ void Videos::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getTitle())
@@ -1988,6 +2275,7 @@ void Videos::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getDescription())
@@ -1999,6 +2287,7 @@ void Videos::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getFileName())
@@ -2010,6 +2299,7 @@ void Videos::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getFilePath())
@@ -2021,6 +2311,7 @@ void Videos::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getFileSize())
@@ -2032,6 +2323,7 @@ void Videos::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getDuration())
@@ -2043,6 +2335,7 @@ void Videos::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getFormat())
@@ -2054,6 +2347,7 @@ void Videos::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[8])
     {
         if(getThumbnailPath())
@@ -2065,6 +2359,7 @@ void Videos::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[9])
     {
         if(getStatus())
@@ -2076,6 +2371,7 @@ void Videos::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[10])
     {
         if(getViews())
@@ -2087,6 +2383,7 @@ void Videos::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[11])
     {
         if(getLikes())
@@ -2098,6 +2395,7 @@ void Videos::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[12])
     {
         if(getDownloads())
@@ -2109,6 +2407,7 @@ void Videos::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[13])
     {
         if(getTags())
@@ -2120,6 +2419,7 @@ void Videos::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[14])
     {
         if(getMetadata())
@@ -2131,6 +2431,7 @@ void Videos::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[15])
     {
         if(getChecksum())
@@ -2142,6 +2443,7 @@ void Videos::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[16])
     {
         if(getCreatedBy())
@@ -2153,6 +2455,7 @@ void Videos::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[17])
     {
         if(getCreatedAt())
@@ -2164,6 +2467,7 @@ void Videos::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[18])
     {
         if(getModifiedBy())
@@ -2175,6 +2479,7 @@ void Videos::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[19])
     {
         if(getModifiedAt())
@@ -2186,170 +2491,232 @@ void Videos::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
 }
 Json::Value Videos::toJson() const
 {
     Json::Value ret;
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getTitle())
     {
+
         ret["title"]=getValueOfTitle();
+
     }
     else
     {
         ret["title"]=Json::Value();
     }
+
     if(getDescription())
     {
+
         ret["description"]=getValueOfDescription();
+
     }
     else
     {
         ret["description"]=Json::Value();
     }
+
     if(getFileName())
     {
+
         ret["file_name"]=getValueOfFileName();
+
     }
     else
     {
         ret["file_name"]=Json::Value();
     }
+
     if(getFilePath())
     {
+
         ret["file_path"]=getValueOfFilePath();
+
     }
     else
     {
         ret["file_path"]=Json::Value();
     }
+
     if(getFileSize())
     {
+
         ret["file_size"]=(Json::Int64)getValueOfFileSize();
+
     }
     else
     {
         ret["file_size"]=Json::Value();
     }
+
     if(getDuration())
     {
+
         ret["duration"]=getValueOfDuration();
+
     }
     else
     {
         ret["duration"]=Json::Value();
     }
+
     if(getFormat())
     {
+
         ret["format"]=getValueOfFormat();
+
     }
     else
     {
         ret["format"]=Json::Value();
     }
+
     if(getThumbnailPath())
     {
+
         ret["thumbnail_path"]=getValueOfThumbnailPath();
+
     }
     else
     {
         ret["thumbnail_path"]=Json::Value();
     }
+
     if(getStatus())
     {
+
         ret["status"]=getValueOfStatus();
+
     }
     else
     {
         ret["status"]=Json::Value();
     }
+
     if(getViews())
     {
+
         ret["views"]=getValueOfViews();
+
     }
     else
     {
         ret["views"]=Json::Value();
     }
+
     if(getLikes())
     {
+
         ret["likes"]=getValueOfLikes();
+
     }
     else
     {
         ret["likes"]=Json::Value();
     }
+
     if(getDownloads())
     {
+
         ret["downloads"]=getValueOfDownloads();
+
     }
     else
     {
         ret["downloads"]=Json::Value();
     }
+
     if(getTags())
     {
+
         ret["tags"]=getValueOfTags();
+
     }
     else
     {
         ret["tags"]=Json::Value();
     }
+
     if(getMetadata())
     {
+
         ret["metadata"]=getValueOfMetadata();
+
     }
     else
     {
         ret["metadata"]=Json::Value();
     }
+
     if(getChecksum())
     {
+
         ret["checksum"]=getValueOfChecksum();
+
     }
     else
     {
         ret["checksum"]=Json::Value();
     }
+
     if(getCreatedBy())
     {
+
         ret["created_by"]=getValueOfCreatedBy();
+
     }
     else
     {
         ret["created_by"]=Json::Value();
     }
+
     if(getCreatedAt())
     {
+
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["created_at"]=Json::Value();
     }
+
     if(getModifiedBy())
     {
+
         ret["modified_by"]=getValueOfModifiedBy();
+
     }
     else
     {
         ret["modified_by"]=Json::Value();
     }
+
     if(getModifiedAt())
     {
+
         ret["modified_at"]=getModifiedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["modified_at"]=Json::Value();
     }
+
     return ret;
 }
 
@@ -2364,514 +2731,661 @@ Json::Value Videos::toMasqueradedJson(
     Json::Value ret;
     if(pMasqueradingVector.size() == 20)
     {
+
         if(!pMasqueradingVector[0].empty())
         {
             if(getId())
             {
+
                 ret[pMasqueradingVector[0]]=getValueOfId();
+
             }
             else
             {
                 ret[pMasqueradingVector[0]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[1].empty())
         {
             if(getTitle())
             {
+
                 ret[pMasqueradingVector[1]]=getValueOfTitle();
+
             }
             else
             {
                 ret[pMasqueradingVector[1]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[2].empty())
         {
             if(getDescription())
             {
+
                 ret[pMasqueradingVector[2]]=getValueOfDescription();
+
             }
             else
             {
                 ret[pMasqueradingVector[2]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[3].empty())
         {
             if(getFileName())
             {
+
                 ret[pMasqueradingVector[3]]=getValueOfFileName();
+
             }
             else
             {
                 ret[pMasqueradingVector[3]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[4].empty())
         {
             if(getFilePath())
             {
+
                 ret[pMasqueradingVector[4]]=getValueOfFilePath();
+
             }
             else
             {
                 ret[pMasqueradingVector[4]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[5].empty())
         {
             if(getFileSize())
             {
+
                 ret[pMasqueradingVector[5]]=(Json::Int64)getValueOfFileSize();
+
             }
             else
             {
                 ret[pMasqueradingVector[5]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[6].empty())
         {
             if(getDuration())
             {
+
                 ret[pMasqueradingVector[6]]=getValueOfDuration();
+
             }
             else
             {
                 ret[pMasqueradingVector[6]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[7].empty())
         {
             if(getFormat())
             {
+
                 ret[pMasqueradingVector[7]]=getValueOfFormat();
+
             }
             else
             {
                 ret[pMasqueradingVector[7]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[8].empty())
         {
             if(getThumbnailPath())
             {
+
                 ret[pMasqueradingVector[8]]=getValueOfThumbnailPath();
+
             }
             else
             {
                 ret[pMasqueradingVector[8]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[9].empty())
         {
             if(getStatus())
             {
+
                 ret[pMasqueradingVector[9]]=getValueOfStatus();
+
             }
             else
             {
                 ret[pMasqueradingVector[9]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[10].empty())
         {
             if(getViews())
             {
+
                 ret[pMasqueradingVector[10]]=getValueOfViews();
+
             }
             else
             {
                 ret[pMasqueradingVector[10]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[11].empty())
         {
             if(getLikes())
             {
+
                 ret[pMasqueradingVector[11]]=getValueOfLikes();
+
             }
             else
             {
                 ret[pMasqueradingVector[11]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[12].empty())
         {
             if(getDownloads())
             {
+
                 ret[pMasqueradingVector[12]]=getValueOfDownloads();
+
             }
             else
             {
                 ret[pMasqueradingVector[12]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[13].empty())
         {
             if(getTags())
             {
+
                 ret[pMasqueradingVector[13]]=getValueOfTags();
+
             }
             else
             {
                 ret[pMasqueradingVector[13]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[14].empty())
         {
             if(getMetadata())
             {
+
                 ret[pMasqueradingVector[14]]=getValueOfMetadata();
+
             }
             else
             {
                 ret[pMasqueradingVector[14]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[15].empty())
         {
             if(getChecksum())
             {
+
                 ret[pMasqueradingVector[15]]=getValueOfChecksum();
+
             }
             else
             {
                 ret[pMasqueradingVector[15]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[16].empty())
         {
             if(getCreatedBy())
             {
+
                 ret[pMasqueradingVector[16]]=getValueOfCreatedBy();
+
             }
             else
             {
                 ret[pMasqueradingVector[16]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[17].empty())
         {
             if(getCreatedAt())
             {
+
                 ret[pMasqueradingVector[17]]=getCreatedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[17]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[18].empty())
         {
             if(getModifiedBy())
             {
+
                 ret[pMasqueradingVector[18]]=getValueOfModifiedBy();
+
             }
             else
             {
                 ret[pMasqueradingVector[18]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[19].empty())
         {
             if(getModifiedAt())
             {
+
                 ret[pMasqueradingVector[19]]=getModifiedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[19]]=Json::Value();
             }
         }
+
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getTitle())
     {
+
         ret["title"]=getValueOfTitle();
+
     }
     else
     {
         ret["title"]=Json::Value();
     }
+
     if(getDescription())
     {
+
         ret["description"]=getValueOfDescription();
+
     }
     else
     {
         ret["description"]=Json::Value();
     }
+
     if(getFileName())
     {
+
         ret["file_name"]=getValueOfFileName();
+
     }
     else
     {
         ret["file_name"]=Json::Value();
     }
+
     if(getFilePath())
     {
+
         ret["file_path"]=getValueOfFilePath();
+
     }
     else
     {
         ret["file_path"]=Json::Value();
     }
+
     if(getFileSize())
     {
+
         ret["file_size"]=(Json::Int64)getValueOfFileSize();
+
     }
     else
     {
         ret["file_size"]=Json::Value();
     }
+
     if(getDuration())
     {
+
         ret["duration"]=getValueOfDuration();
+
     }
     else
     {
         ret["duration"]=Json::Value();
     }
+
     if(getFormat())
     {
+
         ret["format"]=getValueOfFormat();
+
     }
     else
     {
         ret["format"]=Json::Value();
     }
+
     if(getThumbnailPath())
     {
+
         ret["thumbnail_path"]=getValueOfThumbnailPath();
+
     }
     else
     {
         ret["thumbnail_path"]=Json::Value();
     }
+
     if(getStatus())
     {
+
         ret["status"]=getValueOfStatus();
+
     }
     else
     {
         ret["status"]=Json::Value();
     }
+
     if(getViews())
     {
+
         ret["views"]=getValueOfViews();
+
     }
     else
     {
         ret["views"]=Json::Value();
     }
+
     if(getLikes())
     {
+
         ret["likes"]=getValueOfLikes();
+
     }
     else
     {
         ret["likes"]=Json::Value();
     }
+
     if(getDownloads())
     {
+
         ret["downloads"]=getValueOfDownloads();
+
     }
     else
     {
         ret["downloads"]=Json::Value();
     }
+
     if(getTags())
     {
+
         ret["tags"]=getValueOfTags();
+
     }
     else
     {
         ret["tags"]=Json::Value();
     }
+
     if(getMetadata())
     {
+
         ret["metadata"]=getValueOfMetadata();
+
     }
     else
     {
         ret["metadata"]=Json::Value();
     }
+
     if(getChecksum())
     {
+
         ret["checksum"]=getValueOfChecksum();
+
     }
     else
     {
         ret["checksum"]=Json::Value();
     }
+
     if(getCreatedBy())
     {
+
         ret["created_by"]=getValueOfCreatedBy();
+
     }
     else
     {
         ret["created_by"]=Json::Value();
     }
+
     if(getCreatedAt())
     {
+
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["created_at"]=Json::Value();
     }
+
     if(getModifiedBy())
     {
+
         ret["modified_by"]=getValueOfModifiedBy();
+
     }
     else
     {
         ret["modified_by"]=Json::Value();
     }
+
     if(getModifiedAt())
     {
+
         ret["modified_at"]=getModifiedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["modified_at"]=Json::Value();
     }
+
     return ret;
 }
 
 bool Videos::validateJsonForCreation(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, true))
             return false;
     }
+
     if(pJson.isMember("title"))
     {
         if(!validJsonOfField(1, "title", pJson["title"], err, true))
             return false;
     }
+
     else
     {
         err="The title column cannot be null";
         return false;
     }
+
     if(pJson.isMember("description"))
     {
         if(!validJsonOfField(2, "description", pJson["description"], err, true))
             return false;
     }
+
     if(pJson.isMember("file_name"))
     {
         if(!validJsonOfField(3, "file_name", pJson["file_name"], err, true))
             return false;
     }
+
     else
     {
         err="The file_name column cannot be null";
         return false;
     }
+
     if(pJson.isMember("file_path"))
     {
         if(!validJsonOfField(4, "file_path", pJson["file_path"], err, true))
             return false;
     }
+
     else
     {
         err="The file_path column cannot be null";
         return false;
     }
+
     if(pJson.isMember("file_size"))
     {
         if(!validJsonOfField(5, "file_size", pJson["file_size"], err, true))
             return false;
     }
+
     else
     {
         err="The file_size column cannot be null";
         return false;
     }
+
     if(pJson.isMember("duration"))
     {
         if(!validJsonOfField(6, "duration", pJson["duration"], err, true))
             return false;
     }
+
     if(pJson.isMember("format"))
     {
         if(!validJsonOfField(7, "format", pJson["format"], err, true))
             return false;
     }
+
     if(pJson.isMember("thumbnail_path"))
     {
         if(!validJsonOfField(8, "thumbnail_path", pJson["thumbnail_path"], err, true))
             return false;
     }
+
     if(pJson.isMember("status"))
     {
         if(!validJsonOfField(9, "status", pJson["status"], err, true))
             return false;
     }
+
     if(pJson.isMember("views"))
     {
         if(!validJsonOfField(10, "views", pJson["views"], err, true))
             return false;
     }
+
     if(pJson.isMember("likes"))
     {
         if(!validJsonOfField(11, "likes", pJson["likes"], err, true))
             return false;
     }
+
     if(pJson.isMember("downloads"))
     {
         if(!validJsonOfField(12, "downloads", pJson["downloads"], err, true))
             return false;
     }
+
     if(pJson.isMember("tags"))
     {
         if(!validJsonOfField(13, "tags", pJson["tags"], err, true))
             return false;
     }
+
     if(pJson.isMember("metadata"))
     {
         if(!validJsonOfField(14, "metadata", pJson["metadata"], err, true))
             return false;
     }
+
     if(pJson.isMember("checksum"))
     {
         if(!validJsonOfField(15, "checksum", pJson["checksum"], err, true))
             return false;
     }
+
     if(pJson.isMember("created_by"))
     {
         if(!validJsonOfField(16, "created_by", pJson["created_by"], err, true))
             return false;
     }
+
     if(pJson.isMember("created_at"))
     {
         if(!validJsonOfField(17, "created_at", pJson["created_at"], err, true))
             return false;
     }
+
     if(pJson.isMember("modified_by"))
     {
         if(!validJsonOfField(18, "modified_by", pJson["modified_by"], err, true))
             return false;
     }
+
     if(pJson.isMember("modified_at"))
     {
         if(!validJsonOfField(19, "modified_at", pJson["modified_at"], err, true))
             return false;
     }
+
     return true;
 }
 bool Videos::validateMasqueradedJsonForCreation(const Json::Value &pJson,
@@ -2884,6 +3398,7 @@ bool Videos::validateMasqueradedJsonForCreation(const Json::Value &pJson,
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty())
       {
           if(pJson.isMember(pMasqueradingVector[0]))
@@ -2891,7 +3406,9 @@ bool Videos::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[1].empty())
       {
           if(pJson.isMember(pMasqueradingVector[1]))
@@ -2899,12 +3416,15 @@ bool Videos::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[1] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[2].empty())
       {
           if(pJson.isMember(pMasqueradingVector[2]))
@@ -2912,7 +3432,9 @@ bool Videos::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[3].empty())
       {
           if(pJson.isMember(pMasqueradingVector[3]))
@@ -2920,12 +3442,15 @@ bool Videos::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[3] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[4].empty())
       {
           if(pJson.isMember(pMasqueradingVector[4]))
@@ -2933,12 +3458,15 @@ bool Videos::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[4] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[5].empty())
       {
           if(pJson.isMember(pMasqueradingVector[5]))
@@ -2946,12 +3474,15 @@ bool Videos::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[5] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[6].empty())
       {
           if(pJson.isMember(pMasqueradingVector[6]))
@@ -2959,7 +3490,9 @@ bool Videos::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[7].empty())
       {
           if(pJson.isMember(pMasqueradingVector[7]))
@@ -2967,7 +3500,9 @@ bool Videos::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[8].empty())
       {
           if(pJson.isMember(pMasqueradingVector[8]))
@@ -2975,7 +3510,9 @@ bool Videos::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(8, pMasqueradingVector[8], pJson[pMasqueradingVector[8]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[9].empty())
       {
           if(pJson.isMember(pMasqueradingVector[9]))
@@ -2983,7 +3520,9 @@ bool Videos::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(9, pMasqueradingVector[9], pJson[pMasqueradingVector[9]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[10].empty())
       {
           if(pJson.isMember(pMasqueradingVector[10]))
@@ -2991,7 +3530,9 @@ bool Videos::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(10, pMasqueradingVector[10], pJson[pMasqueradingVector[10]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[11].empty())
       {
           if(pJson.isMember(pMasqueradingVector[11]))
@@ -2999,7 +3540,9 @@ bool Videos::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(11, pMasqueradingVector[11], pJson[pMasqueradingVector[11]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[12].empty())
       {
           if(pJson.isMember(pMasqueradingVector[12]))
@@ -3007,7 +3550,9 @@ bool Videos::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(12, pMasqueradingVector[12], pJson[pMasqueradingVector[12]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[13].empty())
       {
           if(pJson.isMember(pMasqueradingVector[13]))
@@ -3015,7 +3560,9 @@ bool Videos::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(13, pMasqueradingVector[13], pJson[pMasqueradingVector[13]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[14].empty())
       {
           if(pJson.isMember(pMasqueradingVector[14]))
@@ -3023,7 +3570,9 @@ bool Videos::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(14, pMasqueradingVector[14], pJson[pMasqueradingVector[14]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[15].empty())
       {
           if(pJson.isMember(pMasqueradingVector[15]))
@@ -3031,7 +3580,9 @@ bool Videos::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(15, pMasqueradingVector[15], pJson[pMasqueradingVector[15]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[16].empty())
       {
           if(pJson.isMember(pMasqueradingVector[16]))
@@ -3039,7 +3590,9 @@ bool Videos::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(16, pMasqueradingVector[16], pJson[pMasqueradingVector[16]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[17].empty())
       {
           if(pJson.isMember(pMasqueradingVector[17]))
@@ -3047,7 +3600,9 @@ bool Videos::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(17, pMasqueradingVector[17], pJson[pMasqueradingVector[17]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[18].empty())
       {
           if(pJson.isMember(pMasqueradingVector[18]))
@@ -3055,7 +3610,9 @@ bool Videos::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(18, pMasqueradingVector[18], pJson[pMasqueradingVector[18]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[19].empty())
       {
           if(pJson.isMember(pMasqueradingVector[19]))
@@ -3063,7 +3620,9 @@ bool Videos::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(19, pMasqueradingVector[19], pJson[pMasqueradingVector[19]], err, true))
                   return false;
           }
+
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -3074,111 +3633,133 @@ bool Videos::validateMasqueradedJsonForCreation(const Json::Value &pJson,
 }
 bool Videos::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, false))
             return false;
     }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
     if(pJson.isMember("title"))
     {
         if(!validJsonOfField(1, "title", pJson["title"], err, false))
             return false;
     }
+
     if(pJson.isMember("description"))
     {
         if(!validJsonOfField(2, "description", pJson["description"], err, false))
             return false;
     }
+
     if(pJson.isMember("file_name"))
     {
         if(!validJsonOfField(3, "file_name", pJson["file_name"], err, false))
             return false;
     }
+
     if(pJson.isMember("file_path"))
     {
         if(!validJsonOfField(4, "file_path", pJson["file_path"], err, false))
             return false;
     }
+
     if(pJson.isMember("file_size"))
     {
         if(!validJsonOfField(5, "file_size", pJson["file_size"], err, false))
             return false;
     }
+
     if(pJson.isMember("duration"))
     {
         if(!validJsonOfField(6, "duration", pJson["duration"], err, false))
             return false;
     }
+
     if(pJson.isMember("format"))
     {
         if(!validJsonOfField(7, "format", pJson["format"], err, false))
             return false;
     }
+
     if(pJson.isMember("thumbnail_path"))
     {
         if(!validJsonOfField(8, "thumbnail_path", pJson["thumbnail_path"], err, false))
             return false;
     }
+
     if(pJson.isMember("status"))
     {
         if(!validJsonOfField(9, "status", pJson["status"], err, false))
             return false;
     }
+
     if(pJson.isMember("views"))
     {
         if(!validJsonOfField(10, "views", pJson["views"], err, false))
             return false;
     }
+
     if(pJson.isMember("likes"))
     {
         if(!validJsonOfField(11, "likes", pJson["likes"], err, false))
             return false;
     }
+
     if(pJson.isMember("downloads"))
     {
         if(!validJsonOfField(12, "downloads", pJson["downloads"], err, false))
             return false;
     }
+
     if(pJson.isMember("tags"))
     {
         if(!validJsonOfField(13, "tags", pJson["tags"], err, false))
             return false;
     }
+
     if(pJson.isMember("metadata"))
     {
         if(!validJsonOfField(14, "metadata", pJson["metadata"], err, false))
             return false;
     }
+
     if(pJson.isMember("checksum"))
     {
         if(!validJsonOfField(15, "checksum", pJson["checksum"], err, false))
             return false;
     }
+
     if(pJson.isMember("created_by"))
     {
         if(!validJsonOfField(16, "created_by", pJson["created_by"], err, false))
             return false;
     }
+
     if(pJson.isMember("created_at"))
     {
         if(!validJsonOfField(17, "created_at", pJson["created_at"], err, false))
             return false;
     }
+
     if(pJson.isMember("modified_by"))
     {
         if(!validJsonOfField(18, "modified_by", pJson["modified_by"], err, false))
             return false;
     }
+
     if(pJson.isMember("modified_at"))
     {
         if(!validJsonOfField(19, "modified_at", pJson["modified_at"], err, false))
             return false;
     }
+
     return true;
 }
 bool Videos::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
@@ -3191,111 +3772,133 @@ bool Videos::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
       {
           if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
               return false;
       }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
       if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
       {
           if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
       {
           if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
       {
           if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
       {
           if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
       {
           if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
       {
           if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
       {
           if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
       {
           if(!validJsonOfField(8, pMasqueradingVector[8], pJson[pMasqueradingVector[8]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
       {
           if(!validJsonOfField(9, pMasqueradingVector[9], pJson[pMasqueradingVector[9]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
       {
           if(!validJsonOfField(10, pMasqueradingVector[10], pJson[pMasqueradingVector[10]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
       {
           if(!validJsonOfField(11, pMasqueradingVector[11], pJson[pMasqueradingVector[11]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
       {
           if(!validJsonOfField(12, pMasqueradingVector[12], pJson[pMasqueradingVector[12]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
       {
           if(!validJsonOfField(13, pMasqueradingVector[13], pJson[pMasqueradingVector[13]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
       {
           if(!validJsonOfField(14, pMasqueradingVector[14], pJson[pMasqueradingVector[14]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[15].empty() && pJson.isMember(pMasqueradingVector[15]))
       {
           if(!validJsonOfField(15, pMasqueradingVector[15], pJson[pMasqueradingVector[15]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[16].empty() && pJson.isMember(pMasqueradingVector[16]))
       {
           if(!validJsonOfField(16, pMasqueradingVector[16], pJson[pMasqueradingVector[16]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[17].empty() && pJson.isMember(pMasqueradingVector[17]))
       {
           if(!validJsonOfField(17, pMasqueradingVector[17], pJson[pMasqueradingVector[17]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[18].empty() && pJson.isMember(pMasqueradingVector[18]))
       {
           if(!validJsonOfField(18, pMasqueradingVector[18], pJson[pMasqueradingVector[18]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[19].empty() && pJson.isMember(pMasqueradingVector[19]))
       {
           if(!validJsonOfField(19, pMasqueradingVector[19], pJson[pMasqueradingVector[19]], err, false))
               return false;
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -3312,282 +3915,364 @@ bool Videos::validJsonOfField(size_t index,
 {
     switch(index)
     {
+
         case 0:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 1:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 500)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 500)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 500)";
                 return false;
             }
+
             break;
+
         case 2:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 3:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 255)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 255)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 255)";
                 return false;
             }
+
             break;
+
         case 4:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 1000)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 1000)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 1000)";
                 return false;
             }
+
             break;
+
         case 5:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isInt64())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 6:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 7:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 50)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 50)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 50)";
                 return false;
             }
+
             break;
+
         case 8:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 150)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 150)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 150)";
                 return false;
             }
+
             break;
+
         case 9:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 10:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 11:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 12:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 13:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 14:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 15:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 64)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 64)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 64)";
                 return false;
             }
+
             break;
+
         case 16:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 17:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 18:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 19:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         default:
             err="Internal error in the server";
             return false;
     }
     return true;
 }
+

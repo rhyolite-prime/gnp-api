@@ -1,3 +1,4 @@
+
 /**
  *
  *  IngestionJobs.cc
@@ -6,22 +7,58 @@
  */
 
 #include "IngestionJobs.h"
+
+#include "Newspapers.h"
+
+#include "Publications.h"
+
 #include <drogon/utils/Utilities.h>
+
 #include <string>
+
 
 using namespace drogon;
 using namespace drogon::orm;
 using namespace drogon_model::Gnp;
 
+
+
 const std::string IngestionJobs::Cols::_id = "\"id\"";
+
 const std::string IngestionJobs::Cols::_publication_date = "\"publication_date\"";
+
 const std::string IngestionJobs::Cols::_ingested_by = "\"ingested_by\"";
+
 const std::string IngestionJobs::Cols::_percentage_completion = "\"percentage_completion\"";
+
 const std::string IngestionJobs::Cols::_status = "\"status\"";
+
 const std::string IngestionJobs::Cols::_created_at = "\"created_at\"";
+
 const std::string IngestionJobs::Cols::_updated_at = "\"updated_at\"";
+
+const std::string IngestionJobs::Cols::_publication_id = "\"publication_id\"";
+
+const std::string IngestionJobs::Cols::_newspaper_id = "\"newspaper_id\"";
+
+const std::string IngestionJobs::Cols::_total_pages = "\"total_pages\"";
+
+const std::string IngestionJobs::Cols::_ocr_pages_completed = "\"ocr_pages_completed\"";
+
+const std::string IngestionJobs::Cols::_rag_chunks_queued = "\"rag_chunks_queued\"";
+
+const std::string IngestionJobs::Cols::_file_size_bytes = "\"file_size_bytes\"";
+
+const std::string IngestionJobs::Cols::_processing_duration_ms = "\"processing_duration_ms\"";
+
+const std::string IngestionJobs::Cols::_error_message = "\"error_message\"";
+
+
 const std::string IngestionJobs::primaryKeyName = "id";
+
+
 const bool IngestionJobs::hasPrimaryKey = true;
+
 const std::string IngestionJobs::tableName = "\"ingestion_jobs\"";
 
 const std::vector<typename IngestionJobs::MetaData> IngestionJobs::metaData_={
@@ -31,7 +68,16 @@ const std::vector<typename IngestionJobs::MetaData> IngestionJobs::metaData_={
 {"percentage_completion","std::string","numeric",0,0,0,1},
 {"status","std::string","character varying",30,0,0,0},
 {"created_at","::trantor::Date","timestamp with time zone",0,0,0,1},
-{"updated_at","::trantor::Date","timestamp without time zone",0,0,0,0}
+{"updated_at","::trantor::Date","timestamp without time zone",0,0,0,0},
+{"publication_id","std::string","uuid",0,0,0,0},
+{"newspaper_id","std::string","uuid",0,0,0,0},
+{"total_pages","int32_t","integer",4,0,0,1},
+{"ocr_pages_completed","int32_t","integer",4,0,0,1},
+{"rag_chunks_queued","int32_t","integer",4,0,0,1},
+{"file_size_bytes","int64_t","bigint",8,0,0,0},
+{"processing_duration_ms","int32_t","integer",4,0,0,0},
+{"error_message","std::string","text",0,0,0,0}
+
 };
 const std::string &IngestionJobs::getColumnName(size_t index) noexcept(false)
 {
@@ -42,15 +88,20 @@ IngestionJobs::IngestionJobs(const Row &r, const ssize_t indexOffset) noexcept
 {
     if(indexOffset < 0)
     {
+
         if(!r["id"].isNull())
         {
+
             id_=std::make_shared<std::string>(r["id"].as<std::string>());
+
         }
+
         if(!r["publication_date"].isNull())
         {
             auto timeStr = r["publication_date"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -68,23 +119,34 @@ IngestionJobs::IngestionJobs(const Row &r, const ssize_t indexOffset) noexcept
                 publicationDate_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         if(!r["ingested_by"].isNull())
         {
+
             ingestedBy_=std::make_shared<std::string>(r["ingested_by"].as<std::string>());
+
         }
+
         if(!r["percentage_completion"].isNull())
         {
+
             percentageCompletion_=std::make_shared<std::string>(r["percentage_completion"].as<std::string>());
+
         }
+
         if(!r["status"].isNull())
         {
+
             status_=std::make_shared<std::string>(r["status"].as<std::string>());
+
         }
+
         if(!r["created_at"].isNull())
         {
             auto timeStr = r["created_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -102,11 +164,13 @@ IngestionJobs::IngestionJobs(const Row &r, const ssize_t indexOffset) noexcept
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         if(!r["updated_at"].isNull())
         {
             auto timeStr = r["updated_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -124,27 +188,89 @@ IngestionJobs::IngestionJobs(const Row &r, const ssize_t indexOffset) noexcept
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
+        if(!r["publication_id"].isNull())
+        {
+
+            publicationId_=std::make_shared<std::string>(r["publication_id"].as<std::string>());
+
+        }
+
+        if(!r["newspaper_id"].isNull())
+        {
+
+            newspaperId_=std::make_shared<std::string>(r["newspaper_id"].as<std::string>());
+
+        }
+
+        if(!r["total_pages"].isNull())
+        {
+
+            totalPages_=std::make_shared<int32_t>(r["total_pages"].as<int32_t>());
+
+        }
+
+        if(!r["ocr_pages_completed"].isNull())
+        {
+
+            ocrPagesCompleted_=std::make_shared<int32_t>(r["ocr_pages_completed"].as<int32_t>());
+
+        }
+
+        if(!r["rag_chunks_queued"].isNull())
+        {
+
+            ragChunksQueued_=std::make_shared<int32_t>(r["rag_chunks_queued"].as<int32_t>());
+
+        }
+
+        if(!r["file_size_bytes"].isNull())
+        {
+
+            fileSizeBytes_=std::make_shared<int64_t>(r["file_size_bytes"].as<int64_t>());
+
+        }
+
+        if(!r["processing_duration_ms"].isNull())
+        {
+
+            processingDurationMs_=std::make_shared<int32_t>(r["processing_duration_ms"].as<int32_t>());
+
+        }
+
+        if(!r["error_message"].isNull())
+        {
+
+            errorMessage_=std::make_shared<std::string>(r["error_message"].as<std::string>());
+
+        }
+
     }
     else
     {
         size_t offset = (size_t)indexOffset;
-        if(offset + 7 > r.size())
+        if(offset + 15 > r.size())
         {
             LOG_FATAL << "Invalid SQL result for this model";
             return;
         }
         size_t index;
+
         index = offset + 0;
         if(!r[index].isNull())
         {
+
             id_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 1;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -162,27 +288,38 @@ IngestionJobs::IngestionJobs(const Row &r, const ssize_t indexOffset) noexcept
                 publicationDate_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         index = offset + 2;
         if(!r[index].isNull())
         {
+
             ingestedBy_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 3;
         if(!r[index].isNull())
         {
+
             percentageCompletion_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 4;
         if(!r[index].isNull())
         {
+
             status_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 5;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -200,12 +337,14 @@ IngestionJobs::IngestionJobs(const Row &r, const ssize_t indexOffset) noexcept
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         index = offset + 6;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -223,17 +362,83 @@ IngestionJobs::IngestionJobs(const Row &r, const ssize_t indexOffset) noexcept
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
+        index = offset + 7;
+        if(!r[index].isNull())
+        {
+
+            publicationId_=std::make_shared<std::string>(r[index].as<std::string>());
+
+        }
+
+        index = offset + 8;
+        if(!r[index].isNull())
+        {
+
+            newspaperId_=std::make_shared<std::string>(r[index].as<std::string>());
+
+        }
+
+        index = offset + 9;
+        if(!r[index].isNull())
+        {
+
+            totalPages_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
+        }
+
+        index = offset + 10;
+        if(!r[index].isNull())
+        {
+
+            ocrPagesCompleted_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
+        }
+
+        index = offset + 11;
+        if(!r[index].isNull())
+        {
+
+            ragChunksQueued_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
+        }
+
+        index = offset + 12;
+        if(!r[index].isNull())
+        {
+
+            fileSizeBytes_=std::make_shared<int64_t>(r[index].as<int64_t>());
+
+        }
+
+        index = offset + 13;
+        if(!r[index].isNull())
+        {
+
+            processingDurationMs_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
+        }
+
+        index = offset + 14;
+        if(!r[index].isNull())
+        {
+
+            errorMessage_=std::make_shared<std::string>(r[index].as<std::string>());
+
+        }
+
     }
 
 }
 
 IngestionJobs::IngestionJobs(const Json::Value &pJson, const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 7)
+    if(pMasqueradingVector.size() != 15)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         dirtyFlag_[0] = true;
@@ -242,6 +447,7 @@ IngestionJobs::IngestionJobs(const Json::Value &pJson, const std::vector<std::st
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -250,6 +456,7 @@ IngestionJobs::IngestionJobs(const Json::Value &pJson, const std::vector<std::st
             auto timeStr = pJson[pMasqueradingVector[1]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -268,6 +475,7 @@ IngestionJobs::IngestionJobs(const Json::Value &pJson, const std::vector<std::st
             }
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -276,6 +484,7 @@ IngestionJobs::IngestionJobs(const Json::Value &pJson, const std::vector<std::st
             ingestedBy_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -284,6 +493,7 @@ IngestionJobs::IngestionJobs(const Json::Value &pJson, const std::vector<std::st
             percentageCompletion_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -292,6 +502,7 @@ IngestionJobs::IngestionJobs(const Json::Value &pJson, const std::vector<std::st
             status_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -300,6 +511,7 @@ IngestionJobs::IngestionJobs(const Json::Value &pJson, const std::vector<std::st
             auto timeStr = pJson[pMasqueradingVector[5]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -318,6 +530,7 @@ IngestionJobs::IngestionJobs(const Json::Value &pJson, const std::vector<std::st
             }
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -326,6 +539,7 @@ IngestionJobs::IngestionJobs(const Json::Value &pJson, const std::vector<std::st
             auto timeStr = pJson[pMasqueradingVector[6]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -344,10 +558,84 @@ IngestionJobs::IngestionJobs(const Json::Value &pJson, const std::vector<std::st
             }
         }
     }
+
+    if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
+    {
+        dirtyFlag_[7] = true;
+        if(!pJson[pMasqueradingVector[7]].isNull())
+        {
+            publicationId_=std::make_shared<std::string>(pJson[pMasqueradingVector[7]].asString());
+        }
+    }
+
+    if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
+    {
+        dirtyFlag_[8] = true;
+        if(!pJson[pMasqueradingVector[8]].isNull())
+        {
+            newspaperId_=std::make_shared<std::string>(pJson[pMasqueradingVector[8]].asString());
+        }
+    }
+
+    if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
+    {
+        dirtyFlag_[9] = true;
+        if(!pJson[pMasqueradingVector[9]].isNull())
+        {
+            totalPages_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[9]].asInt64());
+        }
+    }
+
+    if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
+    {
+        dirtyFlag_[10] = true;
+        if(!pJson[pMasqueradingVector[10]].isNull())
+        {
+            ocrPagesCompleted_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[10]].asInt64());
+        }
+    }
+
+    if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
+    {
+        dirtyFlag_[11] = true;
+        if(!pJson[pMasqueradingVector[11]].isNull())
+        {
+            ragChunksQueued_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[11]].asInt64());
+        }
+    }
+
+    if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
+    {
+        dirtyFlag_[12] = true;
+        if(!pJson[pMasqueradingVector[12]].isNull())
+        {
+            fileSizeBytes_=std::make_shared<int64_t>((int64_t)pJson[pMasqueradingVector[12]].asInt64());
+        }
+    }
+
+    if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
+    {
+        dirtyFlag_[13] = true;
+        if(!pJson[pMasqueradingVector[13]].isNull())
+        {
+            processingDurationMs_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[13]].asInt64());
+        }
+    }
+
+    if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
+    {
+        dirtyFlag_[14] = true;
+        if(!pJson[pMasqueradingVector[14]].isNull())
+        {
+            errorMessage_=std::make_shared<std::string>(pJson[pMasqueradingVector[14]].asString());
+        }
+    }
+
 }
 
 IngestionJobs::IngestionJobs(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         dirtyFlag_[0]=true;
@@ -356,6 +644,7 @@ IngestionJobs::IngestionJobs(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("publication_date"))
     {
         dirtyFlag_[1]=true;
@@ -364,6 +653,7 @@ IngestionJobs::IngestionJobs(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["publication_date"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -382,6 +672,7 @@ IngestionJobs::IngestionJobs(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("ingested_by"))
     {
         dirtyFlag_[2]=true;
@@ -390,6 +681,7 @@ IngestionJobs::IngestionJobs(const Json::Value &pJson) noexcept(false)
             ingestedBy_=std::make_shared<std::string>(pJson["ingested_by"].asString());
         }
     }
+
     if(pJson.isMember("percentage_completion"))
     {
         dirtyFlag_[3]=true;
@@ -398,6 +690,7 @@ IngestionJobs::IngestionJobs(const Json::Value &pJson) noexcept(false)
             percentageCompletion_=std::make_shared<std::string>(pJson["percentage_completion"].asString());
         }
     }
+
     if(pJson.isMember("status"))
     {
         dirtyFlag_[4]=true;
@@ -406,6 +699,7 @@ IngestionJobs::IngestionJobs(const Json::Value &pJson) noexcept(false)
             status_=std::make_shared<std::string>(pJson["status"].asString());
         }
     }
+
     if(pJson.isMember("created_at"))
     {
         dirtyFlag_[5]=true;
@@ -414,6 +708,7 @@ IngestionJobs::IngestionJobs(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["created_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -432,6 +727,7 @@ IngestionJobs::IngestionJobs(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("updated_at"))
     {
         dirtyFlag_[6]=true;
@@ -440,6 +736,7 @@ IngestionJobs::IngestionJobs(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["updated_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -458,16 +755,90 @@ IngestionJobs::IngestionJobs(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
+    if(pJson.isMember("publication_id"))
+    {
+        dirtyFlag_[7]=true;
+        if(!pJson["publication_id"].isNull())
+        {
+            publicationId_=std::make_shared<std::string>(pJson["publication_id"].asString());
+        }
+    }
+
+    if(pJson.isMember("newspaper_id"))
+    {
+        dirtyFlag_[8]=true;
+        if(!pJson["newspaper_id"].isNull())
+        {
+            newspaperId_=std::make_shared<std::string>(pJson["newspaper_id"].asString());
+        }
+    }
+
+    if(pJson.isMember("total_pages"))
+    {
+        dirtyFlag_[9]=true;
+        if(!pJson["total_pages"].isNull())
+        {
+            totalPages_=std::make_shared<int32_t>((int32_t)pJson["total_pages"].asInt64());
+        }
+    }
+
+    if(pJson.isMember("ocr_pages_completed"))
+    {
+        dirtyFlag_[10]=true;
+        if(!pJson["ocr_pages_completed"].isNull())
+        {
+            ocrPagesCompleted_=std::make_shared<int32_t>((int32_t)pJson["ocr_pages_completed"].asInt64());
+        }
+    }
+
+    if(pJson.isMember("rag_chunks_queued"))
+    {
+        dirtyFlag_[11]=true;
+        if(!pJson["rag_chunks_queued"].isNull())
+        {
+            ragChunksQueued_=std::make_shared<int32_t>((int32_t)pJson["rag_chunks_queued"].asInt64());
+        }
+    }
+
+    if(pJson.isMember("file_size_bytes"))
+    {
+        dirtyFlag_[12]=true;
+        if(!pJson["file_size_bytes"].isNull())
+        {
+            fileSizeBytes_=std::make_shared<int64_t>((int64_t)pJson["file_size_bytes"].asInt64());
+        }
+    }
+
+    if(pJson.isMember("processing_duration_ms"))
+    {
+        dirtyFlag_[13]=true;
+        if(!pJson["processing_duration_ms"].isNull())
+        {
+            processingDurationMs_=std::make_shared<int32_t>((int32_t)pJson["processing_duration_ms"].asInt64());
+        }
+    }
+
+    if(pJson.isMember("error_message"))
+    {
+        dirtyFlag_[14]=true;
+        if(!pJson["error_message"].isNull())
+        {
+            errorMessage_=std::make_shared<std::string>(pJson["error_message"].asString());
+        }
+    }
+
 }
 
 void IngestionJobs::updateByMasqueradedJson(const Json::Value &pJson,
                                             const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 7)
+    if(pMasqueradingVector.size() != 15)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         if(!pJson[pMasqueradingVector[0]].isNull())
@@ -475,6 +846,7 @@ void IngestionJobs::updateByMasqueradedJson(const Json::Value &pJson,
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -483,6 +855,7 @@ void IngestionJobs::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[1]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -501,6 +874,7 @@ void IngestionJobs::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -509,6 +883,7 @@ void IngestionJobs::updateByMasqueradedJson(const Json::Value &pJson,
             ingestedBy_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -517,6 +892,7 @@ void IngestionJobs::updateByMasqueradedJson(const Json::Value &pJson,
             percentageCompletion_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -525,6 +901,7 @@ void IngestionJobs::updateByMasqueradedJson(const Json::Value &pJson,
             status_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -533,6 +910,7 @@ void IngestionJobs::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[5]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -551,6 +929,7 @@ void IngestionJobs::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -559,6 +938,7 @@ void IngestionJobs::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[6]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -577,10 +957,84 @@ void IngestionJobs::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
+    if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
+    {
+        dirtyFlag_[7] = true;
+        if(!pJson[pMasqueradingVector[7]].isNull())
+        {
+            publicationId_=std::make_shared<std::string>(pJson[pMasqueradingVector[7]].asString());
+        }
+    }
+
+    if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
+    {
+        dirtyFlag_[8] = true;
+        if(!pJson[pMasqueradingVector[8]].isNull())
+        {
+            newspaperId_=std::make_shared<std::string>(pJson[pMasqueradingVector[8]].asString());
+        }
+    }
+
+    if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
+    {
+        dirtyFlag_[9] = true;
+        if(!pJson[pMasqueradingVector[9]].isNull())
+        {
+            totalPages_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[9]].asInt64());
+        }
+    }
+
+    if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
+    {
+        dirtyFlag_[10] = true;
+        if(!pJson[pMasqueradingVector[10]].isNull())
+        {
+            ocrPagesCompleted_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[10]].asInt64());
+        }
+    }
+
+    if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
+    {
+        dirtyFlag_[11] = true;
+        if(!pJson[pMasqueradingVector[11]].isNull())
+        {
+            ragChunksQueued_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[11]].asInt64());
+        }
+    }
+
+    if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
+    {
+        dirtyFlag_[12] = true;
+        if(!pJson[pMasqueradingVector[12]].isNull())
+        {
+            fileSizeBytes_=std::make_shared<int64_t>((int64_t)pJson[pMasqueradingVector[12]].asInt64());
+        }
+    }
+
+    if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
+    {
+        dirtyFlag_[13] = true;
+        if(!pJson[pMasqueradingVector[13]].isNull())
+        {
+            processingDurationMs_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[13]].asInt64());
+        }
+    }
+
+    if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
+    {
+        dirtyFlag_[14] = true;
+        if(!pJson[pMasqueradingVector[14]].isNull())
+        {
+            errorMessage_=std::make_shared<std::string>(pJson[pMasqueradingVector[14]].asString());
+        }
+    }
+
 }
 
 void IngestionJobs::updateByJson(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         if(!pJson["id"].isNull())
@@ -588,6 +1042,7 @@ void IngestionJobs::updateByJson(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("publication_date"))
     {
         dirtyFlag_[1] = true;
@@ -596,6 +1051,7 @@ void IngestionJobs::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["publication_date"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -614,6 +1070,7 @@ void IngestionJobs::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("ingested_by"))
     {
         dirtyFlag_[2] = true;
@@ -622,6 +1079,7 @@ void IngestionJobs::updateByJson(const Json::Value &pJson) noexcept(false)
             ingestedBy_=std::make_shared<std::string>(pJson["ingested_by"].asString());
         }
     }
+
     if(pJson.isMember("percentage_completion"))
     {
         dirtyFlag_[3] = true;
@@ -630,6 +1088,7 @@ void IngestionJobs::updateByJson(const Json::Value &pJson) noexcept(false)
             percentageCompletion_=std::make_shared<std::string>(pJson["percentage_completion"].asString());
         }
     }
+
     if(pJson.isMember("status"))
     {
         dirtyFlag_[4] = true;
@@ -638,6 +1097,7 @@ void IngestionJobs::updateByJson(const Json::Value &pJson) noexcept(false)
             status_=std::make_shared<std::string>(pJson["status"].asString());
         }
     }
+
     if(pJson.isMember("created_at"))
     {
         dirtyFlag_[5] = true;
@@ -646,6 +1106,7 @@ void IngestionJobs::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["created_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -664,6 +1125,7 @@ void IngestionJobs::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("updated_at"))
     {
         dirtyFlag_[6] = true;
@@ -672,6 +1134,7 @@ void IngestionJobs::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["updated_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -690,6 +1153,79 @@ void IngestionJobs::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
+    if(pJson.isMember("publication_id"))
+    {
+        dirtyFlag_[7] = true;
+        if(!pJson["publication_id"].isNull())
+        {
+            publicationId_=std::make_shared<std::string>(pJson["publication_id"].asString());
+        }
+    }
+
+    if(pJson.isMember("newspaper_id"))
+    {
+        dirtyFlag_[8] = true;
+        if(!pJson["newspaper_id"].isNull())
+        {
+            newspaperId_=std::make_shared<std::string>(pJson["newspaper_id"].asString());
+        }
+    }
+
+    if(pJson.isMember("total_pages"))
+    {
+        dirtyFlag_[9] = true;
+        if(!pJson["total_pages"].isNull())
+        {
+            totalPages_=std::make_shared<int32_t>((int32_t)pJson["total_pages"].asInt64());
+        }
+    }
+
+    if(pJson.isMember("ocr_pages_completed"))
+    {
+        dirtyFlag_[10] = true;
+        if(!pJson["ocr_pages_completed"].isNull())
+        {
+            ocrPagesCompleted_=std::make_shared<int32_t>((int32_t)pJson["ocr_pages_completed"].asInt64());
+        }
+    }
+
+    if(pJson.isMember("rag_chunks_queued"))
+    {
+        dirtyFlag_[11] = true;
+        if(!pJson["rag_chunks_queued"].isNull())
+        {
+            ragChunksQueued_=std::make_shared<int32_t>((int32_t)pJson["rag_chunks_queued"].asInt64());
+        }
+    }
+
+    if(pJson.isMember("file_size_bytes"))
+    {
+        dirtyFlag_[12] = true;
+        if(!pJson["file_size_bytes"].isNull())
+        {
+            fileSizeBytes_=std::make_shared<int64_t>((int64_t)pJson["file_size_bytes"].asInt64());
+        }
+    }
+
+    if(pJson.isMember("processing_duration_ms"))
+    {
+        dirtyFlag_[13] = true;
+        if(!pJson["processing_duration_ms"].isNull())
+        {
+            processingDurationMs_=std::make_shared<int32_t>((int32_t)pJson["processing_duration_ms"].asInt64());
+        }
+    }
+
+    if(pJson.isMember("error_message"))
+    {
+        dirtyFlag_[14] = true;
+        if(!pJson["error_message"].isNull())
+        {
+            errorMessage_=std::make_shared<std::string>(pJson["error_message"].asString());
+        }
+    }
+
 }
 
 const std::string &IngestionJobs::getValueOfId() const noexcept
@@ -851,9 +1387,186 @@ void IngestionJobs::setUpdatedAtToNull() noexcept
     dirtyFlag_[6] = true;
 }
 
+const std::string &IngestionJobs::getValueOfPublicationId() const noexcept
+{
+    static const std::string defaultValue = std::string();
+    if(publicationId_)
+        return *publicationId_;
+    return defaultValue;
+}
+const std::shared_ptr<std::string> &IngestionJobs::getPublicationId() const noexcept
+{
+    return publicationId_;
+}
+void IngestionJobs::setPublicationId(const std::string &pPublicationId) noexcept
+{
+    publicationId_ = std::make_shared<std::string>(pPublicationId);
+    dirtyFlag_[7] = true;
+}
+void IngestionJobs::setPublicationId(std::string &&pPublicationId) noexcept
+{
+    publicationId_ = std::make_shared<std::string>(std::move(pPublicationId));
+    dirtyFlag_[7] = true;
+}
+void IngestionJobs::setPublicationIdToNull() noexcept
+{
+    publicationId_.reset();
+    dirtyFlag_[7] = true;
+}
+
+const std::string &IngestionJobs::getValueOfNewspaperId() const noexcept
+{
+    static const std::string defaultValue = std::string();
+    if(newspaperId_)
+        return *newspaperId_;
+    return defaultValue;
+}
+const std::shared_ptr<std::string> &IngestionJobs::getNewspaperId() const noexcept
+{
+    return newspaperId_;
+}
+void IngestionJobs::setNewspaperId(const std::string &pNewspaperId) noexcept
+{
+    newspaperId_ = std::make_shared<std::string>(pNewspaperId);
+    dirtyFlag_[8] = true;
+}
+void IngestionJobs::setNewspaperId(std::string &&pNewspaperId) noexcept
+{
+    newspaperId_ = std::make_shared<std::string>(std::move(pNewspaperId));
+    dirtyFlag_[8] = true;
+}
+void IngestionJobs::setNewspaperIdToNull() noexcept
+{
+    newspaperId_.reset();
+    dirtyFlag_[8] = true;
+}
+
+const int32_t &IngestionJobs::getValueOfTotalPages() const noexcept
+{
+    static const int32_t defaultValue = int32_t();
+    if(totalPages_)
+        return *totalPages_;
+    return defaultValue;
+}
+const std::shared_ptr<int32_t> &IngestionJobs::getTotalPages() const noexcept
+{
+    return totalPages_;
+}
+void IngestionJobs::setTotalPages(const int32_t &pTotalPages) noexcept
+{
+    totalPages_ = std::make_shared<int32_t>(pTotalPages);
+    dirtyFlag_[9] = true;
+}
+
+const int32_t &IngestionJobs::getValueOfOcrPagesCompleted() const noexcept
+{
+    static const int32_t defaultValue = int32_t();
+    if(ocrPagesCompleted_)
+        return *ocrPagesCompleted_;
+    return defaultValue;
+}
+const std::shared_ptr<int32_t> &IngestionJobs::getOcrPagesCompleted() const noexcept
+{
+    return ocrPagesCompleted_;
+}
+void IngestionJobs::setOcrPagesCompleted(const int32_t &pOcrPagesCompleted) noexcept
+{
+    ocrPagesCompleted_ = std::make_shared<int32_t>(pOcrPagesCompleted);
+    dirtyFlag_[10] = true;
+}
+
+const int32_t &IngestionJobs::getValueOfRagChunksQueued() const noexcept
+{
+    static const int32_t defaultValue = int32_t();
+    if(ragChunksQueued_)
+        return *ragChunksQueued_;
+    return defaultValue;
+}
+const std::shared_ptr<int32_t> &IngestionJobs::getRagChunksQueued() const noexcept
+{
+    return ragChunksQueued_;
+}
+void IngestionJobs::setRagChunksQueued(const int32_t &pRagChunksQueued) noexcept
+{
+    ragChunksQueued_ = std::make_shared<int32_t>(pRagChunksQueued);
+    dirtyFlag_[11] = true;
+}
+
+const int64_t &IngestionJobs::getValueOfFileSizeBytes() const noexcept
+{
+    static const int64_t defaultValue = int64_t();
+    if(fileSizeBytes_)
+        return *fileSizeBytes_;
+    return defaultValue;
+}
+const std::shared_ptr<int64_t> &IngestionJobs::getFileSizeBytes() const noexcept
+{
+    return fileSizeBytes_;
+}
+void IngestionJobs::setFileSizeBytes(const int64_t &pFileSizeBytes) noexcept
+{
+    fileSizeBytes_ = std::make_shared<int64_t>(pFileSizeBytes);
+    dirtyFlag_[12] = true;
+}
+void IngestionJobs::setFileSizeBytesToNull() noexcept
+{
+    fileSizeBytes_.reset();
+    dirtyFlag_[12] = true;
+}
+
+const int32_t &IngestionJobs::getValueOfProcessingDurationMs() const noexcept
+{
+    static const int32_t defaultValue = int32_t();
+    if(processingDurationMs_)
+        return *processingDurationMs_;
+    return defaultValue;
+}
+const std::shared_ptr<int32_t> &IngestionJobs::getProcessingDurationMs() const noexcept
+{
+    return processingDurationMs_;
+}
+void IngestionJobs::setProcessingDurationMs(const int32_t &pProcessingDurationMs) noexcept
+{
+    processingDurationMs_ = std::make_shared<int32_t>(pProcessingDurationMs);
+    dirtyFlag_[13] = true;
+}
+void IngestionJobs::setProcessingDurationMsToNull() noexcept
+{
+    processingDurationMs_.reset();
+    dirtyFlag_[13] = true;
+}
+
+const std::string &IngestionJobs::getValueOfErrorMessage() const noexcept
+{
+    static const std::string defaultValue = std::string();
+    if(errorMessage_)
+        return *errorMessage_;
+    return defaultValue;
+}
+const std::shared_ptr<std::string> &IngestionJobs::getErrorMessage() const noexcept
+{
+    return errorMessage_;
+}
+void IngestionJobs::setErrorMessage(const std::string &pErrorMessage) noexcept
+{
+    errorMessage_ = std::make_shared<std::string>(pErrorMessage);
+    dirtyFlag_[14] = true;
+}
+void IngestionJobs::setErrorMessage(std::string &&pErrorMessage) noexcept
+{
+    errorMessage_ = std::make_shared<std::string>(std::move(pErrorMessage));
+    dirtyFlag_[14] = true;
+}
+void IngestionJobs::setErrorMessageToNull() noexcept
+{
+    errorMessage_.reset();
+    dirtyFlag_[14] = true;
+}
+
 void IngestionJobs::updateId(const uint64_t id)
 {
 }
+
 
 const std::vector<std::string> &IngestionJobs::insertColumns() noexcept
 {
@@ -864,13 +1577,23 @@ const std::vector<std::string> &IngestionJobs::insertColumns() noexcept
         "percentage_completion",
         "status",
         "created_at",
-        "updated_at"
+        "updated_at",
+        "publication_id",
+        "newspaper_id",
+        "total_pages",
+        "ocr_pages_completed",
+        "rag_chunks_queued",
+        "file_size_bytes",
+        "processing_duration_ms",
+        "error_message"
+
     };
     return inCols;
 }
 
 void IngestionJobs::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -882,6 +1605,7 @@ void IngestionJobs::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getPublicationDate())
@@ -893,6 +1617,7 @@ void IngestionJobs::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getIngestedBy())
@@ -904,6 +1629,7 @@ void IngestionJobs::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getPercentageCompletion())
@@ -915,6 +1641,7 @@ void IngestionJobs::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getStatus())
@@ -926,6 +1653,7 @@ void IngestionJobs::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getCreatedAt())
@@ -937,6 +1665,7 @@ void IngestionJobs::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getUpdatedAt())
@@ -948,44 +1677,190 @@ void IngestionJobs::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
+    if(dirtyFlag_[7])
+    {
+        if(getPublicationId())
+        {
+            binder << getValueOfPublicationId();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+
+    if(dirtyFlag_[8])
+    {
+        if(getNewspaperId())
+        {
+            binder << getValueOfNewspaperId();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+
+    if(dirtyFlag_[9])
+    {
+        if(getTotalPages())
+        {
+            binder << getValueOfTotalPages();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+
+    if(dirtyFlag_[10])
+    {
+        if(getOcrPagesCompleted())
+        {
+            binder << getValueOfOcrPagesCompleted();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+
+    if(dirtyFlag_[11])
+    {
+        if(getRagChunksQueued())
+        {
+            binder << getValueOfRagChunksQueued();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+
+    if(dirtyFlag_[12])
+    {
+        if(getFileSizeBytes())
+        {
+            binder << getValueOfFileSizeBytes();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+
+    if(dirtyFlag_[13])
+    {
+        if(getProcessingDurationMs())
+        {
+            binder << getValueOfProcessingDurationMs();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+
+    if(dirtyFlag_[14])
+    {
+        if(getErrorMessage())
+        {
+            binder << getValueOfErrorMessage();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+
 }
 
 const std::vector<std::string> IngestionJobs::updateColumns() const
 {
     std::vector<std::string> ret;
+
     if(dirtyFlag_[0])
     {
         ret.push_back(getColumnName(0));
     }
+
     if(dirtyFlag_[1])
     {
         ret.push_back(getColumnName(1));
     }
+
     if(dirtyFlag_[2])
     {
         ret.push_back(getColumnName(2));
     }
+
     if(dirtyFlag_[3])
     {
         ret.push_back(getColumnName(3));
     }
+
     if(dirtyFlag_[4])
     {
         ret.push_back(getColumnName(4));
     }
+
     if(dirtyFlag_[5])
     {
         ret.push_back(getColumnName(5));
     }
+
     if(dirtyFlag_[6])
     {
         ret.push_back(getColumnName(6));
     }
+
+    if(dirtyFlag_[7])
+    {
+        ret.push_back(getColumnName(7));
+    }
+
+    if(dirtyFlag_[8])
+    {
+        ret.push_back(getColumnName(8));
+    }
+
+    if(dirtyFlag_[9])
+    {
+        ret.push_back(getColumnName(9));
+    }
+
+    if(dirtyFlag_[10])
+    {
+        ret.push_back(getColumnName(10));
+    }
+
+    if(dirtyFlag_[11])
+    {
+        ret.push_back(getColumnName(11));
+    }
+
+    if(dirtyFlag_[12])
+    {
+        ret.push_back(getColumnName(12));
+    }
+
+    if(dirtyFlag_[13])
+    {
+        ret.push_back(getColumnName(13));
+    }
+
+    if(dirtyFlag_[14])
+    {
+        ret.push_back(getColumnName(14));
+    }
+
     return ret;
 }
 
 void IngestionJobs::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -997,6 +1872,7 @@ void IngestionJobs::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getPublicationDate())
@@ -1008,6 +1884,7 @@ void IngestionJobs::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getIngestedBy())
@@ -1019,6 +1896,7 @@ void IngestionJobs::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getPercentageCompletion())
@@ -1030,6 +1908,7 @@ void IngestionJobs::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getStatus())
@@ -1041,6 +1920,7 @@ void IngestionJobs::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getCreatedAt())
@@ -1052,6 +1932,7 @@ void IngestionJobs::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getUpdatedAt())
@@ -1063,66 +1944,273 @@ void IngestionJobs::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
+    if(dirtyFlag_[7])
+    {
+        if(getPublicationId())
+        {
+            binder << getValueOfPublicationId();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+
+    if(dirtyFlag_[8])
+    {
+        if(getNewspaperId())
+        {
+            binder << getValueOfNewspaperId();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+
+    if(dirtyFlag_[9])
+    {
+        if(getTotalPages())
+        {
+            binder << getValueOfTotalPages();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+
+    if(dirtyFlag_[10])
+    {
+        if(getOcrPagesCompleted())
+        {
+            binder << getValueOfOcrPagesCompleted();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+
+    if(dirtyFlag_[11])
+    {
+        if(getRagChunksQueued())
+        {
+            binder << getValueOfRagChunksQueued();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+
+    if(dirtyFlag_[12])
+    {
+        if(getFileSizeBytes())
+        {
+            binder << getValueOfFileSizeBytes();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+
+    if(dirtyFlag_[13])
+    {
+        if(getProcessingDurationMs())
+        {
+            binder << getValueOfProcessingDurationMs();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+
+    if(dirtyFlag_[14])
+    {
+        if(getErrorMessage())
+        {
+            binder << getValueOfErrorMessage();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+
 }
 Json::Value IngestionJobs::toJson() const
 {
     Json::Value ret;
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getPublicationDate())
     {
+
         ret["publication_date"]=getPublicationDate()->toDbStringLocal();
+
     }
     else
     {
         ret["publication_date"]=Json::Value();
     }
+
     if(getIngestedBy())
     {
+
         ret["ingested_by"]=getValueOfIngestedBy();
+
     }
     else
     {
         ret["ingested_by"]=Json::Value();
     }
+
     if(getPercentageCompletion())
     {
+
         ret["percentage_completion"]=getValueOfPercentageCompletion();
+
     }
     else
     {
         ret["percentage_completion"]=Json::Value();
     }
+
     if(getStatus())
     {
+
         ret["status"]=getValueOfStatus();
+
     }
     else
     {
         ret["status"]=Json::Value();
     }
+
     if(getCreatedAt())
     {
+
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["created_at"]=Json::Value();
     }
+
     if(getUpdatedAt())
     {
+
         ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["updated_at"]=Json::Value();
     }
+
+    if(getPublicationId())
+    {
+
+        ret["publication_id"]=getValueOfPublicationId();
+
+    }
+    else
+    {
+        ret["publication_id"]=Json::Value();
+    }
+
+    if(getNewspaperId())
+    {
+
+        ret["newspaper_id"]=getValueOfNewspaperId();
+
+    }
+    else
+    {
+        ret["newspaper_id"]=Json::Value();
+    }
+
+    if(getTotalPages())
+    {
+
+        ret["total_pages"]=getValueOfTotalPages();
+
+    }
+    else
+    {
+        ret["total_pages"]=Json::Value();
+    }
+
+    if(getOcrPagesCompleted())
+    {
+
+        ret["ocr_pages_completed"]=getValueOfOcrPagesCompleted();
+
+    }
+    else
+    {
+        ret["ocr_pages_completed"]=Json::Value();
+    }
+
+    if(getRagChunksQueued())
+    {
+
+        ret["rag_chunks_queued"]=getValueOfRagChunksQueued();
+
+    }
+    else
+    {
+        ret["rag_chunks_queued"]=Json::Value();
+    }
+
+    if(getFileSizeBytes())
+    {
+
+        ret["file_size_bytes"]=(Json::Int64)getValueOfFileSizeBytes();
+
+    }
+    else
+    {
+        ret["file_size_bytes"]=Json::Value();
+    }
+
+    if(getProcessingDurationMs())
+    {
+
+        ret["processing_duration_ms"]=getValueOfProcessingDurationMs();
+
+    }
+    else
+    {
+        ret["processing_duration_ms"]=Json::Value();
+    }
+
+    if(getErrorMessage())
+    {
+
+        ret["error_message"]=getValueOfErrorMessage();
+
+    }
+    else
+    {
+        ret["error_message"]=Json::Value();
+    }
+
     return ret;
 }
 
@@ -1135,206 +2223,509 @@ Json::Value IngestionJobs::toMasqueradedJson(
     const std::vector<std::string> &pMasqueradingVector) const
 {
     Json::Value ret;
-    if(pMasqueradingVector.size() == 7)
+    if(pMasqueradingVector.size() == 15)
     {
+
         if(!pMasqueradingVector[0].empty())
         {
             if(getId())
             {
+
                 ret[pMasqueradingVector[0]]=getValueOfId();
+
             }
             else
             {
                 ret[pMasqueradingVector[0]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[1].empty())
         {
             if(getPublicationDate())
             {
+
                 ret[pMasqueradingVector[1]]=getPublicationDate()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[1]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[2].empty())
         {
             if(getIngestedBy())
             {
+
                 ret[pMasqueradingVector[2]]=getValueOfIngestedBy();
+
             }
             else
             {
                 ret[pMasqueradingVector[2]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[3].empty())
         {
             if(getPercentageCompletion())
             {
+
                 ret[pMasqueradingVector[3]]=getValueOfPercentageCompletion();
+
             }
             else
             {
                 ret[pMasqueradingVector[3]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[4].empty())
         {
             if(getStatus())
             {
+
                 ret[pMasqueradingVector[4]]=getValueOfStatus();
+
             }
             else
             {
                 ret[pMasqueradingVector[4]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[5].empty())
         {
             if(getCreatedAt())
             {
+
                 ret[pMasqueradingVector[5]]=getCreatedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[5]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[6].empty())
         {
             if(getUpdatedAt())
             {
+
                 ret[pMasqueradingVector[6]]=getUpdatedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[6]]=Json::Value();
             }
         }
+
+        if(!pMasqueradingVector[7].empty())
+        {
+            if(getPublicationId())
+            {
+
+                ret[pMasqueradingVector[7]]=getValueOfPublicationId();
+
+            }
+            else
+            {
+                ret[pMasqueradingVector[7]]=Json::Value();
+            }
+        }
+
+        if(!pMasqueradingVector[8].empty())
+        {
+            if(getNewspaperId())
+            {
+
+                ret[pMasqueradingVector[8]]=getValueOfNewspaperId();
+
+            }
+            else
+            {
+                ret[pMasqueradingVector[8]]=Json::Value();
+            }
+        }
+
+        if(!pMasqueradingVector[9].empty())
+        {
+            if(getTotalPages())
+            {
+
+                ret[pMasqueradingVector[9]]=getValueOfTotalPages();
+
+            }
+            else
+            {
+                ret[pMasqueradingVector[9]]=Json::Value();
+            }
+        }
+
+        if(!pMasqueradingVector[10].empty())
+        {
+            if(getOcrPagesCompleted())
+            {
+
+                ret[pMasqueradingVector[10]]=getValueOfOcrPagesCompleted();
+
+            }
+            else
+            {
+                ret[pMasqueradingVector[10]]=Json::Value();
+            }
+        }
+
+        if(!pMasqueradingVector[11].empty())
+        {
+            if(getRagChunksQueued())
+            {
+
+                ret[pMasqueradingVector[11]]=getValueOfRagChunksQueued();
+
+            }
+            else
+            {
+                ret[pMasqueradingVector[11]]=Json::Value();
+            }
+        }
+
+        if(!pMasqueradingVector[12].empty())
+        {
+            if(getFileSizeBytes())
+            {
+
+                ret[pMasqueradingVector[12]]=(Json::Int64)getValueOfFileSizeBytes();
+
+            }
+            else
+            {
+                ret[pMasqueradingVector[12]]=Json::Value();
+            }
+        }
+
+        if(!pMasqueradingVector[13].empty())
+        {
+            if(getProcessingDurationMs())
+            {
+
+                ret[pMasqueradingVector[13]]=getValueOfProcessingDurationMs();
+
+            }
+            else
+            {
+                ret[pMasqueradingVector[13]]=Json::Value();
+            }
+        }
+
+        if(!pMasqueradingVector[14].empty())
+        {
+            if(getErrorMessage())
+            {
+
+                ret[pMasqueradingVector[14]]=getValueOfErrorMessage();
+
+            }
+            else
+            {
+                ret[pMasqueradingVector[14]]=Json::Value();
+            }
+        }
+
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getPublicationDate())
     {
+
         ret["publication_date"]=getPublicationDate()->toDbStringLocal();
+
     }
     else
     {
         ret["publication_date"]=Json::Value();
     }
+
     if(getIngestedBy())
     {
+
         ret["ingested_by"]=getValueOfIngestedBy();
+
     }
     else
     {
         ret["ingested_by"]=Json::Value();
     }
+
     if(getPercentageCompletion())
     {
+
         ret["percentage_completion"]=getValueOfPercentageCompletion();
+
     }
     else
     {
         ret["percentage_completion"]=Json::Value();
     }
+
     if(getStatus())
     {
+
         ret["status"]=getValueOfStatus();
+
     }
     else
     {
         ret["status"]=Json::Value();
     }
+
     if(getCreatedAt())
     {
+
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["created_at"]=Json::Value();
     }
+
     if(getUpdatedAt())
     {
+
         ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["updated_at"]=Json::Value();
     }
+
+    if(getPublicationId())
+    {
+
+        ret["publication_id"]=getValueOfPublicationId();
+
+    }
+    else
+    {
+        ret["publication_id"]=Json::Value();
+    }
+
+    if(getNewspaperId())
+    {
+
+        ret["newspaper_id"]=getValueOfNewspaperId();
+
+    }
+    else
+    {
+        ret["newspaper_id"]=Json::Value();
+    }
+
+    if(getTotalPages())
+    {
+
+        ret["total_pages"]=getValueOfTotalPages();
+
+    }
+    else
+    {
+        ret["total_pages"]=Json::Value();
+    }
+
+    if(getOcrPagesCompleted())
+    {
+
+        ret["ocr_pages_completed"]=getValueOfOcrPagesCompleted();
+
+    }
+    else
+    {
+        ret["ocr_pages_completed"]=Json::Value();
+    }
+
+    if(getRagChunksQueued())
+    {
+
+        ret["rag_chunks_queued"]=getValueOfRagChunksQueued();
+
+    }
+    else
+    {
+        ret["rag_chunks_queued"]=Json::Value();
+    }
+
+    if(getFileSizeBytes())
+    {
+
+        ret["file_size_bytes"]=(Json::Int64)getValueOfFileSizeBytes();
+
+    }
+    else
+    {
+        ret["file_size_bytes"]=Json::Value();
+    }
+
+    if(getProcessingDurationMs())
+    {
+
+        ret["processing_duration_ms"]=getValueOfProcessingDurationMs();
+
+    }
+    else
+    {
+        ret["processing_duration_ms"]=Json::Value();
+    }
+
+    if(getErrorMessage())
+    {
+
+        ret["error_message"]=getValueOfErrorMessage();
+
+    }
+    else
+    {
+        ret["error_message"]=Json::Value();
+    }
+
     return ret;
 }
 
 bool IngestionJobs::validateJsonForCreation(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, true))
             return false;
     }
+
     if(pJson.isMember("publication_date"))
     {
         if(!validJsonOfField(1, "publication_date", pJson["publication_date"], err, true))
             return false;
     }
+
     else
     {
         err="The publication_date column cannot be null";
         return false;
     }
+
     if(pJson.isMember("ingested_by"))
     {
         if(!validJsonOfField(2, "ingested_by", pJson["ingested_by"], err, true))
             return false;
     }
+
     if(pJson.isMember("percentage_completion"))
     {
         if(!validJsonOfField(3, "percentage_completion", pJson["percentage_completion"], err, true))
             return false;
     }
+
     else
     {
         err="The percentage_completion column cannot be null";
         return false;
     }
+
     if(pJson.isMember("status"))
     {
         if(!validJsonOfField(4, "status", pJson["status"], err, true))
             return false;
     }
+
     if(pJson.isMember("created_at"))
     {
         if(!validJsonOfField(5, "created_at", pJson["created_at"], err, true))
             return false;
     }
+
     if(pJson.isMember("updated_at"))
     {
         if(!validJsonOfField(6, "updated_at", pJson["updated_at"], err, true))
             return false;
     }
+
+    if(pJson.isMember("publication_id"))
+    {
+        if(!validJsonOfField(7, "publication_id", pJson["publication_id"], err, true))
+            return false;
+    }
+
+    if(pJson.isMember("newspaper_id"))
+    {
+        if(!validJsonOfField(8, "newspaper_id", pJson["newspaper_id"], err, true))
+            return false;
+    }
+
+    if(pJson.isMember("total_pages"))
+    {
+        if(!validJsonOfField(9, "total_pages", pJson["total_pages"], err, true))
+            return false;
+    }
+
+    if(pJson.isMember("ocr_pages_completed"))
+    {
+        if(!validJsonOfField(10, "ocr_pages_completed", pJson["ocr_pages_completed"], err, true))
+            return false;
+    }
+
+    if(pJson.isMember("rag_chunks_queued"))
+    {
+        if(!validJsonOfField(11, "rag_chunks_queued", pJson["rag_chunks_queued"], err, true))
+            return false;
+    }
+
+    if(pJson.isMember("file_size_bytes"))
+    {
+        if(!validJsonOfField(12, "file_size_bytes", pJson["file_size_bytes"], err, true))
+            return false;
+    }
+
+    if(pJson.isMember("processing_duration_ms"))
+    {
+        if(!validJsonOfField(13, "processing_duration_ms", pJson["processing_duration_ms"], err, true))
+            return false;
+    }
+
+    if(pJson.isMember("error_message"))
+    {
+        if(!validJsonOfField(14, "error_message", pJson["error_message"], err, true))
+            return false;
+    }
+
     return true;
 }
 bool IngestionJobs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                                                        const std::vector<std::string> &pMasqueradingVector,
                                                        std::string &err)
 {
-    if(pMasqueradingVector.size() != 7)
+    if(pMasqueradingVector.size() != 15)
     {
         err = "Bad masquerading vector";
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty())
       {
           if(pJson.isMember(pMasqueradingVector[0]))
@@ -1342,7 +2733,9 @@ bool IngestionJobs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[1].empty())
       {
           if(pJson.isMember(pMasqueradingVector[1]))
@@ -1350,12 +2743,15 @@ bool IngestionJobs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[1] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[2].empty())
       {
           if(pJson.isMember(pMasqueradingVector[2]))
@@ -1363,7 +2759,9 @@ bool IngestionJobs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[3].empty())
       {
           if(pJson.isMember(pMasqueradingVector[3]))
@@ -1371,12 +2769,15 @@ bool IngestionJobs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[3] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[4].empty())
       {
           if(pJson.isMember(pMasqueradingVector[4]))
@@ -1384,7 +2785,9 @@ bool IngestionJobs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[5].empty())
       {
           if(pJson.isMember(pMasqueradingVector[5]))
@@ -1392,7 +2795,9 @@ bool IngestionJobs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[6].empty())
       {
           if(pJson.isMember(pMasqueradingVector[6]))
@@ -1400,7 +2805,89 @@ bool IngestionJobs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, true))
                   return false;
           }
+
       }
+
+      if(!pMasqueradingVector[7].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[7]))
+          {
+              if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, true))
+                  return false;
+          }
+
+      }
+
+      if(!pMasqueradingVector[8].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[8]))
+          {
+              if(!validJsonOfField(8, pMasqueradingVector[8], pJson[pMasqueradingVector[8]], err, true))
+                  return false;
+          }
+
+      }
+
+      if(!pMasqueradingVector[9].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[9]))
+          {
+              if(!validJsonOfField(9, pMasqueradingVector[9], pJson[pMasqueradingVector[9]], err, true))
+                  return false;
+          }
+
+      }
+
+      if(!pMasqueradingVector[10].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[10]))
+          {
+              if(!validJsonOfField(10, pMasqueradingVector[10], pJson[pMasqueradingVector[10]], err, true))
+                  return false;
+          }
+
+      }
+
+      if(!pMasqueradingVector[11].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[11]))
+          {
+              if(!validJsonOfField(11, pMasqueradingVector[11], pJson[pMasqueradingVector[11]], err, true))
+                  return false;
+          }
+
+      }
+
+      if(!pMasqueradingVector[12].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[12]))
+          {
+              if(!validJsonOfField(12, pMasqueradingVector[12], pJson[pMasqueradingVector[12]], err, true))
+                  return false;
+          }
+
+      }
+
+      if(!pMasqueradingVector[13].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[13]))
+          {
+              if(!validJsonOfField(13, pMasqueradingVector[13], pJson[pMasqueradingVector[13]], err, true))
+                  return false;
+          }
+
+      }
+
+      if(!pMasqueradingVector[14].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[14]))
+          {
+              if(!validJsonOfField(14, pMasqueradingVector[14], pJson[pMasqueradingVector[14]], err, true))
+                  return false;
+          }
+
+      }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -1411,98 +2898,212 @@ bool IngestionJobs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
 }
 bool IngestionJobs::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, false))
             return false;
     }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
     if(pJson.isMember("publication_date"))
     {
         if(!validJsonOfField(1, "publication_date", pJson["publication_date"], err, false))
             return false;
     }
+
     if(pJson.isMember("ingested_by"))
     {
         if(!validJsonOfField(2, "ingested_by", pJson["ingested_by"], err, false))
             return false;
     }
+
     if(pJson.isMember("percentage_completion"))
     {
         if(!validJsonOfField(3, "percentage_completion", pJson["percentage_completion"], err, false))
             return false;
     }
+
     if(pJson.isMember("status"))
     {
         if(!validJsonOfField(4, "status", pJson["status"], err, false))
             return false;
     }
+
     if(pJson.isMember("created_at"))
     {
         if(!validJsonOfField(5, "created_at", pJson["created_at"], err, false))
             return false;
     }
+
     if(pJson.isMember("updated_at"))
     {
         if(!validJsonOfField(6, "updated_at", pJson["updated_at"], err, false))
             return false;
     }
+
+    if(pJson.isMember("publication_id"))
+    {
+        if(!validJsonOfField(7, "publication_id", pJson["publication_id"], err, false))
+            return false;
+    }
+
+    if(pJson.isMember("newspaper_id"))
+    {
+        if(!validJsonOfField(8, "newspaper_id", pJson["newspaper_id"], err, false))
+            return false;
+    }
+
+    if(pJson.isMember("total_pages"))
+    {
+        if(!validJsonOfField(9, "total_pages", pJson["total_pages"], err, false))
+            return false;
+    }
+
+    if(pJson.isMember("ocr_pages_completed"))
+    {
+        if(!validJsonOfField(10, "ocr_pages_completed", pJson["ocr_pages_completed"], err, false))
+            return false;
+    }
+
+    if(pJson.isMember("rag_chunks_queued"))
+    {
+        if(!validJsonOfField(11, "rag_chunks_queued", pJson["rag_chunks_queued"], err, false))
+            return false;
+    }
+
+    if(pJson.isMember("file_size_bytes"))
+    {
+        if(!validJsonOfField(12, "file_size_bytes", pJson["file_size_bytes"], err, false))
+            return false;
+    }
+
+    if(pJson.isMember("processing_duration_ms"))
+    {
+        if(!validJsonOfField(13, "processing_duration_ms", pJson["processing_duration_ms"], err, false))
+            return false;
+    }
+
+    if(pJson.isMember("error_message"))
+    {
+        if(!validJsonOfField(14, "error_message", pJson["error_message"], err, false))
+            return false;
+    }
+
     return true;
 }
 bool IngestionJobs::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
                                                      const std::vector<std::string> &pMasqueradingVector,
                                                      std::string &err)
 {
-    if(pMasqueradingVector.size() != 7)
+    if(pMasqueradingVector.size() != 15)
     {
         err = "Bad masquerading vector";
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
       {
           if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
               return false;
       }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
       if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
       {
           if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
       {
           if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
       {
           if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
       {
           if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
       {
           if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
       {
           if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, false))
               return false;
       }
+
+      if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
+      {
+          if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, false))
+              return false;
+      }
+
+      if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
+      {
+          if(!validJsonOfField(8, pMasqueradingVector[8], pJson[pMasqueradingVector[8]], err, false))
+              return false;
+      }
+
+      if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
+      {
+          if(!validJsonOfField(9, pMasqueradingVector[9], pJson[pMasqueradingVector[9]], err, false))
+              return false;
+      }
+
+      if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
+      {
+          if(!validJsonOfField(10, pMasqueradingVector[10], pJson[pMasqueradingVector[10]], err, false))
+              return false;
+      }
+
+      if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
+      {
+          if(!validJsonOfField(11, pMasqueradingVector[11], pJson[pMasqueradingVector[11]], err, false))
+              return false;
+      }
+
+      if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
+      {
+          if(!validJsonOfField(12, pMasqueradingVector[12], pJson[pMasqueradingVector[12]], err, false))
+              return false;
+      }
+
+      if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
+      {
+          if(!validJsonOfField(13, pMasqueradingVector[13], pJson[pMasqueradingVector[13]], err, false))
+              return false;
+      }
+
+      if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
+      {
+          if(!validJsonOfField(14, pMasqueradingVector[14], pJson[pMasqueradingVector[14]], err, false))
+              return false;
+      }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -1519,106 +3120,347 @@ bool IngestionJobs::validJsonOfField(size_t index,
 {
     switch(index)
     {
+
         case 0:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 1:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 2:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 150)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 150)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 150)";
                 return false;
             }
+
             break;
+
         case 3:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 4:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 30)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 30)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 30)";
                 return false;
             }
+
             break;
+
         case 5:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 6:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
+        case 7:
+
+            if(pJson.isNull())
+            {
+                return true;
+            }
+
+            if(!pJson.isString())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+
+            break;
+
+        case 8:
+
+            if(pJson.isNull())
+            {
+                return true;
+            }
+
+            if(!pJson.isString())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+
+            break;
+
+        case 9:
+
+            if(pJson.isNull())
+            {
+                err="The " + fieldName + " column cannot be null";
+                return false;
+            }
+
+            if(!pJson.isInt())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+
+            break;
+
+        case 10:
+
+            if(pJson.isNull())
+            {
+                err="The " + fieldName + " column cannot be null";
+                return false;
+            }
+
+            if(!pJson.isInt())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+
+            break;
+
+        case 11:
+
+            if(pJson.isNull())
+            {
+                err="The " + fieldName + " column cannot be null";
+                return false;
+            }
+
+            if(!pJson.isInt())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+
+            break;
+
+        case 12:
+
+            if(pJson.isNull())
+            {
+                return true;
+            }
+
+            if(!pJson.isInt64())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+
+            break;
+
+        case 13:
+
+            if(pJson.isNull())
+            {
+                return true;
+            }
+
+            if(!pJson.isInt())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+
+            break;
+
+        case 14:
+
+            if(pJson.isNull())
+            {
+                return true;
+            }
+
+            if(!pJson.isString())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+
+            break;
+
         default:
             err="Internal error in the server";
             return false;
     }
     return true;
 }
+
+Newspapers IngestionJobs::getNewspapers(const DbClientPtr &clientPtr) const {
+    static const std::string sql = "select * from newspapers where id = $1";
+    Result r(nullptr);
+    {
+        auto binder = *clientPtr << sql;
+        binder << *newspaperId_ << Mode::Blocking >>
+            [&r](const Result &result) { r = result; };
+        binder.exec();
+    }
+    if (r.size() == 0)
+    {
+        throw UnexpectedRows("0 rows found");
+    }
+    else if (r.size() > 1)
+    {
+        throw UnexpectedRows("Found more than one row");
+    }
+    return Newspapers(r[0]);
+}
+
+void IngestionJobs::getNewspapers(const DbClientPtr &clientPtr,
+                                  const std::function<void(Newspapers)> &rcb,
+                                  const ExceptionCallback &ecb) const
+{
+    static const std::string sql = "select * from newspapers where id = $1";
+    *clientPtr << sql
+               << *newspaperId_
+               >> [rcb = std::move(rcb), ecb](const Result &r){
+                    if (r.size() == 0)
+                    {
+                        ecb(UnexpectedRows("0 rows found"));
+                    }
+                    else if (r.size() > 1)
+                    {
+                        ecb(UnexpectedRows("Found more than one row"));
+                    }
+                    else
+                    {
+                        rcb(Newspapers(r[0]));
+                    }
+               }
+               >> ecb;
+}
+
+Publications IngestionJobs::getPublications(const DbClientPtr &clientPtr) const {
+    static const std::string sql = "select * from publications where id = $1";
+    Result r(nullptr);
+    {
+        auto binder = *clientPtr << sql;
+        binder << *publicationId_ << Mode::Blocking >>
+            [&r](const Result &result) { r = result; };
+        binder.exec();
+    }
+    if (r.size() == 0)
+    {
+        throw UnexpectedRows("0 rows found");
+    }
+    else if (r.size() > 1)
+    {
+        throw UnexpectedRows("Found more than one row");
+    }
+    return Publications(r[0]);
+}
+
+void IngestionJobs::getPublications(const DbClientPtr &clientPtr,
+                                    const std::function<void(Publications)> &rcb,
+                                    const ExceptionCallback &ecb) const
+{
+    static const std::string sql = "select * from publications where id = $1";
+    *clientPtr << sql
+               << *publicationId_
+               >> [rcb = std::move(rcb), ecb](const Result &r){
+                    if (r.size() == 0)
+                    {
+                        ecb(UnexpectedRows("0 rows found"));
+                    }
+                    else if (r.size() > 1)
+                    {
+                        ecb(UnexpectedRows("Found more than one row"));
+                    }
+                    else
+                    {
+                        rcb(Publications(r[0]));
+                    }
+               }
+               >> ecb;
+}
+

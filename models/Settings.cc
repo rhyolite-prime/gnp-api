@@ -1,3 +1,4 @@
+
 /**
  *
  *  Settings.cc
@@ -6,21 +7,36 @@
  */
 
 #include "Settings.h"
+
 #include <drogon/utils/Utilities.h>
+
 #include <string>
+
 
 using namespace drogon;
 using namespace drogon::orm;
 using namespace drogon_model::Gnp;
 
+
+
 const std::string Settings::Cols::_id = "\"id\"";
+
 const std::string Settings::Cols::_business_name = "\"business_name\"";
+
 const std::string Settings::Cols::_subscription_renewal_reminder_days_before = "\"subscription_renewal_reminder_days_before\"";
+
 const std::string Settings::Cols::_require_two_factor_authentication = "\"require_two_factor_authentication\"";
+
 const std::string Settings::Cols::_session_persistence_in_hours = "\"session_persistence_in_hours\"";
+
 const std::string Settings::Cols::_updated_at = "\"updated_at\"";
+
+
 const std::string Settings::primaryKeyName = "id";
+
+
 const bool Settings::hasPrimaryKey = true;
+
 const std::string Settings::tableName = "\"settings\"";
 
 const std::vector<typename Settings::MetaData> Settings::metaData_={
@@ -30,6 +46,7 @@ const std::vector<typename Settings::MetaData> Settings::metaData_={
 {"require_two_factor_authentication","bool","boolean",1,0,0,1},
 {"session_persistence_in_hours","int32_t","integer",4,0,0,0},
 {"updated_at","::trantor::Date","timestamp without time zone",0,0,0,0}
+
 };
 const std::string &Settings::getColumnName(size_t index) noexcept(false)
 {
@@ -40,31 +57,48 @@ Settings::Settings(const Row &r, const ssize_t indexOffset) noexcept
 {
     if(indexOffset < 0)
     {
+
         if(!r["id"].isNull())
         {
+
             id_=std::make_shared<std::string>(r["id"].as<std::string>());
+
         }
+
         if(!r["business_name"].isNull())
         {
+
             businessName_=std::make_shared<std::string>(r["business_name"].as<std::string>());
+
         }
+
         if(!r["subscription_renewal_reminder_days_before"].isNull())
         {
+
             subscriptionRenewalReminderDaysBefore_=std::make_shared<int32_t>(r["subscription_renewal_reminder_days_before"].as<int32_t>());
+
         }
+
         if(!r["require_two_factor_authentication"].isNull())
         {
+
             requireTwoFactorAuthentication_=std::make_shared<bool>(r["require_two_factor_authentication"].as<bool>());
+
         }
+
         if(!r["session_persistence_in_hours"].isNull())
         {
+
             sessionPersistenceInHours_=std::make_shared<int32_t>(r["session_persistence_in_hours"].as<int32_t>());
+
         }
+
         if(!r["updated_at"].isNull())
         {
             auto timeStr = r["updated_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -82,6 +116,7 @@ Settings::Settings(const Row &r, const ssize_t indexOffset) noexcept
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
     }
     else
     {
@@ -92,37 +127,54 @@ Settings::Settings(const Row &r, const ssize_t indexOffset) noexcept
             return;
         }
         size_t index;
+
         index = offset + 0;
         if(!r[index].isNull())
         {
+
             id_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 1;
         if(!r[index].isNull())
         {
+
             businessName_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 2;
         if(!r[index].isNull())
         {
+
             subscriptionRenewalReminderDaysBefore_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 3;
         if(!r[index].isNull())
         {
+
             requireTwoFactorAuthentication_=std::make_shared<bool>(r[index].as<bool>());
+
         }
+
         index = offset + 4;
         if(!r[index].isNull())
         {
+
             sessionPersistenceInHours_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 5;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -140,6 +192,7 @@ Settings::Settings(const Row &r, const ssize_t indexOffset) noexcept
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
     }
 
 }
@@ -151,6 +204,7 @@ Settings::Settings(const Json::Value &pJson, const std::vector<std::string> &pMa
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         dirtyFlag_[0] = true;
@@ -159,6 +213,7 @@ Settings::Settings(const Json::Value &pJson, const std::vector<std::string> &pMa
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -167,6 +222,7 @@ Settings::Settings(const Json::Value &pJson, const std::vector<std::string> &pMa
             businessName_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -175,6 +231,7 @@ Settings::Settings(const Json::Value &pJson, const std::vector<std::string> &pMa
             subscriptionRenewalReminderDaysBefore_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[2]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -183,6 +240,7 @@ Settings::Settings(const Json::Value &pJson, const std::vector<std::string> &pMa
             requireTwoFactorAuthentication_=std::make_shared<bool>(pJson[pMasqueradingVector[3]].asBool());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -191,6 +249,7 @@ Settings::Settings(const Json::Value &pJson, const std::vector<std::string> &pMa
             sessionPersistenceInHours_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[4]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -199,6 +258,7 @@ Settings::Settings(const Json::Value &pJson, const std::vector<std::string> &pMa
             auto timeStr = pJson[pMasqueradingVector[5]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -217,10 +277,12 @@ Settings::Settings(const Json::Value &pJson, const std::vector<std::string> &pMa
             }
         }
     }
+
 }
 
 Settings::Settings(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         dirtyFlag_[0]=true;
@@ -229,6 +291,7 @@ Settings::Settings(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("business_name"))
     {
         dirtyFlag_[1]=true;
@@ -237,6 +300,7 @@ Settings::Settings(const Json::Value &pJson) noexcept(false)
             businessName_=std::make_shared<std::string>(pJson["business_name"].asString());
         }
     }
+
     if(pJson.isMember("subscription_renewal_reminder_days_before"))
     {
         dirtyFlag_[2]=true;
@@ -245,6 +309,7 @@ Settings::Settings(const Json::Value &pJson) noexcept(false)
             subscriptionRenewalReminderDaysBefore_=std::make_shared<int32_t>((int32_t)pJson["subscription_renewal_reminder_days_before"].asInt64());
         }
     }
+
     if(pJson.isMember("require_two_factor_authentication"))
     {
         dirtyFlag_[3]=true;
@@ -253,6 +318,7 @@ Settings::Settings(const Json::Value &pJson) noexcept(false)
             requireTwoFactorAuthentication_=std::make_shared<bool>(pJson["require_two_factor_authentication"].asBool());
         }
     }
+
     if(pJson.isMember("session_persistence_in_hours"))
     {
         dirtyFlag_[4]=true;
@@ -261,6 +327,7 @@ Settings::Settings(const Json::Value &pJson) noexcept(false)
             sessionPersistenceInHours_=std::make_shared<int32_t>((int32_t)pJson["session_persistence_in_hours"].asInt64());
         }
     }
+
     if(pJson.isMember("updated_at"))
     {
         dirtyFlag_[5]=true;
@@ -269,6 +336,7 @@ Settings::Settings(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["updated_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -287,6 +355,7 @@ Settings::Settings(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
 }
 
 void Settings::updateByMasqueradedJson(const Json::Value &pJson,
@@ -297,6 +366,7 @@ void Settings::updateByMasqueradedJson(const Json::Value &pJson,
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         if(!pJson[pMasqueradingVector[0]].isNull())
@@ -304,6 +374,7 @@ void Settings::updateByMasqueradedJson(const Json::Value &pJson,
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -312,6 +383,7 @@ void Settings::updateByMasqueradedJson(const Json::Value &pJson,
             businessName_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -320,6 +392,7 @@ void Settings::updateByMasqueradedJson(const Json::Value &pJson,
             subscriptionRenewalReminderDaysBefore_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[2]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -328,6 +401,7 @@ void Settings::updateByMasqueradedJson(const Json::Value &pJson,
             requireTwoFactorAuthentication_=std::make_shared<bool>(pJson[pMasqueradingVector[3]].asBool());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -336,6 +410,7 @@ void Settings::updateByMasqueradedJson(const Json::Value &pJson,
             sessionPersistenceInHours_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[4]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -344,6 +419,7 @@ void Settings::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[5]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -362,10 +438,12 @@ void Settings::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
 }
 
 void Settings::updateByJson(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         if(!pJson["id"].isNull())
@@ -373,6 +451,7 @@ void Settings::updateByJson(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("business_name"))
     {
         dirtyFlag_[1] = true;
@@ -381,6 +460,7 @@ void Settings::updateByJson(const Json::Value &pJson) noexcept(false)
             businessName_=std::make_shared<std::string>(pJson["business_name"].asString());
         }
     }
+
     if(pJson.isMember("subscription_renewal_reminder_days_before"))
     {
         dirtyFlag_[2] = true;
@@ -389,6 +469,7 @@ void Settings::updateByJson(const Json::Value &pJson) noexcept(false)
             subscriptionRenewalReminderDaysBefore_=std::make_shared<int32_t>((int32_t)pJson["subscription_renewal_reminder_days_before"].asInt64());
         }
     }
+
     if(pJson.isMember("require_two_factor_authentication"))
     {
         dirtyFlag_[3] = true;
@@ -397,6 +478,7 @@ void Settings::updateByJson(const Json::Value &pJson) noexcept(false)
             requireTwoFactorAuthentication_=std::make_shared<bool>(pJson["require_two_factor_authentication"].asBool());
         }
     }
+
     if(pJson.isMember("session_persistence_in_hours"))
     {
         dirtyFlag_[4] = true;
@@ -405,6 +487,7 @@ void Settings::updateByJson(const Json::Value &pJson) noexcept(false)
             sessionPersistenceInHours_=std::make_shared<int32_t>((int32_t)pJson["session_persistence_in_hours"].asInt64());
         }
     }
+
     if(pJson.isMember("updated_at"))
     {
         dirtyFlag_[5] = true;
@@ -413,6 +496,7 @@ void Settings::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["updated_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -431,6 +515,7 @@ void Settings::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
 }
 
 const std::string &Settings::getValueOfId() const noexcept
@@ -569,6 +654,7 @@ void Settings::updateId(const uint64_t id)
 {
 }
 
+
 const std::vector<std::string> &Settings::insertColumns() noexcept
 {
     static const std::vector<std::string> inCols={
@@ -578,12 +664,14 @@ const std::vector<std::string> &Settings::insertColumns() noexcept
         "require_two_factor_authentication",
         "session_persistence_in_hours",
         "updated_at"
+
     };
     return inCols;
 }
 
 void Settings::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -595,6 +683,7 @@ void Settings::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getBusinessName())
@@ -606,6 +695,7 @@ void Settings::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getSubscriptionRenewalReminderDaysBefore())
@@ -617,6 +707,7 @@ void Settings::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getRequireTwoFactorAuthentication())
@@ -628,6 +719,7 @@ void Settings::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getSessionPersistenceInHours())
@@ -639,6 +731,7 @@ void Settings::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getUpdatedAt())
@@ -650,40 +743,49 @@ void Settings::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
 }
 
 const std::vector<std::string> Settings::updateColumns() const
 {
     std::vector<std::string> ret;
+
     if(dirtyFlag_[0])
     {
         ret.push_back(getColumnName(0));
     }
+
     if(dirtyFlag_[1])
     {
         ret.push_back(getColumnName(1));
     }
+
     if(dirtyFlag_[2])
     {
         ret.push_back(getColumnName(2));
     }
+
     if(dirtyFlag_[3])
     {
         ret.push_back(getColumnName(3));
     }
+
     if(dirtyFlag_[4])
     {
         ret.push_back(getColumnName(4));
     }
+
     if(dirtyFlag_[5])
     {
         ret.push_back(getColumnName(5));
     }
+
     return ret;
 }
 
 void Settings::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -695,6 +797,7 @@ void Settings::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getBusinessName())
@@ -706,6 +809,7 @@ void Settings::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getSubscriptionRenewalReminderDaysBefore())
@@ -717,6 +821,7 @@ void Settings::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getRequireTwoFactorAuthentication())
@@ -728,6 +833,7 @@ void Settings::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getSessionPersistenceInHours())
@@ -739,6 +845,7 @@ void Settings::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getUpdatedAt())
@@ -750,58 +857,78 @@ void Settings::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
 }
 Json::Value Settings::toJson() const
 {
     Json::Value ret;
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getBusinessName())
     {
+
         ret["business_name"]=getValueOfBusinessName();
+
     }
     else
     {
         ret["business_name"]=Json::Value();
     }
+
     if(getSubscriptionRenewalReminderDaysBefore())
     {
+
         ret["subscription_renewal_reminder_days_before"]=getValueOfSubscriptionRenewalReminderDaysBefore();
+
     }
     else
     {
         ret["subscription_renewal_reminder_days_before"]=Json::Value();
     }
+
     if(getRequireTwoFactorAuthentication())
     {
+
         ret["require_two_factor_authentication"]=getValueOfRequireTwoFactorAuthentication();
+
     }
     else
     {
         ret["require_two_factor_authentication"]=Json::Value();
     }
+
     if(getSessionPersistenceInHours())
     {
+
         ret["session_persistence_in_hours"]=getValueOfSessionPersistenceInHours();
+
     }
     else
     {
         ret["session_persistence_in_hours"]=Json::Value();
     }
+
     if(getUpdatedAt())
     {
+
         ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["updated_at"]=Json::Value();
     }
+
     return ret;
 }
 
@@ -816,163 +943,209 @@ Json::Value Settings::toMasqueradedJson(
     Json::Value ret;
     if(pMasqueradingVector.size() == 6)
     {
+
         if(!pMasqueradingVector[0].empty())
         {
             if(getId())
             {
+
                 ret[pMasqueradingVector[0]]=getValueOfId();
+
             }
             else
             {
                 ret[pMasqueradingVector[0]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[1].empty())
         {
             if(getBusinessName())
             {
+
                 ret[pMasqueradingVector[1]]=getValueOfBusinessName();
+
             }
             else
             {
                 ret[pMasqueradingVector[1]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[2].empty())
         {
             if(getSubscriptionRenewalReminderDaysBefore())
             {
+
                 ret[pMasqueradingVector[2]]=getValueOfSubscriptionRenewalReminderDaysBefore();
+
             }
             else
             {
                 ret[pMasqueradingVector[2]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[3].empty())
         {
             if(getRequireTwoFactorAuthentication())
             {
+
                 ret[pMasqueradingVector[3]]=getValueOfRequireTwoFactorAuthentication();
+
             }
             else
             {
                 ret[pMasqueradingVector[3]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[4].empty())
         {
             if(getSessionPersistenceInHours())
             {
+
                 ret[pMasqueradingVector[4]]=getValueOfSessionPersistenceInHours();
+
             }
             else
             {
                 ret[pMasqueradingVector[4]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[5].empty())
         {
             if(getUpdatedAt())
             {
+
                 ret[pMasqueradingVector[5]]=getUpdatedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[5]]=Json::Value();
             }
         }
+
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getBusinessName())
     {
+
         ret["business_name"]=getValueOfBusinessName();
+
     }
     else
     {
         ret["business_name"]=Json::Value();
     }
+
     if(getSubscriptionRenewalReminderDaysBefore())
     {
+
         ret["subscription_renewal_reminder_days_before"]=getValueOfSubscriptionRenewalReminderDaysBefore();
+
     }
     else
     {
         ret["subscription_renewal_reminder_days_before"]=Json::Value();
     }
+
     if(getRequireTwoFactorAuthentication())
     {
+
         ret["require_two_factor_authentication"]=getValueOfRequireTwoFactorAuthentication();
+
     }
     else
     {
         ret["require_two_factor_authentication"]=Json::Value();
     }
+
     if(getSessionPersistenceInHours())
     {
+
         ret["session_persistence_in_hours"]=getValueOfSessionPersistenceInHours();
+
     }
     else
     {
         ret["session_persistence_in_hours"]=Json::Value();
     }
+
     if(getUpdatedAt())
     {
+
         ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["updated_at"]=Json::Value();
     }
+
     return ret;
 }
 
 bool Settings::validateJsonForCreation(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, true))
             return false;
     }
+
     if(pJson.isMember("business_name"))
     {
         if(!validJsonOfField(1, "business_name", pJson["business_name"], err, true))
             return false;
     }
+
     else
     {
         err="The business_name column cannot be null";
         return false;
     }
+
     if(pJson.isMember("subscription_renewal_reminder_days_before"))
     {
         if(!validJsonOfField(2, "subscription_renewal_reminder_days_before", pJson["subscription_renewal_reminder_days_before"], err, true))
             return false;
     }
+
     if(pJson.isMember("require_two_factor_authentication"))
     {
         if(!validJsonOfField(3, "require_two_factor_authentication", pJson["require_two_factor_authentication"], err, true))
             return false;
     }
+
     if(pJson.isMember("session_persistence_in_hours"))
     {
         if(!validJsonOfField(4, "session_persistence_in_hours", pJson["session_persistence_in_hours"], err, true))
             return false;
     }
+
     if(pJson.isMember("updated_at"))
     {
         if(!validJsonOfField(5, "updated_at", pJson["updated_at"], err, true))
             return false;
     }
+
     return true;
 }
 bool Settings::validateMasqueradedJsonForCreation(const Json::Value &pJson,
@@ -985,6 +1158,7 @@ bool Settings::validateMasqueradedJsonForCreation(const Json::Value &pJson,
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty())
       {
           if(pJson.isMember(pMasqueradingVector[0]))
@@ -992,7 +1166,9 @@ bool Settings::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[1].empty())
       {
           if(pJson.isMember(pMasqueradingVector[1]))
@@ -1000,12 +1176,15 @@ bool Settings::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[1] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[2].empty())
       {
           if(pJson.isMember(pMasqueradingVector[2]))
@@ -1013,7 +1192,9 @@ bool Settings::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[3].empty())
       {
           if(pJson.isMember(pMasqueradingVector[3]))
@@ -1021,7 +1202,9 @@ bool Settings::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[4].empty())
       {
           if(pJson.isMember(pMasqueradingVector[4]))
@@ -1029,7 +1212,9 @@ bool Settings::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[5].empty())
       {
           if(pJson.isMember(pMasqueradingVector[5]))
@@ -1037,7 +1222,9 @@ bool Settings::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, true))
                   return false;
           }
+
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -1048,41 +1235,49 @@ bool Settings::validateMasqueradedJsonForCreation(const Json::Value &pJson,
 }
 bool Settings::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, false))
             return false;
     }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
     if(pJson.isMember("business_name"))
     {
         if(!validJsonOfField(1, "business_name", pJson["business_name"], err, false))
             return false;
     }
+
     if(pJson.isMember("subscription_renewal_reminder_days_before"))
     {
         if(!validJsonOfField(2, "subscription_renewal_reminder_days_before", pJson["subscription_renewal_reminder_days_before"], err, false))
             return false;
     }
+
     if(pJson.isMember("require_two_factor_authentication"))
     {
         if(!validJsonOfField(3, "require_two_factor_authentication", pJson["require_two_factor_authentication"], err, false))
             return false;
     }
+
     if(pJson.isMember("session_persistence_in_hours"))
     {
         if(!validJsonOfField(4, "session_persistence_in_hours", pJson["session_persistence_in_hours"], err, false))
             return false;
     }
+
     if(pJson.isMember("updated_at"))
     {
         if(!validJsonOfField(5, "updated_at", pJson["updated_at"], err, false))
             return false;
     }
+
     return true;
 }
 bool Settings::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
@@ -1095,41 +1290,49 @@ bool Settings::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
       {
           if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
               return false;
       }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
       if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
       {
           if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
       {
           if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
       {
           if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
       {
           if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
       {
           if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, false))
               return false;
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -1146,86 +1349,112 @@ bool Settings::validJsonOfField(size_t index,
 {
     switch(index)
     {
+
         case 0:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 1:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 255)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 255)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 255)";
                 return false;
             }
+
             break;
+
         case 2:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 3:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isBool())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 4:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 5:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         default:
             err="Internal error in the server";
             return false;
     }
     return true;
 }
+

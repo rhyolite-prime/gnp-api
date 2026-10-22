@@ -1,3 +1,4 @@
+
 /**
  *
  *  PartnerApiRequestLogs.cc
@@ -6,36 +7,66 @@
  */
 
 #include "PartnerApiRequestLogs.h"
+
 #include <drogon/utils/Utilities.h>
+
 #include <string>
+
 
 using namespace drogon;
 using namespace drogon::orm;
 using namespace drogon_model::Gnp;
 
+
+
 const std::string PartnerApiRequestLogs::Cols::_id = "\"id\"";
+
 const std::string PartnerApiRequestLogs::Cols::_partner_id = "\"partner_id\"";
+
 const std::string PartnerApiRequestLogs::Cols::_api_key_id = "\"api_key_id\"";
+
 const std::string PartnerApiRequestLogs::Cols::_endpoint = "\"endpoint\"";
+
 const std::string PartnerApiRequestLogs::Cols::_method = "\"method\"";
+
 const std::string PartnerApiRequestLogs::Cols::_client_id = "\"client_id\"";
+
 const std::string PartnerApiRequestLogs::Cols::_request_params = "\"request_params\"";
+
 const std::string PartnerApiRequestLogs::Cols::_request_body = "\"request_body\"";
+
 const std::string PartnerApiRequestLogs::Cols::_request_headers = "\"request_headers\"";
+
 const std::string PartnerApiRequestLogs::Cols::_request_ip = "\"request_ip\"";
+
 const std::string PartnerApiRequestLogs::Cols::_user_agent = "\"user_agent\"";
+
 const std::string PartnerApiRequestLogs::Cols::_response_status_code = "\"response_status_code\"";
+
 const std::string PartnerApiRequestLogs::Cols::_response_body = "\"response_body\"";
+
 const std::string PartnerApiRequestLogs::Cols::_response_headers = "\"response_headers\"";
+
 const std::string PartnerApiRequestLogs::Cols::_response_time_ms = "\"response_time_ms\"";
+
 const std::string PartnerApiRequestLogs::Cols::_error_message = "\"error_message\"";
+
 const std::string PartnerApiRequestLogs::Cols::_error_stack = "\"error_stack\"";
+
 const std::string PartnerApiRequestLogs::Cols::_is_successful = "\"is_successful\"";
+
 const std::string PartnerApiRequestLogs::Cols::_created_at = "\"created_at\"";
+
 const std::string PartnerApiRequestLogs::Cols::_completed_at = "\"completed_at\"";
+
 const std::string PartnerApiRequestLogs::Cols::_request_id = "\"request_id\"";
+
+
 const std::string PartnerApiRequestLogs::primaryKeyName = "id";
+
+
 const bool PartnerApiRequestLogs::hasPrimaryKey = true;
+
 const std::string PartnerApiRequestLogs::tableName = "\"partner_api_request_logs\"";
 
 const std::vector<typename PartnerApiRequestLogs::MetaData> PartnerApiRequestLogs::metaData_={
@@ -60,6 +91,7 @@ const std::vector<typename PartnerApiRequestLogs::MetaData> PartnerApiRequestLog
 {"created_at","::trantor::Date","timestamp with time zone",0,0,0,0},
 {"completed_at","::trantor::Date","timestamp with time zone",0,0,0,0},
 {"request_id","std::string","character varying",36,0,0,0}
+
 };
 const std::string &PartnerApiRequestLogs::getColumnName(size_t index) noexcept(false)
 {
@@ -70,83 +102,139 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Row &r, const ssize_t indexOf
 {
     if(indexOffset < 0)
     {
+
         if(!r["id"].isNull())
         {
+
             id_=std::make_shared<std::string>(r["id"].as<std::string>());
+
         }
+
         if(!r["partner_id"].isNull())
         {
+
             partnerId_=std::make_shared<std::string>(r["partner_id"].as<std::string>());
+
         }
+
         if(!r["api_key_id"].isNull())
         {
+
             apiKeyId_=std::make_shared<std::string>(r["api_key_id"].as<std::string>());
+
         }
+
         if(!r["endpoint"].isNull())
         {
+
             endpoint_=std::make_shared<std::string>(r["endpoint"].as<std::string>());
+
         }
+
         if(!r["method"].isNull())
         {
+
             method_=std::make_shared<std::string>(r["method"].as<std::string>());
+
         }
+
         if(!r["client_id"].isNull())
         {
+
             clientId_=std::make_shared<std::string>(r["client_id"].as<std::string>());
+
         }
+
         if(!r["request_params"].isNull())
         {
+
             requestParams_=std::make_shared<std::string>(r["request_params"].as<std::string>());
+
         }
+
         if(!r["request_body"].isNull())
         {
+
             requestBody_=std::make_shared<std::string>(r["request_body"].as<std::string>());
+
         }
+
         if(!r["request_headers"].isNull())
         {
+
             requestHeaders_=std::make_shared<std::string>(r["request_headers"].as<std::string>());
+
         }
+
         if(!r["request_ip"].isNull())
         {
+
             requestIp_=std::make_shared<std::string>(r["request_ip"].as<std::string>());
+
         }
+
         if(!r["user_agent"].isNull())
         {
+
             userAgent_=std::make_shared<std::string>(r["user_agent"].as<std::string>());
+
         }
+
         if(!r["response_status_code"].isNull())
         {
+
             responseStatusCode_=std::make_shared<int32_t>(r["response_status_code"].as<int32_t>());
+
         }
+
         if(!r["response_body"].isNull())
         {
+
             responseBody_=std::make_shared<std::string>(r["response_body"].as<std::string>());
+
         }
+
         if(!r["response_headers"].isNull())
         {
+
             responseHeaders_=std::make_shared<std::string>(r["response_headers"].as<std::string>());
+
         }
+
         if(!r["response_time_ms"].isNull())
         {
+
             responseTimeMs_=std::make_shared<int32_t>(r["response_time_ms"].as<int32_t>());
+
         }
+
         if(!r["error_message"].isNull())
         {
+
             errorMessage_=std::make_shared<std::string>(r["error_message"].as<std::string>());
+
         }
+
         if(!r["error_stack"].isNull())
         {
+
             errorStack_=std::make_shared<std::string>(r["error_stack"].as<std::string>());
+
         }
+
         if(!r["is_successful"].isNull())
         {
+
             isSuccessful_=std::make_shared<bool>(r["is_successful"].as<bool>());
+
         }
+
         if(!r["created_at"].isNull())
         {
             auto timeStr = r["created_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -164,11 +252,13 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Row &r, const ssize_t indexOf
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         if(!r["completed_at"].isNull())
         {
             auto timeStr = r["completed_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -186,10 +276,14 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Row &r, const ssize_t indexOf
                 completedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         if(!r["request_id"].isNull())
         {
+
             requestId_=std::make_shared<std::string>(r["request_id"].as<std::string>());
+
         }
+
     }
     else
     {
@@ -200,102 +294,158 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Row &r, const ssize_t indexOf
             return;
         }
         size_t index;
+
         index = offset + 0;
         if(!r[index].isNull())
         {
+
             id_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 1;
         if(!r[index].isNull())
         {
+
             partnerId_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 2;
         if(!r[index].isNull())
         {
+
             apiKeyId_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 3;
         if(!r[index].isNull())
         {
+
             endpoint_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 4;
         if(!r[index].isNull())
         {
+
             method_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 5;
         if(!r[index].isNull())
         {
+
             clientId_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 6;
         if(!r[index].isNull())
         {
+
             requestParams_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 7;
         if(!r[index].isNull())
         {
+
             requestBody_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 8;
         if(!r[index].isNull())
         {
+
             requestHeaders_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 9;
         if(!r[index].isNull())
         {
+
             requestIp_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 10;
         if(!r[index].isNull())
         {
+
             userAgent_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 11;
         if(!r[index].isNull())
         {
+
             responseStatusCode_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 12;
         if(!r[index].isNull())
         {
+
             responseBody_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 13;
         if(!r[index].isNull())
         {
+
             responseHeaders_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 14;
         if(!r[index].isNull())
         {
+
             responseTimeMs_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 15;
         if(!r[index].isNull())
         {
+
             errorMessage_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 16;
         if(!r[index].isNull())
         {
+
             errorStack_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 17;
         if(!r[index].isNull())
         {
+
             isSuccessful_=std::make_shared<bool>(r[index].as<bool>());
+
         }
+
         index = offset + 18;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -313,12 +463,14 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Row &r, const ssize_t indexOf
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         index = offset + 19;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -336,11 +488,15 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Row &r, const ssize_t indexOf
                 completedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         index = offset + 20;
         if(!r[index].isNull())
         {
+
             requestId_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
     }
 
 }
@@ -352,6 +508,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson, const std
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         dirtyFlag_[0] = true;
@@ -360,6 +517,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson, const std
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -368,6 +526,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson, const std
             partnerId_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -376,6 +535,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson, const std
             apiKeyId_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -384,6 +544,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson, const std
             endpoint_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -392,6 +553,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson, const std
             method_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -400,6 +562,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson, const std
             clientId_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -408,6 +571,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson, const std
             requestParams_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -416,6 +580,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson, const std
             requestBody_=std::make_shared<std::string>(pJson[pMasqueradingVector[7]].asString());
         }
     }
+
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
     {
         dirtyFlag_[8] = true;
@@ -424,6 +589,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson, const std
             requestHeaders_=std::make_shared<std::string>(pJson[pMasqueradingVector[8]].asString());
         }
     }
+
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
     {
         dirtyFlag_[9] = true;
@@ -432,6 +598,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson, const std
             requestIp_=std::make_shared<std::string>(pJson[pMasqueradingVector[9]].asString());
         }
     }
+
     if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
     {
         dirtyFlag_[10] = true;
@@ -440,6 +607,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson, const std
             userAgent_=std::make_shared<std::string>(pJson[pMasqueradingVector[10]].asString());
         }
     }
+
     if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
     {
         dirtyFlag_[11] = true;
@@ -448,6 +616,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson, const std
             responseStatusCode_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[11]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
     {
         dirtyFlag_[12] = true;
@@ -456,6 +625,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson, const std
             responseBody_=std::make_shared<std::string>(pJson[pMasqueradingVector[12]].asString());
         }
     }
+
     if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
     {
         dirtyFlag_[13] = true;
@@ -464,6 +634,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson, const std
             responseHeaders_=std::make_shared<std::string>(pJson[pMasqueradingVector[13]].asString());
         }
     }
+
     if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
     {
         dirtyFlag_[14] = true;
@@ -472,6 +643,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson, const std
             responseTimeMs_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[14]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[15].empty() && pJson.isMember(pMasqueradingVector[15]))
     {
         dirtyFlag_[15] = true;
@@ -480,6 +652,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson, const std
             errorMessage_=std::make_shared<std::string>(pJson[pMasqueradingVector[15]].asString());
         }
     }
+
     if(!pMasqueradingVector[16].empty() && pJson.isMember(pMasqueradingVector[16]))
     {
         dirtyFlag_[16] = true;
@@ -488,6 +661,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson, const std
             errorStack_=std::make_shared<std::string>(pJson[pMasqueradingVector[16]].asString());
         }
     }
+
     if(!pMasqueradingVector[17].empty() && pJson.isMember(pMasqueradingVector[17]))
     {
         dirtyFlag_[17] = true;
@@ -496,6 +670,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson, const std
             isSuccessful_=std::make_shared<bool>(pJson[pMasqueradingVector[17]].asBool());
         }
     }
+
     if(!pMasqueradingVector[18].empty() && pJson.isMember(pMasqueradingVector[18]))
     {
         dirtyFlag_[18] = true;
@@ -504,6 +679,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson, const std
             auto timeStr = pJson[pMasqueradingVector[18]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -522,6 +698,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson, const std
             }
         }
     }
+
     if(!pMasqueradingVector[19].empty() && pJson.isMember(pMasqueradingVector[19]))
     {
         dirtyFlag_[19] = true;
@@ -530,6 +707,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson, const std
             auto timeStr = pJson[pMasqueradingVector[19]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -548,6 +726,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson, const std
             }
         }
     }
+
     if(!pMasqueradingVector[20].empty() && pJson.isMember(pMasqueradingVector[20]))
     {
         dirtyFlag_[20] = true;
@@ -556,10 +735,12 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson, const std
             requestId_=std::make_shared<std::string>(pJson[pMasqueradingVector[20]].asString());
         }
     }
+
 }
 
 PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         dirtyFlag_[0]=true;
@@ -568,6 +749,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson) noexcept(
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("partner_id"))
     {
         dirtyFlag_[1]=true;
@@ -576,6 +758,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson) noexcept(
             partnerId_=std::make_shared<std::string>(pJson["partner_id"].asString());
         }
     }
+
     if(pJson.isMember("api_key_id"))
     {
         dirtyFlag_[2]=true;
@@ -584,6 +767,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson) noexcept(
             apiKeyId_=std::make_shared<std::string>(pJson["api_key_id"].asString());
         }
     }
+
     if(pJson.isMember("endpoint"))
     {
         dirtyFlag_[3]=true;
@@ -592,6 +776,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson) noexcept(
             endpoint_=std::make_shared<std::string>(pJson["endpoint"].asString());
         }
     }
+
     if(pJson.isMember("method"))
     {
         dirtyFlag_[4]=true;
@@ -600,6 +785,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson) noexcept(
             method_=std::make_shared<std::string>(pJson["method"].asString());
         }
     }
+
     if(pJson.isMember("client_id"))
     {
         dirtyFlag_[5]=true;
@@ -608,6 +794,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson) noexcept(
             clientId_=std::make_shared<std::string>(pJson["client_id"].asString());
         }
     }
+
     if(pJson.isMember("request_params"))
     {
         dirtyFlag_[6]=true;
@@ -616,6 +803,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson) noexcept(
             requestParams_=std::make_shared<std::string>(pJson["request_params"].asString());
         }
     }
+
     if(pJson.isMember("request_body"))
     {
         dirtyFlag_[7]=true;
@@ -624,6 +812,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson) noexcept(
             requestBody_=std::make_shared<std::string>(pJson["request_body"].asString());
         }
     }
+
     if(pJson.isMember("request_headers"))
     {
         dirtyFlag_[8]=true;
@@ -632,6 +821,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson) noexcept(
             requestHeaders_=std::make_shared<std::string>(pJson["request_headers"].asString());
         }
     }
+
     if(pJson.isMember("request_ip"))
     {
         dirtyFlag_[9]=true;
@@ -640,6 +830,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson) noexcept(
             requestIp_=std::make_shared<std::string>(pJson["request_ip"].asString());
         }
     }
+
     if(pJson.isMember("user_agent"))
     {
         dirtyFlag_[10]=true;
@@ -648,6 +839,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson) noexcept(
             userAgent_=std::make_shared<std::string>(pJson["user_agent"].asString());
         }
     }
+
     if(pJson.isMember("response_status_code"))
     {
         dirtyFlag_[11]=true;
@@ -656,6 +848,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson) noexcept(
             responseStatusCode_=std::make_shared<int32_t>((int32_t)pJson["response_status_code"].asInt64());
         }
     }
+
     if(pJson.isMember("response_body"))
     {
         dirtyFlag_[12]=true;
@@ -664,6 +857,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson) noexcept(
             responseBody_=std::make_shared<std::string>(pJson["response_body"].asString());
         }
     }
+
     if(pJson.isMember("response_headers"))
     {
         dirtyFlag_[13]=true;
@@ -672,6 +866,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson) noexcept(
             responseHeaders_=std::make_shared<std::string>(pJson["response_headers"].asString());
         }
     }
+
     if(pJson.isMember("response_time_ms"))
     {
         dirtyFlag_[14]=true;
@@ -680,6 +875,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson) noexcept(
             responseTimeMs_=std::make_shared<int32_t>((int32_t)pJson["response_time_ms"].asInt64());
         }
     }
+
     if(pJson.isMember("error_message"))
     {
         dirtyFlag_[15]=true;
@@ -688,6 +884,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson) noexcept(
             errorMessage_=std::make_shared<std::string>(pJson["error_message"].asString());
         }
     }
+
     if(pJson.isMember("error_stack"))
     {
         dirtyFlag_[16]=true;
@@ -696,6 +893,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson) noexcept(
             errorStack_=std::make_shared<std::string>(pJson["error_stack"].asString());
         }
     }
+
     if(pJson.isMember("is_successful"))
     {
         dirtyFlag_[17]=true;
@@ -704,6 +902,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson) noexcept(
             isSuccessful_=std::make_shared<bool>(pJson["is_successful"].asBool());
         }
     }
+
     if(pJson.isMember("created_at"))
     {
         dirtyFlag_[18]=true;
@@ -712,6 +911,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson) noexcept(
             auto timeStr = pJson["created_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -730,6 +930,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson) noexcept(
             }
         }
     }
+
     if(pJson.isMember("completed_at"))
     {
         dirtyFlag_[19]=true;
@@ -738,6 +939,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson) noexcept(
             auto timeStr = pJson["completed_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -756,6 +958,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson) noexcept(
             }
         }
     }
+
     if(pJson.isMember("request_id"))
     {
         dirtyFlag_[20]=true;
@@ -764,6 +967,7 @@ PartnerApiRequestLogs::PartnerApiRequestLogs(const Json::Value &pJson) noexcept(
             requestId_=std::make_shared<std::string>(pJson["request_id"].asString());
         }
     }
+
 }
 
 void PartnerApiRequestLogs::updateByMasqueradedJson(const Json::Value &pJson,
@@ -774,6 +978,7 @@ void PartnerApiRequestLogs::updateByMasqueradedJson(const Json::Value &pJson,
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         if(!pJson[pMasqueradingVector[0]].isNull())
@@ -781,6 +986,7 @@ void PartnerApiRequestLogs::updateByMasqueradedJson(const Json::Value &pJson,
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -789,6 +995,7 @@ void PartnerApiRequestLogs::updateByMasqueradedJson(const Json::Value &pJson,
             partnerId_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -797,6 +1004,7 @@ void PartnerApiRequestLogs::updateByMasqueradedJson(const Json::Value &pJson,
             apiKeyId_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -805,6 +1013,7 @@ void PartnerApiRequestLogs::updateByMasqueradedJson(const Json::Value &pJson,
             endpoint_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -813,6 +1022,7 @@ void PartnerApiRequestLogs::updateByMasqueradedJson(const Json::Value &pJson,
             method_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -821,6 +1031,7 @@ void PartnerApiRequestLogs::updateByMasqueradedJson(const Json::Value &pJson,
             clientId_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -829,6 +1040,7 @@ void PartnerApiRequestLogs::updateByMasqueradedJson(const Json::Value &pJson,
             requestParams_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -837,6 +1049,7 @@ void PartnerApiRequestLogs::updateByMasqueradedJson(const Json::Value &pJson,
             requestBody_=std::make_shared<std::string>(pJson[pMasqueradingVector[7]].asString());
         }
     }
+
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
     {
         dirtyFlag_[8] = true;
@@ -845,6 +1058,7 @@ void PartnerApiRequestLogs::updateByMasqueradedJson(const Json::Value &pJson,
             requestHeaders_=std::make_shared<std::string>(pJson[pMasqueradingVector[8]].asString());
         }
     }
+
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
     {
         dirtyFlag_[9] = true;
@@ -853,6 +1067,7 @@ void PartnerApiRequestLogs::updateByMasqueradedJson(const Json::Value &pJson,
             requestIp_=std::make_shared<std::string>(pJson[pMasqueradingVector[9]].asString());
         }
     }
+
     if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
     {
         dirtyFlag_[10] = true;
@@ -861,6 +1076,7 @@ void PartnerApiRequestLogs::updateByMasqueradedJson(const Json::Value &pJson,
             userAgent_=std::make_shared<std::string>(pJson[pMasqueradingVector[10]].asString());
         }
     }
+
     if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
     {
         dirtyFlag_[11] = true;
@@ -869,6 +1085,7 @@ void PartnerApiRequestLogs::updateByMasqueradedJson(const Json::Value &pJson,
             responseStatusCode_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[11]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
     {
         dirtyFlag_[12] = true;
@@ -877,6 +1094,7 @@ void PartnerApiRequestLogs::updateByMasqueradedJson(const Json::Value &pJson,
             responseBody_=std::make_shared<std::string>(pJson[pMasqueradingVector[12]].asString());
         }
     }
+
     if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
     {
         dirtyFlag_[13] = true;
@@ -885,6 +1103,7 @@ void PartnerApiRequestLogs::updateByMasqueradedJson(const Json::Value &pJson,
             responseHeaders_=std::make_shared<std::string>(pJson[pMasqueradingVector[13]].asString());
         }
     }
+
     if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
     {
         dirtyFlag_[14] = true;
@@ -893,6 +1112,7 @@ void PartnerApiRequestLogs::updateByMasqueradedJson(const Json::Value &pJson,
             responseTimeMs_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[14]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[15].empty() && pJson.isMember(pMasqueradingVector[15]))
     {
         dirtyFlag_[15] = true;
@@ -901,6 +1121,7 @@ void PartnerApiRequestLogs::updateByMasqueradedJson(const Json::Value &pJson,
             errorMessage_=std::make_shared<std::string>(pJson[pMasqueradingVector[15]].asString());
         }
     }
+
     if(!pMasqueradingVector[16].empty() && pJson.isMember(pMasqueradingVector[16]))
     {
         dirtyFlag_[16] = true;
@@ -909,6 +1130,7 @@ void PartnerApiRequestLogs::updateByMasqueradedJson(const Json::Value &pJson,
             errorStack_=std::make_shared<std::string>(pJson[pMasqueradingVector[16]].asString());
         }
     }
+
     if(!pMasqueradingVector[17].empty() && pJson.isMember(pMasqueradingVector[17]))
     {
         dirtyFlag_[17] = true;
@@ -917,6 +1139,7 @@ void PartnerApiRequestLogs::updateByMasqueradedJson(const Json::Value &pJson,
             isSuccessful_=std::make_shared<bool>(pJson[pMasqueradingVector[17]].asBool());
         }
     }
+
     if(!pMasqueradingVector[18].empty() && pJson.isMember(pMasqueradingVector[18]))
     {
         dirtyFlag_[18] = true;
@@ -925,6 +1148,7 @@ void PartnerApiRequestLogs::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[18]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -943,6 +1167,7 @@ void PartnerApiRequestLogs::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
     if(!pMasqueradingVector[19].empty() && pJson.isMember(pMasqueradingVector[19]))
     {
         dirtyFlag_[19] = true;
@@ -951,6 +1176,7 @@ void PartnerApiRequestLogs::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[19]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -969,6 +1195,7 @@ void PartnerApiRequestLogs::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
     if(!pMasqueradingVector[20].empty() && pJson.isMember(pMasqueradingVector[20]))
     {
         dirtyFlag_[20] = true;
@@ -977,10 +1204,12 @@ void PartnerApiRequestLogs::updateByMasqueradedJson(const Json::Value &pJson,
             requestId_=std::make_shared<std::string>(pJson[pMasqueradingVector[20]].asString());
         }
     }
+
 }
 
 void PartnerApiRequestLogs::updateByJson(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         if(!pJson["id"].isNull())
@@ -988,6 +1217,7 @@ void PartnerApiRequestLogs::updateByJson(const Json::Value &pJson) noexcept(fals
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("partner_id"))
     {
         dirtyFlag_[1] = true;
@@ -996,6 +1226,7 @@ void PartnerApiRequestLogs::updateByJson(const Json::Value &pJson) noexcept(fals
             partnerId_=std::make_shared<std::string>(pJson["partner_id"].asString());
         }
     }
+
     if(pJson.isMember("api_key_id"))
     {
         dirtyFlag_[2] = true;
@@ -1004,6 +1235,7 @@ void PartnerApiRequestLogs::updateByJson(const Json::Value &pJson) noexcept(fals
             apiKeyId_=std::make_shared<std::string>(pJson["api_key_id"].asString());
         }
     }
+
     if(pJson.isMember("endpoint"))
     {
         dirtyFlag_[3] = true;
@@ -1012,6 +1244,7 @@ void PartnerApiRequestLogs::updateByJson(const Json::Value &pJson) noexcept(fals
             endpoint_=std::make_shared<std::string>(pJson["endpoint"].asString());
         }
     }
+
     if(pJson.isMember("method"))
     {
         dirtyFlag_[4] = true;
@@ -1020,6 +1253,7 @@ void PartnerApiRequestLogs::updateByJson(const Json::Value &pJson) noexcept(fals
             method_=std::make_shared<std::string>(pJson["method"].asString());
         }
     }
+
     if(pJson.isMember("client_id"))
     {
         dirtyFlag_[5] = true;
@@ -1028,6 +1262,7 @@ void PartnerApiRequestLogs::updateByJson(const Json::Value &pJson) noexcept(fals
             clientId_=std::make_shared<std::string>(pJson["client_id"].asString());
         }
     }
+
     if(pJson.isMember("request_params"))
     {
         dirtyFlag_[6] = true;
@@ -1036,6 +1271,7 @@ void PartnerApiRequestLogs::updateByJson(const Json::Value &pJson) noexcept(fals
             requestParams_=std::make_shared<std::string>(pJson["request_params"].asString());
         }
     }
+
     if(pJson.isMember("request_body"))
     {
         dirtyFlag_[7] = true;
@@ -1044,6 +1280,7 @@ void PartnerApiRequestLogs::updateByJson(const Json::Value &pJson) noexcept(fals
             requestBody_=std::make_shared<std::string>(pJson["request_body"].asString());
         }
     }
+
     if(pJson.isMember("request_headers"))
     {
         dirtyFlag_[8] = true;
@@ -1052,6 +1289,7 @@ void PartnerApiRequestLogs::updateByJson(const Json::Value &pJson) noexcept(fals
             requestHeaders_=std::make_shared<std::string>(pJson["request_headers"].asString());
         }
     }
+
     if(pJson.isMember("request_ip"))
     {
         dirtyFlag_[9] = true;
@@ -1060,6 +1298,7 @@ void PartnerApiRequestLogs::updateByJson(const Json::Value &pJson) noexcept(fals
             requestIp_=std::make_shared<std::string>(pJson["request_ip"].asString());
         }
     }
+
     if(pJson.isMember("user_agent"))
     {
         dirtyFlag_[10] = true;
@@ -1068,6 +1307,7 @@ void PartnerApiRequestLogs::updateByJson(const Json::Value &pJson) noexcept(fals
             userAgent_=std::make_shared<std::string>(pJson["user_agent"].asString());
         }
     }
+
     if(pJson.isMember("response_status_code"))
     {
         dirtyFlag_[11] = true;
@@ -1076,6 +1316,7 @@ void PartnerApiRequestLogs::updateByJson(const Json::Value &pJson) noexcept(fals
             responseStatusCode_=std::make_shared<int32_t>((int32_t)pJson["response_status_code"].asInt64());
         }
     }
+
     if(pJson.isMember("response_body"))
     {
         dirtyFlag_[12] = true;
@@ -1084,6 +1325,7 @@ void PartnerApiRequestLogs::updateByJson(const Json::Value &pJson) noexcept(fals
             responseBody_=std::make_shared<std::string>(pJson["response_body"].asString());
         }
     }
+
     if(pJson.isMember("response_headers"))
     {
         dirtyFlag_[13] = true;
@@ -1092,6 +1334,7 @@ void PartnerApiRequestLogs::updateByJson(const Json::Value &pJson) noexcept(fals
             responseHeaders_=std::make_shared<std::string>(pJson["response_headers"].asString());
         }
     }
+
     if(pJson.isMember("response_time_ms"))
     {
         dirtyFlag_[14] = true;
@@ -1100,6 +1343,7 @@ void PartnerApiRequestLogs::updateByJson(const Json::Value &pJson) noexcept(fals
             responseTimeMs_=std::make_shared<int32_t>((int32_t)pJson["response_time_ms"].asInt64());
         }
     }
+
     if(pJson.isMember("error_message"))
     {
         dirtyFlag_[15] = true;
@@ -1108,6 +1352,7 @@ void PartnerApiRequestLogs::updateByJson(const Json::Value &pJson) noexcept(fals
             errorMessage_=std::make_shared<std::string>(pJson["error_message"].asString());
         }
     }
+
     if(pJson.isMember("error_stack"))
     {
         dirtyFlag_[16] = true;
@@ -1116,6 +1361,7 @@ void PartnerApiRequestLogs::updateByJson(const Json::Value &pJson) noexcept(fals
             errorStack_=std::make_shared<std::string>(pJson["error_stack"].asString());
         }
     }
+
     if(pJson.isMember("is_successful"))
     {
         dirtyFlag_[17] = true;
@@ -1124,6 +1370,7 @@ void PartnerApiRequestLogs::updateByJson(const Json::Value &pJson) noexcept(fals
             isSuccessful_=std::make_shared<bool>(pJson["is_successful"].asBool());
         }
     }
+
     if(pJson.isMember("created_at"))
     {
         dirtyFlag_[18] = true;
@@ -1132,6 +1379,7 @@ void PartnerApiRequestLogs::updateByJson(const Json::Value &pJson) noexcept(fals
             auto timeStr = pJson["created_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -1150,6 +1398,7 @@ void PartnerApiRequestLogs::updateByJson(const Json::Value &pJson) noexcept(fals
             }
         }
     }
+
     if(pJson.isMember("completed_at"))
     {
         dirtyFlag_[19] = true;
@@ -1158,6 +1407,7 @@ void PartnerApiRequestLogs::updateByJson(const Json::Value &pJson) noexcept(fals
             auto timeStr = pJson["completed_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -1176,6 +1426,7 @@ void PartnerApiRequestLogs::updateByJson(const Json::Value &pJson) noexcept(fals
             }
         }
     }
+
     if(pJson.isMember("request_id"))
     {
         dirtyFlag_[20] = true;
@@ -1184,6 +1435,7 @@ void PartnerApiRequestLogs::updateByJson(const Json::Value &pJson) noexcept(fals
             requestId_=std::make_shared<std::string>(pJson["request_id"].asString());
         }
     }
+
 }
 
 const std::string &PartnerApiRequestLogs::getValueOfId() const noexcept
@@ -1717,6 +1969,7 @@ void PartnerApiRequestLogs::updateId(const uint64_t id)
 {
 }
 
+
 const std::vector<std::string> &PartnerApiRequestLogs::insertColumns() noexcept
 {
     static const std::vector<std::string> inCols={
@@ -1741,12 +1994,14 @@ const std::vector<std::string> &PartnerApiRequestLogs::insertColumns() noexcept
         "created_at",
         "completed_at",
         "request_id"
+
     };
     return inCols;
 }
 
 void PartnerApiRequestLogs::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -1758,6 +2013,7 @@ void PartnerApiRequestLogs::outputArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getPartnerId())
@@ -1769,6 +2025,7 @@ void PartnerApiRequestLogs::outputArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getApiKeyId())
@@ -1780,6 +2037,7 @@ void PartnerApiRequestLogs::outputArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getEndpoint())
@@ -1791,6 +2049,7 @@ void PartnerApiRequestLogs::outputArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getMethod())
@@ -1802,6 +2061,7 @@ void PartnerApiRequestLogs::outputArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getClientId())
@@ -1813,6 +2073,7 @@ void PartnerApiRequestLogs::outputArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getRequestParams())
@@ -1824,6 +2085,7 @@ void PartnerApiRequestLogs::outputArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getRequestBody())
@@ -1835,6 +2097,7 @@ void PartnerApiRequestLogs::outputArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[8])
     {
         if(getRequestHeaders())
@@ -1846,6 +2109,7 @@ void PartnerApiRequestLogs::outputArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[9])
     {
         if(getRequestIp())
@@ -1857,6 +2121,7 @@ void PartnerApiRequestLogs::outputArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[10])
     {
         if(getUserAgent())
@@ -1868,6 +2133,7 @@ void PartnerApiRequestLogs::outputArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[11])
     {
         if(getResponseStatusCode())
@@ -1879,6 +2145,7 @@ void PartnerApiRequestLogs::outputArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[12])
     {
         if(getResponseBody())
@@ -1890,6 +2157,7 @@ void PartnerApiRequestLogs::outputArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[13])
     {
         if(getResponseHeaders())
@@ -1901,6 +2169,7 @@ void PartnerApiRequestLogs::outputArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[14])
     {
         if(getResponseTimeMs())
@@ -1912,6 +2181,7 @@ void PartnerApiRequestLogs::outputArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[15])
     {
         if(getErrorMessage())
@@ -1923,6 +2193,7 @@ void PartnerApiRequestLogs::outputArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[16])
     {
         if(getErrorStack())
@@ -1934,6 +2205,7 @@ void PartnerApiRequestLogs::outputArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[17])
     {
         if(getIsSuccessful())
@@ -1945,6 +2217,7 @@ void PartnerApiRequestLogs::outputArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[18])
     {
         if(getCreatedAt())
@@ -1956,6 +2229,7 @@ void PartnerApiRequestLogs::outputArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[19])
     {
         if(getCompletedAt())
@@ -1967,6 +2241,7 @@ void PartnerApiRequestLogs::outputArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[20])
     {
         if(getRequestId())
@@ -1978,100 +2253,124 @@ void PartnerApiRequestLogs::outputArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
 }
 
 const std::vector<std::string> PartnerApiRequestLogs::updateColumns() const
 {
     std::vector<std::string> ret;
+
     if(dirtyFlag_[0])
     {
         ret.push_back(getColumnName(0));
     }
+
     if(dirtyFlag_[1])
     {
         ret.push_back(getColumnName(1));
     }
+
     if(dirtyFlag_[2])
     {
         ret.push_back(getColumnName(2));
     }
+
     if(dirtyFlag_[3])
     {
         ret.push_back(getColumnName(3));
     }
+
     if(dirtyFlag_[4])
     {
         ret.push_back(getColumnName(4));
     }
+
     if(dirtyFlag_[5])
     {
         ret.push_back(getColumnName(5));
     }
+
     if(dirtyFlag_[6])
     {
         ret.push_back(getColumnName(6));
     }
+
     if(dirtyFlag_[7])
     {
         ret.push_back(getColumnName(7));
     }
+
     if(dirtyFlag_[8])
     {
         ret.push_back(getColumnName(8));
     }
+
     if(dirtyFlag_[9])
     {
         ret.push_back(getColumnName(9));
     }
+
     if(dirtyFlag_[10])
     {
         ret.push_back(getColumnName(10));
     }
+
     if(dirtyFlag_[11])
     {
         ret.push_back(getColumnName(11));
     }
+
     if(dirtyFlag_[12])
     {
         ret.push_back(getColumnName(12));
     }
+
     if(dirtyFlag_[13])
     {
         ret.push_back(getColumnName(13));
     }
+
     if(dirtyFlag_[14])
     {
         ret.push_back(getColumnName(14));
     }
+
     if(dirtyFlag_[15])
     {
         ret.push_back(getColumnName(15));
     }
+
     if(dirtyFlag_[16])
     {
         ret.push_back(getColumnName(16));
     }
+
     if(dirtyFlag_[17])
     {
         ret.push_back(getColumnName(17));
     }
+
     if(dirtyFlag_[18])
     {
         ret.push_back(getColumnName(18));
     }
+
     if(dirtyFlag_[19])
     {
         ret.push_back(getColumnName(19));
     }
+
     if(dirtyFlag_[20])
     {
         ret.push_back(getColumnName(20));
     }
+
     return ret;
 }
 
 void PartnerApiRequestLogs::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -2083,6 +2382,7 @@ void PartnerApiRequestLogs::updateArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getPartnerId())
@@ -2094,6 +2394,7 @@ void PartnerApiRequestLogs::updateArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getApiKeyId())
@@ -2105,6 +2406,7 @@ void PartnerApiRequestLogs::updateArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getEndpoint())
@@ -2116,6 +2418,7 @@ void PartnerApiRequestLogs::updateArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getMethod())
@@ -2127,6 +2430,7 @@ void PartnerApiRequestLogs::updateArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getClientId())
@@ -2138,6 +2442,7 @@ void PartnerApiRequestLogs::updateArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getRequestParams())
@@ -2149,6 +2454,7 @@ void PartnerApiRequestLogs::updateArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getRequestBody())
@@ -2160,6 +2466,7 @@ void PartnerApiRequestLogs::updateArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[8])
     {
         if(getRequestHeaders())
@@ -2171,6 +2478,7 @@ void PartnerApiRequestLogs::updateArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[9])
     {
         if(getRequestIp())
@@ -2182,6 +2490,7 @@ void PartnerApiRequestLogs::updateArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[10])
     {
         if(getUserAgent())
@@ -2193,6 +2502,7 @@ void PartnerApiRequestLogs::updateArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[11])
     {
         if(getResponseStatusCode())
@@ -2204,6 +2514,7 @@ void PartnerApiRequestLogs::updateArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[12])
     {
         if(getResponseBody())
@@ -2215,6 +2526,7 @@ void PartnerApiRequestLogs::updateArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[13])
     {
         if(getResponseHeaders())
@@ -2226,6 +2538,7 @@ void PartnerApiRequestLogs::updateArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[14])
     {
         if(getResponseTimeMs())
@@ -2237,6 +2550,7 @@ void PartnerApiRequestLogs::updateArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[15])
     {
         if(getErrorMessage())
@@ -2248,6 +2562,7 @@ void PartnerApiRequestLogs::updateArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[16])
     {
         if(getErrorStack())
@@ -2259,6 +2574,7 @@ void PartnerApiRequestLogs::updateArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[17])
     {
         if(getIsSuccessful())
@@ -2270,6 +2586,7 @@ void PartnerApiRequestLogs::updateArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[18])
     {
         if(getCreatedAt())
@@ -2281,6 +2598,7 @@ void PartnerApiRequestLogs::updateArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[19])
     {
         if(getCompletedAt())
@@ -2292,6 +2610,7 @@ void PartnerApiRequestLogs::updateArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[20])
     {
         if(getRequestId())
@@ -2303,178 +2622,243 @@ void PartnerApiRequestLogs::updateArgs(drogon::orm::internal::SqlBinder &binder)
             binder << nullptr;
         }
     }
+
 }
 Json::Value PartnerApiRequestLogs::toJson() const
 {
     Json::Value ret;
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getPartnerId())
     {
+
         ret["partner_id"]=getValueOfPartnerId();
+
     }
     else
     {
         ret["partner_id"]=Json::Value();
     }
+
     if(getApiKeyId())
     {
+
         ret["api_key_id"]=getValueOfApiKeyId();
+
     }
     else
     {
         ret["api_key_id"]=Json::Value();
     }
+
     if(getEndpoint())
     {
+
         ret["endpoint"]=getValueOfEndpoint();
+
     }
     else
     {
         ret["endpoint"]=Json::Value();
     }
+
     if(getMethod())
     {
+
         ret["method"]=getValueOfMethod();
+
     }
     else
     {
         ret["method"]=Json::Value();
     }
+
     if(getClientId())
     {
+
         ret["client_id"]=getValueOfClientId();
+
     }
     else
     {
         ret["client_id"]=Json::Value();
     }
+
     if(getRequestParams())
     {
+
         ret["request_params"]=getValueOfRequestParams();
+
     }
     else
     {
         ret["request_params"]=Json::Value();
     }
+
     if(getRequestBody())
     {
+
         ret["request_body"]=getValueOfRequestBody();
+
     }
     else
     {
         ret["request_body"]=Json::Value();
     }
+
     if(getRequestHeaders())
     {
+
         ret["request_headers"]=getValueOfRequestHeaders();
+
     }
     else
     {
         ret["request_headers"]=Json::Value();
     }
+
     if(getRequestIp())
     {
+
         ret["request_ip"]=getValueOfRequestIp();
+
     }
     else
     {
         ret["request_ip"]=Json::Value();
     }
+
     if(getUserAgent())
     {
+
         ret["user_agent"]=getValueOfUserAgent();
+
     }
     else
     {
         ret["user_agent"]=Json::Value();
     }
+
     if(getResponseStatusCode())
     {
+
         ret["response_status_code"]=getValueOfResponseStatusCode();
+
     }
     else
     {
         ret["response_status_code"]=Json::Value();
     }
+
     if(getResponseBody())
     {
+
         ret["response_body"]=getValueOfResponseBody();
+
     }
     else
     {
         ret["response_body"]=Json::Value();
     }
+
     if(getResponseHeaders())
     {
+
         ret["response_headers"]=getValueOfResponseHeaders();
+
     }
     else
     {
         ret["response_headers"]=Json::Value();
     }
+
     if(getResponseTimeMs())
     {
+
         ret["response_time_ms"]=getValueOfResponseTimeMs();
+
     }
     else
     {
         ret["response_time_ms"]=Json::Value();
     }
+
     if(getErrorMessage())
     {
+
         ret["error_message"]=getValueOfErrorMessage();
+
     }
     else
     {
         ret["error_message"]=Json::Value();
     }
+
     if(getErrorStack())
     {
+
         ret["error_stack"]=getValueOfErrorStack();
+
     }
     else
     {
         ret["error_stack"]=Json::Value();
     }
+
     if(getIsSuccessful())
     {
+
         ret["is_successful"]=getValueOfIsSuccessful();
+
     }
     else
     {
         ret["is_successful"]=Json::Value();
     }
+
     if(getCreatedAt())
     {
+
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["created_at"]=Json::Value();
     }
+
     if(getCompletedAt())
     {
+
         ret["completed_at"]=getCompletedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["completed_at"]=Json::Value();
     }
+
     if(getRequestId())
     {
+
         ret["request_id"]=getValueOfRequestId();
+
     }
     else
     {
         ret["request_id"]=Json::Value();
     }
+
     return ret;
 }
 
@@ -2489,533 +2873,686 @@ Json::Value PartnerApiRequestLogs::toMasqueradedJson(
     Json::Value ret;
     if(pMasqueradingVector.size() == 21)
     {
+
         if(!pMasqueradingVector[0].empty())
         {
             if(getId())
             {
+
                 ret[pMasqueradingVector[0]]=getValueOfId();
+
             }
             else
             {
                 ret[pMasqueradingVector[0]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[1].empty())
         {
             if(getPartnerId())
             {
+
                 ret[pMasqueradingVector[1]]=getValueOfPartnerId();
+
             }
             else
             {
                 ret[pMasqueradingVector[1]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[2].empty())
         {
             if(getApiKeyId())
             {
+
                 ret[pMasqueradingVector[2]]=getValueOfApiKeyId();
+
             }
             else
             {
                 ret[pMasqueradingVector[2]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[3].empty())
         {
             if(getEndpoint())
             {
+
                 ret[pMasqueradingVector[3]]=getValueOfEndpoint();
+
             }
             else
             {
                 ret[pMasqueradingVector[3]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[4].empty())
         {
             if(getMethod())
             {
+
                 ret[pMasqueradingVector[4]]=getValueOfMethod();
+
             }
             else
             {
                 ret[pMasqueradingVector[4]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[5].empty())
         {
             if(getClientId())
             {
+
                 ret[pMasqueradingVector[5]]=getValueOfClientId();
+
             }
             else
             {
                 ret[pMasqueradingVector[5]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[6].empty())
         {
             if(getRequestParams())
             {
+
                 ret[pMasqueradingVector[6]]=getValueOfRequestParams();
+
             }
             else
             {
                 ret[pMasqueradingVector[6]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[7].empty())
         {
             if(getRequestBody())
             {
+
                 ret[pMasqueradingVector[7]]=getValueOfRequestBody();
+
             }
             else
             {
                 ret[pMasqueradingVector[7]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[8].empty())
         {
             if(getRequestHeaders())
             {
+
                 ret[pMasqueradingVector[8]]=getValueOfRequestHeaders();
+
             }
             else
             {
                 ret[pMasqueradingVector[8]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[9].empty())
         {
             if(getRequestIp())
             {
+
                 ret[pMasqueradingVector[9]]=getValueOfRequestIp();
+
             }
             else
             {
                 ret[pMasqueradingVector[9]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[10].empty())
         {
             if(getUserAgent())
             {
+
                 ret[pMasqueradingVector[10]]=getValueOfUserAgent();
+
             }
             else
             {
                 ret[pMasqueradingVector[10]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[11].empty())
         {
             if(getResponseStatusCode())
             {
+
                 ret[pMasqueradingVector[11]]=getValueOfResponseStatusCode();
+
             }
             else
             {
                 ret[pMasqueradingVector[11]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[12].empty())
         {
             if(getResponseBody())
             {
+
                 ret[pMasqueradingVector[12]]=getValueOfResponseBody();
+
             }
             else
             {
                 ret[pMasqueradingVector[12]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[13].empty())
         {
             if(getResponseHeaders())
             {
+
                 ret[pMasqueradingVector[13]]=getValueOfResponseHeaders();
+
             }
             else
             {
                 ret[pMasqueradingVector[13]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[14].empty())
         {
             if(getResponseTimeMs())
             {
+
                 ret[pMasqueradingVector[14]]=getValueOfResponseTimeMs();
+
             }
             else
             {
                 ret[pMasqueradingVector[14]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[15].empty())
         {
             if(getErrorMessage())
             {
+
                 ret[pMasqueradingVector[15]]=getValueOfErrorMessage();
+
             }
             else
             {
                 ret[pMasqueradingVector[15]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[16].empty())
         {
             if(getErrorStack())
             {
+
                 ret[pMasqueradingVector[16]]=getValueOfErrorStack();
+
             }
             else
             {
                 ret[pMasqueradingVector[16]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[17].empty())
         {
             if(getIsSuccessful())
             {
+
                 ret[pMasqueradingVector[17]]=getValueOfIsSuccessful();
+
             }
             else
             {
                 ret[pMasqueradingVector[17]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[18].empty())
         {
             if(getCreatedAt())
             {
+
                 ret[pMasqueradingVector[18]]=getCreatedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[18]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[19].empty())
         {
             if(getCompletedAt())
             {
+
                 ret[pMasqueradingVector[19]]=getCompletedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[19]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[20].empty())
         {
             if(getRequestId())
             {
+
                 ret[pMasqueradingVector[20]]=getValueOfRequestId();
+
             }
             else
             {
                 ret[pMasqueradingVector[20]]=Json::Value();
             }
         }
+
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getPartnerId())
     {
+
         ret["partner_id"]=getValueOfPartnerId();
+
     }
     else
     {
         ret["partner_id"]=Json::Value();
     }
+
     if(getApiKeyId())
     {
+
         ret["api_key_id"]=getValueOfApiKeyId();
+
     }
     else
     {
         ret["api_key_id"]=Json::Value();
     }
+
     if(getEndpoint())
     {
+
         ret["endpoint"]=getValueOfEndpoint();
+
     }
     else
     {
         ret["endpoint"]=Json::Value();
     }
+
     if(getMethod())
     {
+
         ret["method"]=getValueOfMethod();
+
     }
     else
     {
         ret["method"]=Json::Value();
     }
+
     if(getClientId())
     {
+
         ret["client_id"]=getValueOfClientId();
+
     }
     else
     {
         ret["client_id"]=Json::Value();
     }
+
     if(getRequestParams())
     {
+
         ret["request_params"]=getValueOfRequestParams();
+
     }
     else
     {
         ret["request_params"]=Json::Value();
     }
+
     if(getRequestBody())
     {
+
         ret["request_body"]=getValueOfRequestBody();
+
     }
     else
     {
         ret["request_body"]=Json::Value();
     }
+
     if(getRequestHeaders())
     {
+
         ret["request_headers"]=getValueOfRequestHeaders();
+
     }
     else
     {
         ret["request_headers"]=Json::Value();
     }
+
     if(getRequestIp())
     {
+
         ret["request_ip"]=getValueOfRequestIp();
+
     }
     else
     {
         ret["request_ip"]=Json::Value();
     }
+
     if(getUserAgent())
     {
+
         ret["user_agent"]=getValueOfUserAgent();
+
     }
     else
     {
         ret["user_agent"]=Json::Value();
     }
+
     if(getResponseStatusCode())
     {
+
         ret["response_status_code"]=getValueOfResponseStatusCode();
+
     }
     else
     {
         ret["response_status_code"]=Json::Value();
     }
+
     if(getResponseBody())
     {
+
         ret["response_body"]=getValueOfResponseBody();
+
     }
     else
     {
         ret["response_body"]=Json::Value();
     }
+
     if(getResponseHeaders())
     {
+
         ret["response_headers"]=getValueOfResponseHeaders();
+
     }
     else
     {
         ret["response_headers"]=Json::Value();
     }
+
     if(getResponseTimeMs())
     {
+
         ret["response_time_ms"]=getValueOfResponseTimeMs();
+
     }
     else
     {
         ret["response_time_ms"]=Json::Value();
     }
+
     if(getErrorMessage())
     {
+
         ret["error_message"]=getValueOfErrorMessage();
+
     }
     else
     {
         ret["error_message"]=Json::Value();
     }
+
     if(getErrorStack())
     {
+
         ret["error_stack"]=getValueOfErrorStack();
+
     }
     else
     {
         ret["error_stack"]=Json::Value();
     }
+
     if(getIsSuccessful())
     {
+
         ret["is_successful"]=getValueOfIsSuccessful();
+
     }
     else
     {
         ret["is_successful"]=Json::Value();
     }
+
     if(getCreatedAt())
     {
+
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["created_at"]=Json::Value();
     }
+
     if(getCompletedAt())
     {
+
         ret["completed_at"]=getCompletedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["completed_at"]=Json::Value();
     }
+
     if(getRequestId())
     {
+
         ret["request_id"]=getValueOfRequestId();
+
     }
     else
     {
         ret["request_id"]=Json::Value();
     }
+
     return ret;
 }
 
 bool PartnerApiRequestLogs::validateJsonForCreation(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, true))
             return false;
     }
+
     if(pJson.isMember("partner_id"))
     {
         if(!validJsonOfField(1, "partner_id", pJson["partner_id"], err, true))
             return false;
     }
+
     if(pJson.isMember("api_key_id"))
     {
         if(!validJsonOfField(2, "api_key_id", pJson["api_key_id"], err, true))
             return false;
     }
+
     if(pJson.isMember("endpoint"))
     {
         if(!validJsonOfField(3, "endpoint", pJson["endpoint"], err, true))
             return false;
     }
+
     else
     {
         err="The endpoint column cannot be null";
         return false;
     }
+
     if(pJson.isMember("method"))
     {
         if(!validJsonOfField(4, "method", pJson["method"], err, true))
             return false;
     }
+
     else
     {
         err="The method column cannot be null";
         return false;
     }
+
     if(pJson.isMember("client_id"))
     {
         if(!validJsonOfField(5, "client_id", pJson["client_id"], err, true))
             return false;
     }
+
     if(pJson.isMember("request_params"))
     {
         if(!validJsonOfField(6, "request_params", pJson["request_params"], err, true))
             return false;
     }
+
     if(pJson.isMember("request_body"))
     {
         if(!validJsonOfField(7, "request_body", pJson["request_body"], err, true))
             return false;
     }
+
     if(pJson.isMember("request_headers"))
     {
         if(!validJsonOfField(8, "request_headers", pJson["request_headers"], err, true))
             return false;
     }
+
     if(pJson.isMember("request_ip"))
     {
         if(!validJsonOfField(9, "request_ip", pJson["request_ip"], err, true))
             return false;
     }
+
     if(pJson.isMember("user_agent"))
     {
         if(!validJsonOfField(10, "user_agent", pJson["user_agent"], err, true))
             return false;
     }
+
     if(pJson.isMember("response_status_code"))
     {
         if(!validJsonOfField(11, "response_status_code", pJson["response_status_code"], err, true))
             return false;
     }
+
     else
     {
         err="The response_status_code column cannot be null";
         return false;
     }
+
     if(pJson.isMember("response_body"))
     {
         if(!validJsonOfField(12, "response_body", pJson["response_body"], err, true))
             return false;
     }
+
     if(pJson.isMember("response_headers"))
     {
         if(!validJsonOfField(13, "response_headers", pJson["response_headers"], err, true))
             return false;
     }
+
     if(pJson.isMember("response_time_ms"))
     {
         if(!validJsonOfField(14, "response_time_ms", pJson["response_time_ms"], err, true))
             return false;
     }
+
     if(pJson.isMember("error_message"))
     {
         if(!validJsonOfField(15, "error_message", pJson["error_message"], err, true))
             return false;
     }
+
     if(pJson.isMember("error_stack"))
     {
         if(!validJsonOfField(16, "error_stack", pJson["error_stack"], err, true))
             return false;
     }
+
     if(pJson.isMember("is_successful"))
     {
         if(!validJsonOfField(17, "is_successful", pJson["is_successful"], err, true))
             return false;
     }
+
     if(pJson.isMember("created_at"))
     {
         if(!validJsonOfField(18, "created_at", pJson["created_at"], err, true))
             return false;
     }
+
     if(pJson.isMember("completed_at"))
     {
         if(!validJsonOfField(19, "completed_at", pJson["completed_at"], err, true))
             return false;
     }
+
     if(pJson.isMember("request_id"))
     {
         if(!validJsonOfField(20, "request_id", pJson["request_id"], err, true))
             return false;
     }
+
     return true;
 }
 bool PartnerApiRequestLogs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
@@ -3028,6 +3565,7 @@ bool PartnerApiRequestLogs::validateMasqueradedJsonForCreation(const Json::Value
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty())
       {
           if(pJson.isMember(pMasqueradingVector[0]))
@@ -3035,7 +3573,9 @@ bool PartnerApiRequestLogs::validateMasqueradedJsonForCreation(const Json::Value
               if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[1].empty())
       {
           if(pJson.isMember(pMasqueradingVector[1]))
@@ -3043,7 +3583,9 @@ bool PartnerApiRequestLogs::validateMasqueradedJsonForCreation(const Json::Value
               if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[2].empty())
       {
           if(pJson.isMember(pMasqueradingVector[2]))
@@ -3051,7 +3593,9 @@ bool PartnerApiRequestLogs::validateMasqueradedJsonForCreation(const Json::Value
               if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[3].empty())
       {
           if(pJson.isMember(pMasqueradingVector[3]))
@@ -3059,12 +3603,15 @@ bool PartnerApiRequestLogs::validateMasqueradedJsonForCreation(const Json::Value
               if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[3] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[4].empty())
       {
           if(pJson.isMember(pMasqueradingVector[4]))
@@ -3072,12 +3619,15 @@ bool PartnerApiRequestLogs::validateMasqueradedJsonForCreation(const Json::Value
               if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[4] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[5].empty())
       {
           if(pJson.isMember(pMasqueradingVector[5]))
@@ -3085,7 +3635,9 @@ bool PartnerApiRequestLogs::validateMasqueradedJsonForCreation(const Json::Value
               if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[6].empty())
       {
           if(pJson.isMember(pMasqueradingVector[6]))
@@ -3093,7 +3645,9 @@ bool PartnerApiRequestLogs::validateMasqueradedJsonForCreation(const Json::Value
               if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[7].empty())
       {
           if(pJson.isMember(pMasqueradingVector[7]))
@@ -3101,7 +3655,9 @@ bool PartnerApiRequestLogs::validateMasqueradedJsonForCreation(const Json::Value
               if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[8].empty())
       {
           if(pJson.isMember(pMasqueradingVector[8]))
@@ -3109,7 +3665,9 @@ bool PartnerApiRequestLogs::validateMasqueradedJsonForCreation(const Json::Value
               if(!validJsonOfField(8, pMasqueradingVector[8], pJson[pMasqueradingVector[8]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[9].empty())
       {
           if(pJson.isMember(pMasqueradingVector[9]))
@@ -3117,7 +3675,9 @@ bool PartnerApiRequestLogs::validateMasqueradedJsonForCreation(const Json::Value
               if(!validJsonOfField(9, pMasqueradingVector[9], pJson[pMasqueradingVector[9]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[10].empty())
       {
           if(pJson.isMember(pMasqueradingVector[10]))
@@ -3125,7 +3685,9 @@ bool PartnerApiRequestLogs::validateMasqueradedJsonForCreation(const Json::Value
               if(!validJsonOfField(10, pMasqueradingVector[10], pJson[pMasqueradingVector[10]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[11].empty())
       {
           if(pJson.isMember(pMasqueradingVector[11]))
@@ -3133,12 +3695,15 @@ bool PartnerApiRequestLogs::validateMasqueradedJsonForCreation(const Json::Value
               if(!validJsonOfField(11, pMasqueradingVector[11], pJson[pMasqueradingVector[11]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[11] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[12].empty())
       {
           if(pJson.isMember(pMasqueradingVector[12]))
@@ -3146,7 +3711,9 @@ bool PartnerApiRequestLogs::validateMasqueradedJsonForCreation(const Json::Value
               if(!validJsonOfField(12, pMasqueradingVector[12], pJson[pMasqueradingVector[12]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[13].empty())
       {
           if(pJson.isMember(pMasqueradingVector[13]))
@@ -3154,7 +3721,9 @@ bool PartnerApiRequestLogs::validateMasqueradedJsonForCreation(const Json::Value
               if(!validJsonOfField(13, pMasqueradingVector[13], pJson[pMasqueradingVector[13]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[14].empty())
       {
           if(pJson.isMember(pMasqueradingVector[14]))
@@ -3162,7 +3731,9 @@ bool PartnerApiRequestLogs::validateMasqueradedJsonForCreation(const Json::Value
               if(!validJsonOfField(14, pMasqueradingVector[14], pJson[pMasqueradingVector[14]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[15].empty())
       {
           if(pJson.isMember(pMasqueradingVector[15]))
@@ -3170,7 +3741,9 @@ bool PartnerApiRequestLogs::validateMasqueradedJsonForCreation(const Json::Value
               if(!validJsonOfField(15, pMasqueradingVector[15], pJson[pMasqueradingVector[15]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[16].empty())
       {
           if(pJson.isMember(pMasqueradingVector[16]))
@@ -3178,7 +3751,9 @@ bool PartnerApiRequestLogs::validateMasqueradedJsonForCreation(const Json::Value
               if(!validJsonOfField(16, pMasqueradingVector[16], pJson[pMasqueradingVector[16]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[17].empty())
       {
           if(pJson.isMember(pMasqueradingVector[17]))
@@ -3186,7 +3761,9 @@ bool PartnerApiRequestLogs::validateMasqueradedJsonForCreation(const Json::Value
               if(!validJsonOfField(17, pMasqueradingVector[17], pJson[pMasqueradingVector[17]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[18].empty())
       {
           if(pJson.isMember(pMasqueradingVector[18]))
@@ -3194,7 +3771,9 @@ bool PartnerApiRequestLogs::validateMasqueradedJsonForCreation(const Json::Value
               if(!validJsonOfField(18, pMasqueradingVector[18], pJson[pMasqueradingVector[18]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[19].empty())
       {
           if(pJson.isMember(pMasqueradingVector[19]))
@@ -3202,7 +3781,9 @@ bool PartnerApiRequestLogs::validateMasqueradedJsonForCreation(const Json::Value
               if(!validJsonOfField(19, pMasqueradingVector[19], pJson[pMasqueradingVector[19]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[20].empty())
       {
           if(pJson.isMember(pMasqueradingVector[20]))
@@ -3210,7 +3791,9 @@ bool PartnerApiRequestLogs::validateMasqueradedJsonForCreation(const Json::Value
               if(!validJsonOfField(20, pMasqueradingVector[20], pJson[pMasqueradingVector[20]], err, true))
                   return false;
           }
+
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -3221,116 +3804,139 @@ bool PartnerApiRequestLogs::validateMasqueradedJsonForCreation(const Json::Value
 }
 bool PartnerApiRequestLogs::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, false))
             return false;
     }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
     if(pJson.isMember("partner_id"))
     {
         if(!validJsonOfField(1, "partner_id", pJson["partner_id"], err, false))
             return false;
     }
+
     if(pJson.isMember("api_key_id"))
     {
         if(!validJsonOfField(2, "api_key_id", pJson["api_key_id"], err, false))
             return false;
     }
+
     if(pJson.isMember("endpoint"))
     {
         if(!validJsonOfField(3, "endpoint", pJson["endpoint"], err, false))
             return false;
     }
+
     if(pJson.isMember("method"))
     {
         if(!validJsonOfField(4, "method", pJson["method"], err, false))
             return false;
     }
+
     if(pJson.isMember("client_id"))
     {
         if(!validJsonOfField(5, "client_id", pJson["client_id"], err, false))
             return false;
     }
+
     if(pJson.isMember("request_params"))
     {
         if(!validJsonOfField(6, "request_params", pJson["request_params"], err, false))
             return false;
     }
+
     if(pJson.isMember("request_body"))
     {
         if(!validJsonOfField(7, "request_body", pJson["request_body"], err, false))
             return false;
     }
+
     if(pJson.isMember("request_headers"))
     {
         if(!validJsonOfField(8, "request_headers", pJson["request_headers"], err, false))
             return false;
     }
+
     if(pJson.isMember("request_ip"))
     {
         if(!validJsonOfField(9, "request_ip", pJson["request_ip"], err, false))
             return false;
     }
+
     if(pJson.isMember("user_agent"))
     {
         if(!validJsonOfField(10, "user_agent", pJson["user_agent"], err, false))
             return false;
     }
+
     if(pJson.isMember("response_status_code"))
     {
         if(!validJsonOfField(11, "response_status_code", pJson["response_status_code"], err, false))
             return false;
     }
+
     if(pJson.isMember("response_body"))
     {
         if(!validJsonOfField(12, "response_body", pJson["response_body"], err, false))
             return false;
     }
+
     if(pJson.isMember("response_headers"))
     {
         if(!validJsonOfField(13, "response_headers", pJson["response_headers"], err, false))
             return false;
     }
+
     if(pJson.isMember("response_time_ms"))
     {
         if(!validJsonOfField(14, "response_time_ms", pJson["response_time_ms"], err, false))
             return false;
     }
+
     if(pJson.isMember("error_message"))
     {
         if(!validJsonOfField(15, "error_message", pJson["error_message"], err, false))
             return false;
     }
+
     if(pJson.isMember("error_stack"))
     {
         if(!validJsonOfField(16, "error_stack", pJson["error_stack"], err, false))
             return false;
     }
+
     if(pJson.isMember("is_successful"))
     {
         if(!validJsonOfField(17, "is_successful", pJson["is_successful"], err, false))
             return false;
     }
+
     if(pJson.isMember("created_at"))
     {
         if(!validJsonOfField(18, "created_at", pJson["created_at"], err, false))
             return false;
     }
+
     if(pJson.isMember("completed_at"))
     {
         if(!validJsonOfField(19, "completed_at", pJson["completed_at"], err, false))
             return false;
     }
+
     if(pJson.isMember("request_id"))
     {
         if(!validJsonOfField(20, "request_id", pJson["request_id"], err, false))
             return false;
     }
+
     return true;
 }
 bool PartnerApiRequestLogs::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
@@ -3343,116 +3949,139 @@ bool PartnerApiRequestLogs::validateMasqueradedJsonForUpdate(const Json::Value &
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
       {
           if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
               return false;
       }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
       if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
       {
           if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
       {
           if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
       {
           if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
       {
           if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
       {
           if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
       {
           if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
       {
           if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
       {
           if(!validJsonOfField(8, pMasqueradingVector[8], pJson[pMasqueradingVector[8]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
       {
           if(!validJsonOfField(9, pMasqueradingVector[9], pJson[pMasqueradingVector[9]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
       {
           if(!validJsonOfField(10, pMasqueradingVector[10], pJson[pMasqueradingVector[10]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
       {
           if(!validJsonOfField(11, pMasqueradingVector[11], pJson[pMasqueradingVector[11]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
       {
           if(!validJsonOfField(12, pMasqueradingVector[12], pJson[pMasqueradingVector[12]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
       {
           if(!validJsonOfField(13, pMasqueradingVector[13], pJson[pMasqueradingVector[13]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
       {
           if(!validJsonOfField(14, pMasqueradingVector[14], pJson[pMasqueradingVector[14]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[15].empty() && pJson.isMember(pMasqueradingVector[15]))
       {
           if(!validJsonOfField(15, pMasqueradingVector[15], pJson[pMasqueradingVector[15]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[16].empty() && pJson.isMember(pMasqueradingVector[16]))
       {
           if(!validJsonOfField(16, pMasqueradingVector[16], pJson[pMasqueradingVector[16]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[17].empty() && pJson.isMember(pMasqueradingVector[17]))
       {
           if(!validJsonOfField(17, pMasqueradingVector[17], pJson[pMasqueradingVector[17]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[18].empty() && pJson.isMember(pMasqueradingVector[18]))
       {
           if(!validJsonOfField(18, pMasqueradingVector[18], pJson[pMasqueradingVector[18]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[19].empty() && pJson.isMember(pMasqueradingVector[19]))
       {
           if(!validJsonOfField(19, pMasqueradingVector[19], pJson[pMasqueradingVector[19]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[20].empty() && pJson.isMember(pMasqueradingVector[20]))
       {
           if(!validJsonOfField(20, pMasqueradingVector[20], pJson[pMasqueradingVector[20]], err, false))
               return false;
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -3469,292 +4098,378 @@ bool PartnerApiRequestLogs::validJsonOfField(size_t index,
 {
     switch(index)
     {
+
         case 0:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 36)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 36)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 36)";
                 return false;
             }
+
             break;
+
         case 1:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 2:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 3:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 255)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 255)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 255)";
                 return false;
             }
+
             break;
+
         case 4:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 10)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 10)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 10)";
                 return false;
             }
+
             break;
+
         case 5:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 100)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 100)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 100)";
                 return false;
             }
+
             break;
+
         case 6:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 7:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 8:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 9:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 45)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 45)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 45)";
                 return false;
             }
+
             break;
+
         case 10:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 11:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 12:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 13:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 14:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 15:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 16:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 17:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isBool())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 18:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 19:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 20:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 36)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 36)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 36)";
                 return false;
             }
+
             break;
+
         default:
             err="Internal error in the server";
             return false;
     }
     return true;
 }
+

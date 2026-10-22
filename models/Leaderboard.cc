@@ -1,3 +1,4 @@
+
 /**
  *
  *  Leaderboard.cc
@@ -6,22 +7,38 @@
  */
 
 #include "Leaderboard.h"
+
 #include <drogon/utils/Utilities.h>
+
 #include <string>
+
 
 using namespace drogon;
 using namespace drogon::orm;
 using namespace drogon_model::Gnp;
 
+
+
 const std::string Leaderboard::Cols::_id = "\"id\"";
+
 const std::string Leaderboard::Cols::_user_id = "\"user_id\"";
+
 const std::string Leaderboard::Cols::_total_points = "\"total_points\"";
+
 const std::string Leaderboard::Cols::_games_played = "\"games_played\"";
+
 const std::string Leaderboard::Cols::_win_rate = "\"win_rate\"";
+
 const std::string Leaderboard::Cols::_last_active = "\"last_active\"";
+
 const std::string Leaderboard::Cols::_updated_at = "\"updated_at\"";
+
+
 const std::string Leaderboard::primaryKeyName = "id";
+
+
 const bool Leaderboard::hasPrimaryKey = true;
+
 const std::string Leaderboard::tableName = "\"leaderboard\"";
 
 const std::vector<typename Leaderboard::MetaData> Leaderboard::metaData_={
@@ -32,6 +49,7 @@ const std::vector<typename Leaderboard::MetaData> Leaderboard::metaData_={
 {"win_rate","std::string","numeric",0,0,0,0},
 {"last_active","::trantor::Date","timestamp without time zone",0,0,0,0},
 {"updated_at","::trantor::Date","timestamp without time zone",0,0,0,0}
+
 };
 const std::string &Leaderboard::getColumnName(size_t index) noexcept(false)
 {
@@ -42,31 +60,48 @@ Leaderboard::Leaderboard(const Row &r, const ssize_t indexOffset) noexcept
 {
     if(indexOffset < 0)
     {
+
         if(!r["id"].isNull())
         {
+
             id_=std::make_shared<std::string>(r["id"].as<std::string>());
+
         }
+
         if(!r["user_id"].isNull())
         {
+
             userId_=std::make_shared<std::string>(r["user_id"].as<std::string>());
+
         }
+
         if(!r["total_points"].isNull())
         {
+
             totalPoints_=std::make_shared<int32_t>(r["total_points"].as<int32_t>());
+
         }
+
         if(!r["games_played"].isNull())
         {
+
             gamesPlayed_=std::make_shared<int32_t>(r["games_played"].as<int32_t>());
+
         }
+
         if(!r["win_rate"].isNull())
         {
+
             winRate_=std::make_shared<std::string>(r["win_rate"].as<std::string>());
+
         }
+
         if(!r["last_active"].isNull())
         {
             auto timeStr = r["last_active"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -84,11 +119,13 @@ Leaderboard::Leaderboard(const Row &r, const ssize_t indexOffset) noexcept
                 lastActive_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         if(!r["updated_at"].isNull())
         {
             auto timeStr = r["updated_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -106,6 +143,7 @@ Leaderboard::Leaderboard(const Row &r, const ssize_t indexOffset) noexcept
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
     }
     else
     {
@@ -116,37 +154,54 @@ Leaderboard::Leaderboard(const Row &r, const ssize_t indexOffset) noexcept
             return;
         }
         size_t index;
+
         index = offset + 0;
         if(!r[index].isNull())
         {
+
             id_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 1;
         if(!r[index].isNull())
         {
+
             userId_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 2;
         if(!r[index].isNull())
         {
+
             totalPoints_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 3;
         if(!r[index].isNull())
         {
+
             gamesPlayed_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 4;
         if(!r[index].isNull())
         {
+
             winRate_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 5;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -164,12 +219,14 @@ Leaderboard::Leaderboard(const Row &r, const ssize_t indexOffset) noexcept
                 lastActive_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         index = offset + 6;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -187,6 +244,7 @@ Leaderboard::Leaderboard(const Row &r, const ssize_t indexOffset) noexcept
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
     }
 
 }
@@ -198,6 +256,7 @@ Leaderboard::Leaderboard(const Json::Value &pJson, const std::vector<std::string
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         dirtyFlag_[0] = true;
@@ -206,6 +265,7 @@ Leaderboard::Leaderboard(const Json::Value &pJson, const std::vector<std::string
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -214,6 +274,7 @@ Leaderboard::Leaderboard(const Json::Value &pJson, const std::vector<std::string
             userId_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -222,6 +283,7 @@ Leaderboard::Leaderboard(const Json::Value &pJson, const std::vector<std::string
             totalPoints_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[2]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -230,6 +292,7 @@ Leaderboard::Leaderboard(const Json::Value &pJson, const std::vector<std::string
             gamesPlayed_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[3]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -238,6 +301,7 @@ Leaderboard::Leaderboard(const Json::Value &pJson, const std::vector<std::string
             winRate_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -246,6 +310,7 @@ Leaderboard::Leaderboard(const Json::Value &pJson, const std::vector<std::string
             auto timeStr = pJson[pMasqueradingVector[5]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -264,6 +329,7 @@ Leaderboard::Leaderboard(const Json::Value &pJson, const std::vector<std::string
             }
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -272,6 +338,7 @@ Leaderboard::Leaderboard(const Json::Value &pJson, const std::vector<std::string
             auto timeStr = pJson[pMasqueradingVector[6]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -290,10 +357,12 @@ Leaderboard::Leaderboard(const Json::Value &pJson, const std::vector<std::string
             }
         }
     }
+
 }
 
 Leaderboard::Leaderboard(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         dirtyFlag_[0]=true;
@@ -302,6 +371,7 @@ Leaderboard::Leaderboard(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("user_id"))
     {
         dirtyFlag_[1]=true;
@@ -310,6 +380,7 @@ Leaderboard::Leaderboard(const Json::Value &pJson) noexcept(false)
             userId_=std::make_shared<std::string>(pJson["user_id"].asString());
         }
     }
+
     if(pJson.isMember("total_points"))
     {
         dirtyFlag_[2]=true;
@@ -318,6 +389,7 @@ Leaderboard::Leaderboard(const Json::Value &pJson) noexcept(false)
             totalPoints_=std::make_shared<int32_t>((int32_t)pJson["total_points"].asInt64());
         }
     }
+
     if(pJson.isMember("games_played"))
     {
         dirtyFlag_[3]=true;
@@ -326,6 +398,7 @@ Leaderboard::Leaderboard(const Json::Value &pJson) noexcept(false)
             gamesPlayed_=std::make_shared<int32_t>((int32_t)pJson["games_played"].asInt64());
         }
     }
+
     if(pJson.isMember("win_rate"))
     {
         dirtyFlag_[4]=true;
@@ -334,6 +407,7 @@ Leaderboard::Leaderboard(const Json::Value &pJson) noexcept(false)
             winRate_=std::make_shared<std::string>(pJson["win_rate"].asString());
         }
     }
+
     if(pJson.isMember("last_active"))
     {
         dirtyFlag_[5]=true;
@@ -342,6 +416,7 @@ Leaderboard::Leaderboard(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["last_active"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -360,6 +435,7 @@ Leaderboard::Leaderboard(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("updated_at"))
     {
         dirtyFlag_[6]=true;
@@ -368,6 +444,7 @@ Leaderboard::Leaderboard(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["updated_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -386,6 +463,7 @@ Leaderboard::Leaderboard(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
 }
 
 void Leaderboard::updateByMasqueradedJson(const Json::Value &pJson,
@@ -396,6 +474,7 @@ void Leaderboard::updateByMasqueradedJson(const Json::Value &pJson,
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         if(!pJson[pMasqueradingVector[0]].isNull())
@@ -403,6 +482,7 @@ void Leaderboard::updateByMasqueradedJson(const Json::Value &pJson,
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -411,6 +491,7 @@ void Leaderboard::updateByMasqueradedJson(const Json::Value &pJson,
             userId_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -419,6 +500,7 @@ void Leaderboard::updateByMasqueradedJson(const Json::Value &pJson,
             totalPoints_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[2]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -427,6 +509,7 @@ void Leaderboard::updateByMasqueradedJson(const Json::Value &pJson,
             gamesPlayed_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[3]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -435,6 +518,7 @@ void Leaderboard::updateByMasqueradedJson(const Json::Value &pJson,
             winRate_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -443,6 +527,7 @@ void Leaderboard::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[5]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -461,6 +546,7 @@ void Leaderboard::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -469,6 +555,7 @@ void Leaderboard::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[6]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -487,10 +574,12 @@ void Leaderboard::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
 }
 
 void Leaderboard::updateByJson(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         if(!pJson["id"].isNull())
@@ -498,6 +587,7 @@ void Leaderboard::updateByJson(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("user_id"))
     {
         dirtyFlag_[1] = true;
@@ -506,6 +596,7 @@ void Leaderboard::updateByJson(const Json::Value &pJson) noexcept(false)
             userId_=std::make_shared<std::string>(pJson["user_id"].asString());
         }
     }
+
     if(pJson.isMember("total_points"))
     {
         dirtyFlag_[2] = true;
@@ -514,6 +605,7 @@ void Leaderboard::updateByJson(const Json::Value &pJson) noexcept(false)
             totalPoints_=std::make_shared<int32_t>((int32_t)pJson["total_points"].asInt64());
         }
     }
+
     if(pJson.isMember("games_played"))
     {
         dirtyFlag_[3] = true;
@@ -522,6 +614,7 @@ void Leaderboard::updateByJson(const Json::Value &pJson) noexcept(false)
             gamesPlayed_=std::make_shared<int32_t>((int32_t)pJson["games_played"].asInt64());
         }
     }
+
     if(pJson.isMember("win_rate"))
     {
         dirtyFlag_[4] = true;
@@ -530,6 +623,7 @@ void Leaderboard::updateByJson(const Json::Value &pJson) noexcept(false)
             winRate_=std::make_shared<std::string>(pJson["win_rate"].asString());
         }
     }
+
     if(pJson.isMember("last_active"))
     {
         dirtyFlag_[5] = true;
@@ -538,6 +632,7 @@ void Leaderboard::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["last_active"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -556,6 +651,7 @@ void Leaderboard::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("updated_at"))
     {
         dirtyFlag_[6] = true;
@@ -564,6 +660,7 @@ void Leaderboard::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["updated_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -582,6 +679,7 @@ void Leaderboard::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
 }
 
 const std::string &Leaderboard::getValueOfId() const noexcept
@@ -752,6 +850,7 @@ void Leaderboard::updateId(const uint64_t id)
 {
 }
 
+
 const std::vector<std::string> &Leaderboard::insertColumns() noexcept
 {
     static const std::vector<std::string> inCols={
@@ -762,12 +861,14 @@ const std::vector<std::string> &Leaderboard::insertColumns() noexcept
         "win_rate",
         "last_active",
         "updated_at"
+
     };
     return inCols;
 }
 
 void Leaderboard::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -779,6 +880,7 @@ void Leaderboard::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getUserId())
@@ -790,6 +892,7 @@ void Leaderboard::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getTotalPoints())
@@ -801,6 +904,7 @@ void Leaderboard::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getGamesPlayed())
@@ -812,6 +916,7 @@ void Leaderboard::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getWinRate())
@@ -823,6 +928,7 @@ void Leaderboard::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getLastActive())
@@ -834,6 +940,7 @@ void Leaderboard::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getUpdatedAt())
@@ -845,44 +952,54 @@ void Leaderboard::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
 }
 
 const std::vector<std::string> Leaderboard::updateColumns() const
 {
     std::vector<std::string> ret;
+
     if(dirtyFlag_[0])
     {
         ret.push_back(getColumnName(0));
     }
+
     if(dirtyFlag_[1])
     {
         ret.push_back(getColumnName(1));
     }
+
     if(dirtyFlag_[2])
     {
         ret.push_back(getColumnName(2));
     }
+
     if(dirtyFlag_[3])
     {
         ret.push_back(getColumnName(3));
     }
+
     if(dirtyFlag_[4])
     {
         ret.push_back(getColumnName(4));
     }
+
     if(dirtyFlag_[5])
     {
         ret.push_back(getColumnName(5));
     }
+
     if(dirtyFlag_[6])
     {
         ret.push_back(getColumnName(6));
     }
+
     return ret;
 }
 
 void Leaderboard::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -894,6 +1011,7 @@ void Leaderboard::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getUserId())
@@ -905,6 +1023,7 @@ void Leaderboard::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getTotalPoints())
@@ -916,6 +1035,7 @@ void Leaderboard::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getGamesPlayed())
@@ -927,6 +1047,7 @@ void Leaderboard::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getWinRate())
@@ -938,6 +1059,7 @@ void Leaderboard::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getLastActive())
@@ -949,6 +1071,7 @@ void Leaderboard::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getUpdatedAt())
@@ -960,66 +1083,89 @@ void Leaderboard::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
 }
 Json::Value Leaderboard::toJson() const
 {
     Json::Value ret;
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getUserId())
     {
+
         ret["user_id"]=getValueOfUserId();
+
     }
     else
     {
         ret["user_id"]=Json::Value();
     }
+
     if(getTotalPoints())
     {
+
         ret["total_points"]=getValueOfTotalPoints();
+
     }
     else
     {
         ret["total_points"]=Json::Value();
     }
+
     if(getGamesPlayed())
     {
+
         ret["games_played"]=getValueOfGamesPlayed();
+
     }
     else
     {
         ret["games_played"]=Json::Value();
     }
+
     if(getWinRate())
     {
+
         ret["win_rate"]=getValueOfWinRate();
+
     }
     else
     {
         ret["win_rate"]=Json::Value();
     }
+
     if(getLastActive())
     {
+
         ret["last_active"]=getLastActive()->toDbStringLocal();
+
     }
     else
     {
         ret["last_active"]=Json::Value();
     }
+
     if(getUpdatedAt())
     {
+
         ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["updated_at"]=Json::Value();
     }
+
     return ret;
 }
 
@@ -1034,187 +1180,240 @@ Json::Value Leaderboard::toMasqueradedJson(
     Json::Value ret;
     if(pMasqueradingVector.size() == 7)
     {
+
         if(!pMasqueradingVector[0].empty())
         {
             if(getId())
             {
+
                 ret[pMasqueradingVector[0]]=getValueOfId();
+
             }
             else
             {
                 ret[pMasqueradingVector[0]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[1].empty())
         {
             if(getUserId())
             {
+
                 ret[pMasqueradingVector[1]]=getValueOfUserId();
+
             }
             else
             {
                 ret[pMasqueradingVector[1]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[2].empty())
         {
             if(getTotalPoints())
             {
+
                 ret[pMasqueradingVector[2]]=getValueOfTotalPoints();
+
             }
             else
             {
                 ret[pMasqueradingVector[2]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[3].empty())
         {
             if(getGamesPlayed())
             {
+
                 ret[pMasqueradingVector[3]]=getValueOfGamesPlayed();
+
             }
             else
             {
                 ret[pMasqueradingVector[3]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[4].empty())
         {
             if(getWinRate())
             {
+
                 ret[pMasqueradingVector[4]]=getValueOfWinRate();
+
             }
             else
             {
                 ret[pMasqueradingVector[4]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[5].empty())
         {
             if(getLastActive())
             {
+
                 ret[pMasqueradingVector[5]]=getLastActive()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[5]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[6].empty())
         {
             if(getUpdatedAt())
             {
+
                 ret[pMasqueradingVector[6]]=getUpdatedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[6]]=Json::Value();
             }
         }
+
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getUserId())
     {
+
         ret["user_id"]=getValueOfUserId();
+
     }
     else
     {
         ret["user_id"]=Json::Value();
     }
+
     if(getTotalPoints())
     {
+
         ret["total_points"]=getValueOfTotalPoints();
+
     }
     else
     {
         ret["total_points"]=Json::Value();
     }
+
     if(getGamesPlayed())
     {
+
         ret["games_played"]=getValueOfGamesPlayed();
+
     }
     else
     {
         ret["games_played"]=Json::Value();
     }
+
     if(getWinRate())
     {
+
         ret["win_rate"]=getValueOfWinRate();
+
     }
     else
     {
         ret["win_rate"]=Json::Value();
     }
+
     if(getLastActive())
     {
+
         ret["last_active"]=getLastActive()->toDbStringLocal();
+
     }
     else
     {
         ret["last_active"]=Json::Value();
     }
+
     if(getUpdatedAt())
     {
+
         ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["updated_at"]=Json::Value();
     }
+
     return ret;
 }
 
 bool Leaderboard::validateJsonForCreation(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, true))
             return false;
     }
+
     if(pJson.isMember("user_id"))
     {
         if(!validJsonOfField(1, "user_id", pJson["user_id"], err, true))
             return false;
     }
+
     else
     {
         err="The user_id column cannot be null";
         return false;
     }
+
     if(pJson.isMember("total_points"))
     {
         if(!validJsonOfField(2, "total_points", pJson["total_points"], err, true))
             return false;
     }
+
     if(pJson.isMember("games_played"))
     {
         if(!validJsonOfField(3, "games_played", pJson["games_played"], err, true))
             return false;
     }
+
     if(pJson.isMember("win_rate"))
     {
         if(!validJsonOfField(4, "win_rate", pJson["win_rate"], err, true))
             return false;
     }
+
     if(pJson.isMember("last_active"))
     {
         if(!validJsonOfField(5, "last_active", pJson["last_active"], err, true))
             return false;
     }
+
     if(pJson.isMember("updated_at"))
     {
         if(!validJsonOfField(6, "updated_at", pJson["updated_at"], err, true))
             return false;
     }
+
     return true;
 }
 bool Leaderboard::validateMasqueradedJsonForCreation(const Json::Value &pJson,
@@ -1227,6 +1426,7 @@ bool Leaderboard::validateMasqueradedJsonForCreation(const Json::Value &pJson,
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty())
       {
           if(pJson.isMember(pMasqueradingVector[0]))
@@ -1234,7 +1434,9 @@ bool Leaderboard::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[1].empty())
       {
           if(pJson.isMember(pMasqueradingVector[1]))
@@ -1242,12 +1444,15 @@ bool Leaderboard::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[1] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[2].empty())
       {
           if(pJson.isMember(pMasqueradingVector[2]))
@@ -1255,7 +1460,9 @@ bool Leaderboard::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[3].empty())
       {
           if(pJson.isMember(pMasqueradingVector[3]))
@@ -1263,7 +1470,9 @@ bool Leaderboard::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[4].empty())
       {
           if(pJson.isMember(pMasqueradingVector[4]))
@@ -1271,7 +1480,9 @@ bool Leaderboard::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[5].empty())
       {
           if(pJson.isMember(pMasqueradingVector[5]))
@@ -1279,7 +1490,9 @@ bool Leaderboard::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[6].empty())
       {
           if(pJson.isMember(pMasqueradingVector[6]))
@@ -1287,7 +1500,9 @@ bool Leaderboard::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, true))
                   return false;
           }
+
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -1298,46 +1513,55 @@ bool Leaderboard::validateMasqueradedJsonForCreation(const Json::Value &pJson,
 }
 bool Leaderboard::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, false))
             return false;
     }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
     if(pJson.isMember("user_id"))
     {
         if(!validJsonOfField(1, "user_id", pJson["user_id"], err, false))
             return false;
     }
+
     if(pJson.isMember("total_points"))
     {
         if(!validJsonOfField(2, "total_points", pJson["total_points"], err, false))
             return false;
     }
+
     if(pJson.isMember("games_played"))
     {
         if(!validJsonOfField(3, "games_played", pJson["games_played"], err, false))
             return false;
     }
+
     if(pJson.isMember("win_rate"))
     {
         if(!validJsonOfField(4, "win_rate", pJson["win_rate"], err, false))
             return false;
     }
+
     if(pJson.isMember("last_active"))
     {
         if(!validJsonOfField(5, "last_active", pJson["last_active"], err, false))
             return false;
     }
+
     if(pJson.isMember("updated_at"))
     {
         if(!validJsonOfField(6, "updated_at", pJson["updated_at"], err, false))
             return false;
     }
+
     return true;
 }
 bool Leaderboard::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
@@ -1350,46 +1574,55 @@ bool Leaderboard::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
       {
           if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
               return false;
       }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
       if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
       {
           if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
       {
           if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
       {
           if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
       {
           if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
       {
           if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
       {
           if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, false))
               return false;
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -1406,88 +1639,118 @@ bool Leaderboard::validJsonOfField(size_t index,
 {
     switch(index)
     {
+
         case 0:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 1:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 2:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 3:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 4:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 5:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 6:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         default:
             err="Internal error in the server";
             return false;
     }
     return true;
 }
+

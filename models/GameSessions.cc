@@ -1,3 +1,4 @@
+
 /**
  *
  *  GameSessions.cc
@@ -6,31 +7,56 @@
  */
 
 #include "GameSessions.h"
+
 #include <drogon/utils/Utilities.h>
+
 #include <string>
+
 
 using namespace drogon;
 using namespace drogon::orm;
 using namespace drogon_model::Gnp;
 
+
+
 const std::string GameSessions::Cols::_id = "\"id\"";
+
 const std::string GameSessions::Cols::_user_id = "\"user_id\"";
+
 const std::string GameSessions::Cols::_game_type = "\"game_type\"";
+
 const std::string GameSessions::Cols::_puzzle_id = "\"puzzle_id\"";
+
 const std::string GameSessions::Cols::_difficulty = "\"difficulty\"";
+
 const std::string GameSessions::Cols::_start_time = "\"start_time\"";
+
 const std::string GameSessions::Cols::_last_activity = "\"last_activity\"";
+
 const std::string GameSessions::Cols::_is_multiplayer = "\"is_multiplayer\"";
+
 const std::string GameSessions::Cols::_opponent_id = "\"opponent_id\"";
+
 const std::string GameSessions::Cols::_is_complete = "\"is_complete\"";
+
 const std::string GameSessions::Cols::_total_points_earned = "\"total_points_earned\"";
+
 const std::string GameSessions::Cols::_completion_time_seconds = "\"completion_time_seconds\"";
+
 const std::string GameSessions::Cols::_mistakes = "\"mistakes\"";
+
 const std::string GameSessions::Cols::_hints_used = "\"hints_used\"";
+
 const std::string GameSessions::Cols::_progress_data = "\"progress_data\"";
+
 const std::string GameSessions::Cols::_ended_at = "\"ended_at\"";
+
+
 const std::string GameSessions::primaryKeyName = "id";
+
+
 const bool GameSessions::hasPrimaryKey = true;
+
 const std::string GameSessions::tableName = "\"game_sessions\"";
 
 const std::vector<typename GameSessions::MetaData> GameSessions::metaData_={
@@ -50,6 +76,7 @@ const std::vector<typename GameSessions::MetaData> GameSessions::metaData_={
 {"hints_used","int32_t","integer",4,0,0,0},
 {"progress_data","std::string","jsonb",0,0,0,0},
 {"ended_at","::trantor::Date","timestamp without time zone",0,0,0,0}
+
 };
 const std::string &GameSessions::getColumnName(size_t index) noexcept(false)
 {
@@ -60,31 +87,48 @@ GameSessions::GameSessions(const Row &r, const ssize_t indexOffset) noexcept
 {
     if(indexOffset < 0)
     {
+
         if(!r["id"].isNull())
         {
+
             id_=std::make_shared<std::string>(r["id"].as<std::string>());
+
         }
+
         if(!r["user_id"].isNull())
         {
+
             userId_=std::make_shared<std::string>(r["user_id"].as<std::string>());
+
         }
+
         if(!r["game_type"].isNull())
         {
+
             gameType_=std::make_shared<int32_t>(r["game_type"].as<int32_t>());
+
         }
+
         if(!r["puzzle_id"].isNull())
         {
+
             puzzleId_=std::make_shared<std::string>(r["puzzle_id"].as<std::string>());
+
         }
+
         if(!r["difficulty"].isNull())
         {
+
             difficulty_=std::make_shared<int32_t>(r["difficulty"].as<int32_t>());
+
         }
+
         if(!r["start_time"].isNull())
         {
             auto timeStr = r["start_time"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -102,11 +146,13 @@ GameSessions::GameSessions(const Row &r, const ssize_t indexOffset) noexcept
                 startTime_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         if(!r["last_activity"].isNull())
         {
             auto timeStr = r["last_activity"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -124,43 +170,69 @@ GameSessions::GameSessions(const Row &r, const ssize_t indexOffset) noexcept
                 lastActivity_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         if(!r["is_multiplayer"].isNull())
         {
+
             isMultiplayer_=std::make_shared<bool>(r["is_multiplayer"].as<bool>());
+
         }
+
         if(!r["opponent_id"].isNull())
         {
+
             opponentId_=std::make_shared<std::string>(r["opponent_id"].as<std::string>());
+
         }
+
         if(!r["is_complete"].isNull())
         {
+
             isComplete_=std::make_shared<bool>(r["is_complete"].as<bool>());
+
         }
+
         if(!r["total_points_earned"].isNull())
         {
+
             totalPointsEarned_=std::make_shared<int32_t>(r["total_points_earned"].as<int32_t>());
+
         }
+
         if(!r["completion_time_seconds"].isNull())
         {
+
             completionTimeSeconds_=std::make_shared<int32_t>(r["completion_time_seconds"].as<int32_t>());
+
         }
+
         if(!r["mistakes"].isNull())
         {
+
             mistakes_=std::make_shared<int32_t>(r["mistakes"].as<int32_t>());
+
         }
+
         if(!r["hints_used"].isNull())
         {
+
             hintsUsed_=std::make_shared<int32_t>(r["hints_used"].as<int32_t>());
+
         }
+
         if(!r["progress_data"].isNull())
         {
+
             progressData_=std::make_shared<std::string>(r["progress_data"].as<std::string>());
+
         }
+
         if(!r["ended_at"].isNull())
         {
             auto timeStr = r["ended_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -178,6 +250,7 @@ GameSessions::GameSessions(const Row &r, const ssize_t indexOffset) noexcept
                 endedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
     }
     else
     {
@@ -188,37 +261,54 @@ GameSessions::GameSessions(const Row &r, const ssize_t indexOffset) noexcept
             return;
         }
         size_t index;
+
         index = offset + 0;
         if(!r[index].isNull())
         {
+
             id_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 1;
         if(!r[index].isNull())
         {
+
             userId_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 2;
         if(!r[index].isNull())
         {
+
             gameType_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 3;
         if(!r[index].isNull())
         {
+
             puzzleId_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 4;
         if(!r[index].isNull())
         {
+
             difficulty_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 5;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -236,12 +326,14 @@ GameSessions::GameSessions(const Row &r, const ssize_t indexOffset) noexcept
                 startTime_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         index = offset + 6;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -259,52 +351,78 @@ GameSessions::GameSessions(const Row &r, const ssize_t indexOffset) noexcept
                 lastActivity_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         index = offset + 7;
         if(!r[index].isNull())
         {
+
             isMultiplayer_=std::make_shared<bool>(r[index].as<bool>());
+
         }
+
         index = offset + 8;
         if(!r[index].isNull())
         {
+
             opponentId_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 9;
         if(!r[index].isNull())
         {
+
             isComplete_=std::make_shared<bool>(r[index].as<bool>());
+
         }
+
         index = offset + 10;
         if(!r[index].isNull())
         {
+
             totalPointsEarned_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 11;
         if(!r[index].isNull())
         {
+
             completionTimeSeconds_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 12;
         if(!r[index].isNull())
         {
+
             mistakes_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 13;
         if(!r[index].isNull())
         {
+
             hintsUsed_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 14;
         if(!r[index].isNull())
         {
+
             progressData_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 15;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -322,6 +440,7 @@ GameSessions::GameSessions(const Row &r, const ssize_t indexOffset) noexcept
                 endedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
     }
 
 }
@@ -333,6 +452,7 @@ GameSessions::GameSessions(const Json::Value &pJson, const std::vector<std::stri
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         dirtyFlag_[0] = true;
@@ -341,6 +461,7 @@ GameSessions::GameSessions(const Json::Value &pJson, const std::vector<std::stri
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -349,6 +470,7 @@ GameSessions::GameSessions(const Json::Value &pJson, const std::vector<std::stri
             userId_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -357,6 +479,7 @@ GameSessions::GameSessions(const Json::Value &pJson, const std::vector<std::stri
             gameType_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[2]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -365,6 +488,7 @@ GameSessions::GameSessions(const Json::Value &pJson, const std::vector<std::stri
             puzzleId_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -373,6 +497,7 @@ GameSessions::GameSessions(const Json::Value &pJson, const std::vector<std::stri
             difficulty_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[4]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -381,6 +506,7 @@ GameSessions::GameSessions(const Json::Value &pJson, const std::vector<std::stri
             auto timeStr = pJson[pMasqueradingVector[5]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -399,6 +525,7 @@ GameSessions::GameSessions(const Json::Value &pJson, const std::vector<std::stri
             }
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -407,6 +534,7 @@ GameSessions::GameSessions(const Json::Value &pJson, const std::vector<std::stri
             auto timeStr = pJson[pMasqueradingVector[6]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -425,6 +553,7 @@ GameSessions::GameSessions(const Json::Value &pJson, const std::vector<std::stri
             }
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -433,6 +562,7 @@ GameSessions::GameSessions(const Json::Value &pJson, const std::vector<std::stri
             isMultiplayer_=std::make_shared<bool>(pJson[pMasqueradingVector[7]].asBool());
         }
     }
+
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
     {
         dirtyFlag_[8] = true;
@@ -441,6 +571,7 @@ GameSessions::GameSessions(const Json::Value &pJson, const std::vector<std::stri
             opponentId_=std::make_shared<std::string>(pJson[pMasqueradingVector[8]].asString());
         }
     }
+
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
     {
         dirtyFlag_[9] = true;
@@ -449,6 +580,7 @@ GameSessions::GameSessions(const Json::Value &pJson, const std::vector<std::stri
             isComplete_=std::make_shared<bool>(pJson[pMasqueradingVector[9]].asBool());
         }
     }
+
     if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
     {
         dirtyFlag_[10] = true;
@@ -457,6 +589,7 @@ GameSessions::GameSessions(const Json::Value &pJson, const std::vector<std::stri
             totalPointsEarned_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[10]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
     {
         dirtyFlag_[11] = true;
@@ -465,6 +598,7 @@ GameSessions::GameSessions(const Json::Value &pJson, const std::vector<std::stri
             completionTimeSeconds_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[11]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
     {
         dirtyFlag_[12] = true;
@@ -473,6 +607,7 @@ GameSessions::GameSessions(const Json::Value &pJson, const std::vector<std::stri
             mistakes_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[12]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
     {
         dirtyFlag_[13] = true;
@@ -481,6 +616,7 @@ GameSessions::GameSessions(const Json::Value &pJson, const std::vector<std::stri
             hintsUsed_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[13]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
     {
         dirtyFlag_[14] = true;
@@ -489,6 +625,7 @@ GameSessions::GameSessions(const Json::Value &pJson, const std::vector<std::stri
             progressData_=std::make_shared<std::string>(pJson[pMasqueradingVector[14]].asString());
         }
     }
+
     if(!pMasqueradingVector[15].empty() && pJson.isMember(pMasqueradingVector[15]))
     {
         dirtyFlag_[15] = true;
@@ -497,6 +634,7 @@ GameSessions::GameSessions(const Json::Value &pJson, const std::vector<std::stri
             auto timeStr = pJson[pMasqueradingVector[15]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -515,10 +653,12 @@ GameSessions::GameSessions(const Json::Value &pJson, const std::vector<std::stri
             }
         }
     }
+
 }
 
 GameSessions::GameSessions(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         dirtyFlag_[0]=true;
@@ -527,6 +667,7 @@ GameSessions::GameSessions(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("user_id"))
     {
         dirtyFlag_[1]=true;
@@ -535,6 +676,7 @@ GameSessions::GameSessions(const Json::Value &pJson) noexcept(false)
             userId_=std::make_shared<std::string>(pJson["user_id"].asString());
         }
     }
+
     if(pJson.isMember("game_type"))
     {
         dirtyFlag_[2]=true;
@@ -543,6 +685,7 @@ GameSessions::GameSessions(const Json::Value &pJson) noexcept(false)
             gameType_=std::make_shared<int32_t>((int32_t)pJson["game_type"].asInt64());
         }
     }
+
     if(pJson.isMember("puzzle_id"))
     {
         dirtyFlag_[3]=true;
@@ -551,6 +694,7 @@ GameSessions::GameSessions(const Json::Value &pJson) noexcept(false)
             puzzleId_=std::make_shared<std::string>(pJson["puzzle_id"].asString());
         }
     }
+
     if(pJson.isMember("difficulty"))
     {
         dirtyFlag_[4]=true;
@@ -559,6 +703,7 @@ GameSessions::GameSessions(const Json::Value &pJson) noexcept(false)
             difficulty_=std::make_shared<int32_t>((int32_t)pJson["difficulty"].asInt64());
         }
     }
+
     if(pJson.isMember("start_time"))
     {
         dirtyFlag_[5]=true;
@@ -567,6 +712,7 @@ GameSessions::GameSessions(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["start_time"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -585,6 +731,7 @@ GameSessions::GameSessions(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("last_activity"))
     {
         dirtyFlag_[6]=true;
@@ -593,6 +740,7 @@ GameSessions::GameSessions(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["last_activity"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -611,6 +759,7 @@ GameSessions::GameSessions(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("is_multiplayer"))
     {
         dirtyFlag_[7]=true;
@@ -619,6 +768,7 @@ GameSessions::GameSessions(const Json::Value &pJson) noexcept(false)
             isMultiplayer_=std::make_shared<bool>(pJson["is_multiplayer"].asBool());
         }
     }
+
     if(pJson.isMember("opponent_id"))
     {
         dirtyFlag_[8]=true;
@@ -627,6 +777,7 @@ GameSessions::GameSessions(const Json::Value &pJson) noexcept(false)
             opponentId_=std::make_shared<std::string>(pJson["opponent_id"].asString());
         }
     }
+
     if(pJson.isMember("is_complete"))
     {
         dirtyFlag_[9]=true;
@@ -635,6 +786,7 @@ GameSessions::GameSessions(const Json::Value &pJson) noexcept(false)
             isComplete_=std::make_shared<bool>(pJson["is_complete"].asBool());
         }
     }
+
     if(pJson.isMember("total_points_earned"))
     {
         dirtyFlag_[10]=true;
@@ -643,6 +795,7 @@ GameSessions::GameSessions(const Json::Value &pJson) noexcept(false)
             totalPointsEarned_=std::make_shared<int32_t>((int32_t)pJson["total_points_earned"].asInt64());
         }
     }
+
     if(pJson.isMember("completion_time_seconds"))
     {
         dirtyFlag_[11]=true;
@@ -651,6 +804,7 @@ GameSessions::GameSessions(const Json::Value &pJson) noexcept(false)
             completionTimeSeconds_=std::make_shared<int32_t>((int32_t)pJson["completion_time_seconds"].asInt64());
         }
     }
+
     if(pJson.isMember("mistakes"))
     {
         dirtyFlag_[12]=true;
@@ -659,6 +813,7 @@ GameSessions::GameSessions(const Json::Value &pJson) noexcept(false)
             mistakes_=std::make_shared<int32_t>((int32_t)pJson["mistakes"].asInt64());
         }
     }
+
     if(pJson.isMember("hints_used"))
     {
         dirtyFlag_[13]=true;
@@ -667,6 +822,7 @@ GameSessions::GameSessions(const Json::Value &pJson) noexcept(false)
             hintsUsed_=std::make_shared<int32_t>((int32_t)pJson["hints_used"].asInt64());
         }
     }
+
     if(pJson.isMember("progress_data"))
     {
         dirtyFlag_[14]=true;
@@ -675,6 +831,7 @@ GameSessions::GameSessions(const Json::Value &pJson) noexcept(false)
             progressData_=std::make_shared<std::string>(pJson["progress_data"].asString());
         }
     }
+
     if(pJson.isMember("ended_at"))
     {
         dirtyFlag_[15]=true;
@@ -683,6 +840,7 @@ GameSessions::GameSessions(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["ended_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -701,6 +859,7 @@ GameSessions::GameSessions(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
 }
 
 void GameSessions::updateByMasqueradedJson(const Json::Value &pJson,
@@ -711,6 +870,7 @@ void GameSessions::updateByMasqueradedJson(const Json::Value &pJson,
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         if(!pJson[pMasqueradingVector[0]].isNull())
@@ -718,6 +878,7 @@ void GameSessions::updateByMasqueradedJson(const Json::Value &pJson,
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -726,6 +887,7 @@ void GameSessions::updateByMasqueradedJson(const Json::Value &pJson,
             userId_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -734,6 +896,7 @@ void GameSessions::updateByMasqueradedJson(const Json::Value &pJson,
             gameType_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[2]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -742,6 +905,7 @@ void GameSessions::updateByMasqueradedJson(const Json::Value &pJson,
             puzzleId_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -750,6 +914,7 @@ void GameSessions::updateByMasqueradedJson(const Json::Value &pJson,
             difficulty_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[4]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -758,6 +923,7 @@ void GameSessions::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[5]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -776,6 +942,7 @@ void GameSessions::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -784,6 +951,7 @@ void GameSessions::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[6]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -802,6 +970,7 @@ void GameSessions::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -810,6 +979,7 @@ void GameSessions::updateByMasqueradedJson(const Json::Value &pJson,
             isMultiplayer_=std::make_shared<bool>(pJson[pMasqueradingVector[7]].asBool());
         }
     }
+
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
     {
         dirtyFlag_[8] = true;
@@ -818,6 +988,7 @@ void GameSessions::updateByMasqueradedJson(const Json::Value &pJson,
             opponentId_=std::make_shared<std::string>(pJson[pMasqueradingVector[8]].asString());
         }
     }
+
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
     {
         dirtyFlag_[9] = true;
@@ -826,6 +997,7 @@ void GameSessions::updateByMasqueradedJson(const Json::Value &pJson,
             isComplete_=std::make_shared<bool>(pJson[pMasqueradingVector[9]].asBool());
         }
     }
+
     if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
     {
         dirtyFlag_[10] = true;
@@ -834,6 +1006,7 @@ void GameSessions::updateByMasqueradedJson(const Json::Value &pJson,
             totalPointsEarned_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[10]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
     {
         dirtyFlag_[11] = true;
@@ -842,6 +1015,7 @@ void GameSessions::updateByMasqueradedJson(const Json::Value &pJson,
             completionTimeSeconds_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[11]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
     {
         dirtyFlag_[12] = true;
@@ -850,6 +1024,7 @@ void GameSessions::updateByMasqueradedJson(const Json::Value &pJson,
             mistakes_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[12]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
     {
         dirtyFlag_[13] = true;
@@ -858,6 +1033,7 @@ void GameSessions::updateByMasqueradedJson(const Json::Value &pJson,
             hintsUsed_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[13]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
     {
         dirtyFlag_[14] = true;
@@ -866,6 +1042,7 @@ void GameSessions::updateByMasqueradedJson(const Json::Value &pJson,
             progressData_=std::make_shared<std::string>(pJson[pMasqueradingVector[14]].asString());
         }
     }
+
     if(!pMasqueradingVector[15].empty() && pJson.isMember(pMasqueradingVector[15]))
     {
         dirtyFlag_[15] = true;
@@ -874,6 +1051,7 @@ void GameSessions::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[15]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -892,10 +1070,12 @@ void GameSessions::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
 }
 
 void GameSessions::updateByJson(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         if(!pJson["id"].isNull())
@@ -903,6 +1083,7 @@ void GameSessions::updateByJson(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("user_id"))
     {
         dirtyFlag_[1] = true;
@@ -911,6 +1092,7 @@ void GameSessions::updateByJson(const Json::Value &pJson) noexcept(false)
             userId_=std::make_shared<std::string>(pJson["user_id"].asString());
         }
     }
+
     if(pJson.isMember("game_type"))
     {
         dirtyFlag_[2] = true;
@@ -919,6 +1101,7 @@ void GameSessions::updateByJson(const Json::Value &pJson) noexcept(false)
             gameType_=std::make_shared<int32_t>((int32_t)pJson["game_type"].asInt64());
         }
     }
+
     if(pJson.isMember("puzzle_id"))
     {
         dirtyFlag_[3] = true;
@@ -927,6 +1110,7 @@ void GameSessions::updateByJson(const Json::Value &pJson) noexcept(false)
             puzzleId_=std::make_shared<std::string>(pJson["puzzle_id"].asString());
         }
     }
+
     if(pJson.isMember("difficulty"))
     {
         dirtyFlag_[4] = true;
@@ -935,6 +1119,7 @@ void GameSessions::updateByJson(const Json::Value &pJson) noexcept(false)
             difficulty_=std::make_shared<int32_t>((int32_t)pJson["difficulty"].asInt64());
         }
     }
+
     if(pJson.isMember("start_time"))
     {
         dirtyFlag_[5] = true;
@@ -943,6 +1128,7 @@ void GameSessions::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["start_time"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -961,6 +1147,7 @@ void GameSessions::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("last_activity"))
     {
         dirtyFlag_[6] = true;
@@ -969,6 +1156,7 @@ void GameSessions::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["last_activity"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -987,6 +1175,7 @@ void GameSessions::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("is_multiplayer"))
     {
         dirtyFlag_[7] = true;
@@ -995,6 +1184,7 @@ void GameSessions::updateByJson(const Json::Value &pJson) noexcept(false)
             isMultiplayer_=std::make_shared<bool>(pJson["is_multiplayer"].asBool());
         }
     }
+
     if(pJson.isMember("opponent_id"))
     {
         dirtyFlag_[8] = true;
@@ -1003,6 +1193,7 @@ void GameSessions::updateByJson(const Json::Value &pJson) noexcept(false)
             opponentId_=std::make_shared<std::string>(pJson["opponent_id"].asString());
         }
     }
+
     if(pJson.isMember("is_complete"))
     {
         dirtyFlag_[9] = true;
@@ -1011,6 +1202,7 @@ void GameSessions::updateByJson(const Json::Value &pJson) noexcept(false)
             isComplete_=std::make_shared<bool>(pJson["is_complete"].asBool());
         }
     }
+
     if(pJson.isMember("total_points_earned"))
     {
         dirtyFlag_[10] = true;
@@ -1019,6 +1211,7 @@ void GameSessions::updateByJson(const Json::Value &pJson) noexcept(false)
             totalPointsEarned_=std::make_shared<int32_t>((int32_t)pJson["total_points_earned"].asInt64());
         }
     }
+
     if(pJson.isMember("completion_time_seconds"))
     {
         dirtyFlag_[11] = true;
@@ -1027,6 +1220,7 @@ void GameSessions::updateByJson(const Json::Value &pJson) noexcept(false)
             completionTimeSeconds_=std::make_shared<int32_t>((int32_t)pJson["completion_time_seconds"].asInt64());
         }
     }
+
     if(pJson.isMember("mistakes"))
     {
         dirtyFlag_[12] = true;
@@ -1035,6 +1229,7 @@ void GameSessions::updateByJson(const Json::Value &pJson) noexcept(false)
             mistakes_=std::make_shared<int32_t>((int32_t)pJson["mistakes"].asInt64());
         }
     }
+
     if(pJson.isMember("hints_used"))
     {
         dirtyFlag_[13] = true;
@@ -1043,6 +1238,7 @@ void GameSessions::updateByJson(const Json::Value &pJson) noexcept(false)
             hintsUsed_=std::make_shared<int32_t>((int32_t)pJson["hints_used"].asInt64());
         }
     }
+
     if(pJson.isMember("progress_data"))
     {
         dirtyFlag_[14] = true;
@@ -1051,6 +1247,7 @@ void GameSessions::updateByJson(const Json::Value &pJson) noexcept(false)
             progressData_=std::make_shared<std::string>(pJson["progress_data"].asString());
         }
     }
+
     if(pJson.isMember("ended_at"))
     {
         dirtyFlag_[15] = true;
@@ -1059,6 +1256,7 @@ void GameSessions::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["ended_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -1077,6 +1275,7 @@ void GameSessions::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
 }
 
 const std::string &GameSessions::getValueOfId() const noexcept
@@ -1455,6 +1654,7 @@ void GameSessions::updateId(const uint64_t id)
 {
 }
 
+
 const std::vector<std::string> &GameSessions::insertColumns() noexcept
 {
     static const std::vector<std::string> inCols={
@@ -1474,12 +1674,14 @@ const std::vector<std::string> &GameSessions::insertColumns() noexcept
         "hints_used",
         "progress_data",
         "ended_at"
+
     };
     return inCols;
 }
 
 void GameSessions::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -1491,6 +1693,7 @@ void GameSessions::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getUserId())
@@ -1502,6 +1705,7 @@ void GameSessions::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getGameType())
@@ -1513,6 +1717,7 @@ void GameSessions::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getPuzzleId())
@@ -1524,6 +1729,7 @@ void GameSessions::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getDifficulty())
@@ -1535,6 +1741,7 @@ void GameSessions::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getStartTime())
@@ -1546,6 +1753,7 @@ void GameSessions::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getLastActivity())
@@ -1557,6 +1765,7 @@ void GameSessions::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getIsMultiplayer())
@@ -1568,6 +1777,7 @@ void GameSessions::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[8])
     {
         if(getOpponentId())
@@ -1579,6 +1789,7 @@ void GameSessions::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[9])
     {
         if(getIsComplete())
@@ -1590,6 +1801,7 @@ void GameSessions::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[10])
     {
         if(getTotalPointsEarned())
@@ -1601,6 +1813,7 @@ void GameSessions::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[11])
     {
         if(getCompletionTimeSeconds())
@@ -1612,6 +1825,7 @@ void GameSessions::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[12])
     {
         if(getMistakes())
@@ -1623,6 +1837,7 @@ void GameSessions::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[13])
     {
         if(getHintsUsed())
@@ -1634,6 +1849,7 @@ void GameSessions::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[14])
     {
         if(getProgressData())
@@ -1645,6 +1861,7 @@ void GameSessions::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[15])
     {
         if(getEndedAt())
@@ -1656,80 +1873,99 @@ void GameSessions::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
 }
 
 const std::vector<std::string> GameSessions::updateColumns() const
 {
     std::vector<std::string> ret;
+
     if(dirtyFlag_[0])
     {
         ret.push_back(getColumnName(0));
     }
+
     if(dirtyFlag_[1])
     {
         ret.push_back(getColumnName(1));
     }
+
     if(dirtyFlag_[2])
     {
         ret.push_back(getColumnName(2));
     }
+
     if(dirtyFlag_[3])
     {
         ret.push_back(getColumnName(3));
     }
+
     if(dirtyFlag_[4])
     {
         ret.push_back(getColumnName(4));
     }
+
     if(dirtyFlag_[5])
     {
         ret.push_back(getColumnName(5));
     }
+
     if(dirtyFlag_[6])
     {
         ret.push_back(getColumnName(6));
     }
+
     if(dirtyFlag_[7])
     {
         ret.push_back(getColumnName(7));
     }
+
     if(dirtyFlag_[8])
     {
         ret.push_back(getColumnName(8));
     }
+
     if(dirtyFlag_[9])
     {
         ret.push_back(getColumnName(9));
     }
+
     if(dirtyFlag_[10])
     {
         ret.push_back(getColumnName(10));
     }
+
     if(dirtyFlag_[11])
     {
         ret.push_back(getColumnName(11));
     }
+
     if(dirtyFlag_[12])
     {
         ret.push_back(getColumnName(12));
     }
+
     if(dirtyFlag_[13])
     {
         ret.push_back(getColumnName(13));
     }
+
     if(dirtyFlag_[14])
     {
         ret.push_back(getColumnName(14));
     }
+
     if(dirtyFlag_[15])
     {
         ret.push_back(getColumnName(15));
     }
+
     return ret;
 }
 
 void GameSessions::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -1741,6 +1977,7 @@ void GameSessions::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getUserId())
@@ -1752,6 +1989,7 @@ void GameSessions::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getGameType())
@@ -1763,6 +2001,7 @@ void GameSessions::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getPuzzleId())
@@ -1774,6 +2013,7 @@ void GameSessions::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getDifficulty())
@@ -1785,6 +2025,7 @@ void GameSessions::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getStartTime())
@@ -1796,6 +2037,7 @@ void GameSessions::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getLastActivity())
@@ -1807,6 +2049,7 @@ void GameSessions::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getIsMultiplayer())
@@ -1818,6 +2061,7 @@ void GameSessions::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[8])
     {
         if(getOpponentId())
@@ -1829,6 +2073,7 @@ void GameSessions::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[9])
     {
         if(getIsComplete())
@@ -1840,6 +2085,7 @@ void GameSessions::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[10])
     {
         if(getTotalPointsEarned())
@@ -1851,6 +2097,7 @@ void GameSessions::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[11])
     {
         if(getCompletionTimeSeconds())
@@ -1862,6 +2109,7 @@ void GameSessions::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[12])
     {
         if(getMistakes())
@@ -1873,6 +2121,7 @@ void GameSessions::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[13])
     {
         if(getHintsUsed())
@@ -1884,6 +2133,7 @@ void GameSessions::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[14])
     {
         if(getProgressData())
@@ -1895,6 +2145,7 @@ void GameSessions::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[15])
     {
         if(getEndedAt())
@@ -1906,138 +2157,188 @@ void GameSessions::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
 }
 Json::Value GameSessions::toJson() const
 {
     Json::Value ret;
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getUserId())
     {
+
         ret["user_id"]=getValueOfUserId();
+
     }
     else
     {
         ret["user_id"]=Json::Value();
     }
+
     if(getGameType())
     {
+
         ret["game_type"]=getValueOfGameType();
+
     }
     else
     {
         ret["game_type"]=Json::Value();
     }
+
     if(getPuzzleId())
     {
+
         ret["puzzle_id"]=getValueOfPuzzleId();
+
     }
     else
     {
         ret["puzzle_id"]=Json::Value();
     }
+
     if(getDifficulty())
     {
+
         ret["difficulty"]=getValueOfDifficulty();
+
     }
     else
     {
         ret["difficulty"]=Json::Value();
     }
+
     if(getStartTime())
     {
+
         ret["start_time"]=getStartTime()->toDbStringLocal();
+
     }
     else
     {
         ret["start_time"]=Json::Value();
     }
+
     if(getLastActivity())
     {
+
         ret["last_activity"]=getLastActivity()->toDbStringLocal();
+
     }
     else
     {
         ret["last_activity"]=Json::Value();
     }
+
     if(getIsMultiplayer())
     {
+
         ret["is_multiplayer"]=getValueOfIsMultiplayer();
+
     }
     else
     {
         ret["is_multiplayer"]=Json::Value();
     }
+
     if(getOpponentId())
     {
+
         ret["opponent_id"]=getValueOfOpponentId();
+
     }
     else
     {
         ret["opponent_id"]=Json::Value();
     }
+
     if(getIsComplete())
     {
+
         ret["is_complete"]=getValueOfIsComplete();
+
     }
     else
     {
         ret["is_complete"]=Json::Value();
     }
+
     if(getTotalPointsEarned())
     {
+
         ret["total_points_earned"]=getValueOfTotalPointsEarned();
+
     }
     else
     {
         ret["total_points_earned"]=Json::Value();
     }
+
     if(getCompletionTimeSeconds())
     {
+
         ret["completion_time_seconds"]=getValueOfCompletionTimeSeconds();
+
     }
     else
     {
         ret["completion_time_seconds"]=Json::Value();
     }
+
     if(getMistakes())
     {
+
         ret["mistakes"]=getValueOfMistakes();
+
     }
     else
     {
         ret["mistakes"]=Json::Value();
     }
+
     if(getHintsUsed())
     {
+
         ret["hints_used"]=getValueOfHintsUsed();
+
     }
     else
     {
         ret["hints_used"]=Json::Value();
     }
+
     if(getProgressData())
     {
+
         ret["progress_data"]=getValueOfProgressData();
+
     }
     else
     {
         ret["progress_data"]=Json::Value();
     }
+
     if(getEndedAt())
     {
+
         ret["ended_at"]=getEndedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["ended_at"]=Json::Value();
     }
+
     return ret;
 }
 
@@ -2052,403 +2353,519 @@ Json::Value GameSessions::toMasqueradedJson(
     Json::Value ret;
     if(pMasqueradingVector.size() == 16)
     {
+
         if(!pMasqueradingVector[0].empty())
         {
             if(getId())
             {
+
                 ret[pMasqueradingVector[0]]=getValueOfId();
+
             }
             else
             {
                 ret[pMasqueradingVector[0]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[1].empty())
         {
             if(getUserId())
             {
+
                 ret[pMasqueradingVector[1]]=getValueOfUserId();
+
             }
             else
             {
                 ret[pMasqueradingVector[1]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[2].empty())
         {
             if(getGameType())
             {
+
                 ret[pMasqueradingVector[2]]=getValueOfGameType();
+
             }
             else
             {
                 ret[pMasqueradingVector[2]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[3].empty())
         {
             if(getPuzzleId())
             {
+
                 ret[pMasqueradingVector[3]]=getValueOfPuzzleId();
+
             }
             else
             {
                 ret[pMasqueradingVector[3]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[4].empty())
         {
             if(getDifficulty())
             {
+
                 ret[pMasqueradingVector[4]]=getValueOfDifficulty();
+
             }
             else
             {
                 ret[pMasqueradingVector[4]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[5].empty())
         {
             if(getStartTime())
             {
+
                 ret[pMasqueradingVector[5]]=getStartTime()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[5]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[6].empty())
         {
             if(getLastActivity())
             {
+
                 ret[pMasqueradingVector[6]]=getLastActivity()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[6]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[7].empty())
         {
             if(getIsMultiplayer())
             {
+
                 ret[pMasqueradingVector[7]]=getValueOfIsMultiplayer();
+
             }
             else
             {
                 ret[pMasqueradingVector[7]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[8].empty())
         {
             if(getOpponentId())
             {
+
                 ret[pMasqueradingVector[8]]=getValueOfOpponentId();
+
             }
             else
             {
                 ret[pMasqueradingVector[8]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[9].empty())
         {
             if(getIsComplete())
             {
+
                 ret[pMasqueradingVector[9]]=getValueOfIsComplete();
+
             }
             else
             {
                 ret[pMasqueradingVector[9]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[10].empty())
         {
             if(getTotalPointsEarned())
             {
+
                 ret[pMasqueradingVector[10]]=getValueOfTotalPointsEarned();
+
             }
             else
             {
                 ret[pMasqueradingVector[10]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[11].empty())
         {
             if(getCompletionTimeSeconds())
             {
+
                 ret[pMasqueradingVector[11]]=getValueOfCompletionTimeSeconds();
+
             }
             else
             {
                 ret[pMasqueradingVector[11]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[12].empty())
         {
             if(getMistakes())
             {
+
                 ret[pMasqueradingVector[12]]=getValueOfMistakes();
+
             }
             else
             {
                 ret[pMasqueradingVector[12]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[13].empty())
         {
             if(getHintsUsed())
             {
+
                 ret[pMasqueradingVector[13]]=getValueOfHintsUsed();
+
             }
             else
             {
                 ret[pMasqueradingVector[13]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[14].empty())
         {
             if(getProgressData())
             {
+
                 ret[pMasqueradingVector[14]]=getValueOfProgressData();
+
             }
             else
             {
                 ret[pMasqueradingVector[14]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[15].empty())
         {
             if(getEndedAt())
             {
+
                 ret[pMasqueradingVector[15]]=getEndedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[15]]=Json::Value();
             }
         }
+
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getUserId())
     {
+
         ret["user_id"]=getValueOfUserId();
+
     }
     else
     {
         ret["user_id"]=Json::Value();
     }
+
     if(getGameType())
     {
+
         ret["game_type"]=getValueOfGameType();
+
     }
     else
     {
         ret["game_type"]=Json::Value();
     }
+
     if(getPuzzleId())
     {
+
         ret["puzzle_id"]=getValueOfPuzzleId();
+
     }
     else
     {
         ret["puzzle_id"]=Json::Value();
     }
+
     if(getDifficulty())
     {
+
         ret["difficulty"]=getValueOfDifficulty();
+
     }
     else
     {
         ret["difficulty"]=Json::Value();
     }
+
     if(getStartTime())
     {
+
         ret["start_time"]=getStartTime()->toDbStringLocal();
+
     }
     else
     {
         ret["start_time"]=Json::Value();
     }
+
     if(getLastActivity())
     {
+
         ret["last_activity"]=getLastActivity()->toDbStringLocal();
+
     }
     else
     {
         ret["last_activity"]=Json::Value();
     }
+
     if(getIsMultiplayer())
     {
+
         ret["is_multiplayer"]=getValueOfIsMultiplayer();
+
     }
     else
     {
         ret["is_multiplayer"]=Json::Value();
     }
+
     if(getOpponentId())
     {
+
         ret["opponent_id"]=getValueOfOpponentId();
+
     }
     else
     {
         ret["opponent_id"]=Json::Value();
     }
+
     if(getIsComplete())
     {
+
         ret["is_complete"]=getValueOfIsComplete();
+
     }
     else
     {
         ret["is_complete"]=Json::Value();
     }
+
     if(getTotalPointsEarned())
     {
+
         ret["total_points_earned"]=getValueOfTotalPointsEarned();
+
     }
     else
     {
         ret["total_points_earned"]=Json::Value();
     }
+
     if(getCompletionTimeSeconds())
     {
+
         ret["completion_time_seconds"]=getValueOfCompletionTimeSeconds();
+
     }
     else
     {
         ret["completion_time_seconds"]=Json::Value();
     }
+
     if(getMistakes())
     {
+
         ret["mistakes"]=getValueOfMistakes();
+
     }
     else
     {
         ret["mistakes"]=Json::Value();
     }
+
     if(getHintsUsed())
     {
+
         ret["hints_used"]=getValueOfHintsUsed();
+
     }
     else
     {
         ret["hints_used"]=Json::Value();
     }
+
     if(getProgressData())
     {
+
         ret["progress_data"]=getValueOfProgressData();
+
     }
     else
     {
         ret["progress_data"]=Json::Value();
     }
+
     if(getEndedAt())
     {
+
         ret["ended_at"]=getEndedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["ended_at"]=Json::Value();
     }
+
     return ret;
 }
 
 bool GameSessions::validateJsonForCreation(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, true))
             return false;
     }
+
     if(pJson.isMember("user_id"))
     {
         if(!validJsonOfField(1, "user_id", pJson["user_id"], err, true))
             return false;
     }
+
     else
     {
         err="The user_id column cannot be null";
         return false;
     }
+
     if(pJson.isMember("game_type"))
     {
         if(!validJsonOfField(2, "game_type", pJson["game_type"], err, true))
             return false;
     }
+
     if(pJson.isMember("puzzle_id"))
     {
         if(!validJsonOfField(3, "puzzle_id", pJson["puzzle_id"], err, true))
             return false;
     }
+
     if(pJson.isMember("difficulty"))
     {
         if(!validJsonOfField(4, "difficulty", pJson["difficulty"], err, true))
             return false;
     }
+
     if(pJson.isMember("start_time"))
     {
         if(!validJsonOfField(5, "start_time", pJson["start_time"], err, true))
             return false;
     }
+
     if(pJson.isMember("last_activity"))
     {
         if(!validJsonOfField(6, "last_activity", pJson["last_activity"], err, true))
             return false;
     }
+
     if(pJson.isMember("is_multiplayer"))
     {
         if(!validJsonOfField(7, "is_multiplayer", pJson["is_multiplayer"], err, true))
             return false;
     }
+
     if(pJson.isMember("opponent_id"))
     {
         if(!validJsonOfField(8, "opponent_id", pJson["opponent_id"], err, true))
             return false;
     }
+
     if(pJson.isMember("is_complete"))
     {
         if(!validJsonOfField(9, "is_complete", pJson["is_complete"], err, true))
             return false;
     }
+
     if(pJson.isMember("total_points_earned"))
     {
         if(!validJsonOfField(10, "total_points_earned", pJson["total_points_earned"], err, true))
             return false;
     }
+
     if(pJson.isMember("completion_time_seconds"))
     {
         if(!validJsonOfField(11, "completion_time_seconds", pJson["completion_time_seconds"], err, true))
             return false;
     }
+
     if(pJson.isMember("mistakes"))
     {
         if(!validJsonOfField(12, "mistakes", pJson["mistakes"], err, true))
             return false;
     }
+
     if(pJson.isMember("hints_used"))
     {
         if(!validJsonOfField(13, "hints_used", pJson["hints_used"], err, true))
             return false;
     }
+
     if(pJson.isMember("progress_data"))
     {
         if(!validJsonOfField(14, "progress_data", pJson["progress_data"], err, true))
             return false;
     }
+
     if(pJson.isMember("ended_at"))
     {
         if(!validJsonOfField(15, "ended_at", pJson["ended_at"], err, true))
             return false;
     }
+
     return true;
 }
 bool GameSessions::validateMasqueradedJsonForCreation(const Json::Value &pJson,
@@ -2461,6 +2878,7 @@ bool GameSessions::validateMasqueradedJsonForCreation(const Json::Value &pJson,
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty())
       {
           if(pJson.isMember(pMasqueradingVector[0]))
@@ -2468,7 +2886,9 @@ bool GameSessions::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[1].empty())
       {
           if(pJson.isMember(pMasqueradingVector[1]))
@@ -2476,12 +2896,15 @@ bool GameSessions::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[1] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[2].empty())
       {
           if(pJson.isMember(pMasqueradingVector[2]))
@@ -2489,7 +2912,9 @@ bool GameSessions::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[3].empty())
       {
           if(pJson.isMember(pMasqueradingVector[3]))
@@ -2497,7 +2922,9 @@ bool GameSessions::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[4].empty())
       {
           if(pJson.isMember(pMasqueradingVector[4]))
@@ -2505,7 +2932,9 @@ bool GameSessions::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[5].empty())
       {
           if(pJson.isMember(pMasqueradingVector[5]))
@@ -2513,7 +2942,9 @@ bool GameSessions::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[6].empty())
       {
           if(pJson.isMember(pMasqueradingVector[6]))
@@ -2521,7 +2952,9 @@ bool GameSessions::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[7].empty())
       {
           if(pJson.isMember(pMasqueradingVector[7]))
@@ -2529,7 +2962,9 @@ bool GameSessions::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[8].empty())
       {
           if(pJson.isMember(pMasqueradingVector[8]))
@@ -2537,7 +2972,9 @@ bool GameSessions::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(8, pMasqueradingVector[8], pJson[pMasqueradingVector[8]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[9].empty())
       {
           if(pJson.isMember(pMasqueradingVector[9]))
@@ -2545,7 +2982,9 @@ bool GameSessions::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(9, pMasqueradingVector[9], pJson[pMasqueradingVector[9]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[10].empty())
       {
           if(pJson.isMember(pMasqueradingVector[10]))
@@ -2553,7 +2992,9 @@ bool GameSessions::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(10, pMasqueradingVector[10], pJson[pMasqueradingVector[10]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[11].empty())
       {
           if(pJson.isMember(pMasqueradingVector[11]))
@@ -2561,7 +3002,9 @@ bool GameSessions::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(11, pMasqueradingVector[11], pJson[pMasqueradingVector[11]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[12].empty())
       {
           if(pJson.isMember(pMasqueradingVector[12]))
@@ -2569,7 +3012,9 @@ bool GameSessions::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(12, pMasqueradingVector[12], pJson[pMasqueradingVector[12]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[13].empty())
       {
           if(pJson.isMember(pMasqueradingVector[13]))
@@ -2577,7 +3022,9 @@ bool GameSessions::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(13, pMasqueradingVector[13], pJson[pMasqueradingVector[13]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[14].empty())
       {
           if(pJson.isMember(pMasqueradingVector[14]))
@@ -2585,7 +3032,9 @@ bool GameSessions::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(14, pMasqueradingVector[14], pJson[pMasqueradingVector[14]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[15].empty())
       {
           if(pJson.isMember(pMasqueradingVector[15]))
@@ -2593,7 +3042,9 @@ bool GameSessions::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(15, pMasqueradingVector[15], pJson[pMasqueradingVector[15]], err, true))
                   return false;
           }
+
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -2604,91 +3055,109 @@ bool GameSessions::validateMasqueradedJsonForCreation(const Json::Value &pJson,
 }
 bool GameSessions::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, false))
             return false;
     }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
     if(pJson.isMember("user_id"))
     {
         if(!validJsonOfField(1, "user_id", pJson["user_id"], err, false))
             return false;
     }
+
     if(pJson.isMember("game_type"))
     {
         if(!validJsonOfField(2, "game_type", pJson["game_type"], err, false))
             return false;
     }
+
     if(pJson.isMember("puzzle_id"))
     {
         if(!validJsonOfField(3, "puzzle_id", pJson["puzzle_id"], err, false))
             return false;
     }
+
     if(pJson.isMember("difficulty"))
     {
         if(!validJsonOfField(4, "difficulty", pJson["difficulty"], err, false))
             return false;
     }
+
     if(pJson.isMember("start_time"))
     {
         if(!validJsonOfField(5, "start_time", pJson["start_time"], err, false))
             return false;
     }
+
     if(pJson.isMember("last_activity"))
     {
         if(!validJsonOfField(6, "last_activity", pJson["last_activity"], err, false))
             return false;
     }
+
     if(pJson.isMember("is_multiplayer"))
     {
         if(!validJsonOfField(7, "is_multiplayer", pJson["is_multiplayer"], err, false))
             return false;
     }
+
     if(pJson.isMember("opponent_id"))
     {
         if(!validJsonOfField(8, "opponent_id", pJson["opponent_id"], err, false))
             return false;
     }
+
     if(pJson.isMember("is_complete"))
     {
         if(!validJsonOfField(9, "is_complete", pJson["is_complete"], err, false))
             return false;
     }
+
     if(pJson.isMember("total_points_earned"))
     {
         if(!validJsonOfField(10, "total_points_earned", pJson["total_points_earned"], err, false))
             return false;
     }
+
     if(pJson.isMember("completion_time_seconds"))
     {
         if(!validJsonOfField(11, "completion_time_seconds", pJson["completion_time_seconds"], err, false))
             return false;
     }
+
     if(pJson.isMember("mistakes"))
     {
         if(!validJsonOfField(12, "mistakes", pJson["mistakes"], err, false))
             return false;
     }
+
     if(pJson.isMember("hints_used"))
     {
         if(!validJsonOfField(13, "hints_used", pJson["hints_used"], err, false))
             return false;
     }
+
     if(pJson.isMember("progress_data"))
     {
         if(!validJsonOfField(14, "progress_data", pJson["progress_data"], err, false))
             return false;
     }
+
     if(pJson.isMember("ended_at"))
     {
         if(!validJsonOfField(15, "ended_at", pJson["ended_at"], err, false))
             return false;
     }
+
     return true;
 }
 bool GameSessions::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
@@ -2701,91 +3170,109 @@ bool GameSessions::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
       {
           if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
               return false;
       }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
       if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
       {
           if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
       {
           if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
       {
           if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
       {
           if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
       {
           if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
       {
           if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
       {
           if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
       {
           if(!validJsonOfField(8, pMasqueradingVector[8], pJson[pMasqueradingVector[8]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
       {
           if(!validJsonOfField(9, pMasqueradingVector[9], pJson[pMasqueradingVector[9]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
       {
           if(!validJsonOfField(10, pMasqueradingVector[10], pJson[pMasqueradingVector[10]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
       {
           if(!validJsonOfField(11, pMasqueradingVector[11], pJson[pMasqueradingVector[11]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
       {
           if(!validJsonOfField(12, pMasqueradingVector[12], pJson[pMasqueradingVector[12]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
       {
           if(!validJsonOfField(13, pMasqueradingVector[13], pJson[pMasqueradingVector[13]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
       {
           if(!validJsonOfField(14, pMasqueradingVector[14], pJson[pMasqueradingVector[14]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[15].empty() && pJson.isMember(pMasqueradingVector[15]))
       {
           if(!validJsonOfField(15, pMasqueradingVector[15], pJson[pMasqueradingVector[15]], err, false))
               return false;
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -2802,195 +3289,261 @@ bool GameSessions::validJsonOfField(size_t index,
 {
     switch(index)
     {
+
         case 0:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 1:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 2:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 3:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 50)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 50)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 50)";
                 return false;
             }
+
             break;
+
         case 4:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 5:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 6:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 7:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isBool())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 8:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 9:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isBool())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 10:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 11:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 12:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 13:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 14:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 15:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         default:
             err="Internal error in the server";
             return false;
     }
     return true;
 }
+

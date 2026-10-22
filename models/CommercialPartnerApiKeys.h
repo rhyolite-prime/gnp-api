@@ -1,3 +1,4 @@
+
 /**
  *
  *  CommercialPartnerApiKeys.h
@@ -38,7 +39,12 @@ namespace drogon_model
 {
 namespace Gnp
 {
+
+
 class CommercialPartners;
+
+class Users;
+
 
 class CommercialPartnerApiKeys
 {
@@ -56,14 +62,24 @@ class CommercialPartnerApiKeys
         static const std::string _is_active;
         static const std::string _last_used_at;
         static const std::string _created_at;
+        static const std::string _expires_at;
+        static const std::string _revoked_at;
+        static const std::string _revoked_by;
+        static const std::string _rate_limit_per_minute;
+        static const std::string _environment;
+
     };
 
     static const int primaryKeyNumber;
     static const std::string tableName;
     static const bool hasPrimaryKey;
+
     static const std::string primaryKeyName;
+
     using PrimaryKeyType = std::string;
     const PrimaryKeyType &getPrimaryKey() const;
+
+
 
     /**
      * @brief constructor
@@ -209,18 +225,71 @@ class CommercialPartnerApiKeys
     void setCreatedAt(const ::trantor::Date &pCreatedAt) noexcept;
     void setCreatedAtToNull() noexcept;
 
+    /**  For column expires_at  */
+    ///Get the value of the column expires_at, returns the default value if the column is null
+    const ::trantor::Date &getValueOfExpiresAt() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<::trantor::Date> &getExpiresAt() const noexcept;
+    ///Set the value of the column expires_at
+    void setExpiresAt(const ::trantor::Date &pExpiresAt) noexcept;
+    void setExpiresAtToNull() noexcept;
 
-    static size_t getColumnNumber() noexcept {  return 11;  }
+    /**  For column revoked_at  */
+    ///Get the value of the column revoked_at, returns the default value if the column is null
+    const ::trantor::Date &getValueOfRevokedAt() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<::trantor::Date> &getRevokedAt() const noexcept;
+    ///Set the value of the column revoked_at
+    void setRevokedAt(const ::trantor::Date &pRevokedAt) noexcept;
+    void setRevokedAtToNull() noexcept;
+
+    /**  For column revoked_by  */
+    ///Get the value of the column revoked_by, returns the default value if the column is null
+    const std::string &getValueOfRevokedBy() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getRevokedBy() const noexcept;
+    ///Set the value of the column revoked_by
+    void setRevokedBy(const std::string &pRevokedBy) noexcept;
+    void setRevokedBy(std::string &&pRevokedBy) noexcept;
+    void setRevokedByToNull() noexcept;
+
+    /**  For column rate_limit_per_minute  */
+    ///Get the value of the column rate_limit_per_minute, returns the default value if the column is null
+    const int32_t &getValueOfRateLimitPerMinute() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<int32_t> &getRateLimitPerMinute() const noexcept;
+    ///Set the value of the column rate_limit_per_minute
+    void setRateLimitPerMinute(const int32_t &pRateLimitPerMinute) noexcept;
+
+    /**  For column environment  */
+    ///Get the value of the column environment, returns the default value if the column is null
+    const std::string &getValueOfEnvironment() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getEnvironment() const noexcept;
+    ///Set the value of the column environment
+    void setEnvironment(const std::string &pEnvironment) noexcept;
+    void setEnvironment(std::string &&pEnvironment) noexcept;
+
+
+
+    static size_t getColumnNumber() noexcept {  return 16;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
     std::string toString() const;
     Json::Value toMasqueradedJson(const std::vector<std::string> &pMasqueradingVector) const;
     /// Relationship interfaces
+
     CommercialPartners getCommercialPartners(const drogon::orm::DbClientPtr &clientPtr) const;
     void getCommercialPartners(const drogon::orm::DbClientPtr &clientPtr,
                                const std::function<void(CommercialPartners)> &rcb,
                                const drogon::orm::ExceptionCallback &ecb) const;
+
+    Users getUsers(const drogon::orm::DbClientPtr &clientPtr) const;
+    void getUsers(const drogon::orm::DbClientPtr &clientPtr,
+                  const std::function<void(Users)> &rcb,
+                  const drogon::orm::ExceptionCallback &ecb) const;
+
   private:
     friend drogon::orm::Mapper<CommercialPartnerApiKeys>;
     friend drogon::orm::BaseBuilder<CommercialPartnerApiKeys, true, true>;
@@ -247,6 +316,12 @@ class CommercialPartnerApiKeys
     std::shared_ptr<bool> isActive_;
     std::shared_ptr<::trantor::Date> lastUsedAt_;
     std::shared_ptr<::trantor::Date> createdAt_;
+    std::shared_ptr<::trantor::Date> expiresAt_;
+    std::shared_ptr<::trantor::Date> revokedAt_;
+    std::shared_ptr<std::string> revokedBy_;
+    std::shared_ptr<int32_t> rateLimitPerMinute_;
+    std::shared_ptr<std::string> environment_;
+
     struct MetaData
     {
         const std::string colName_;
@@ -258,17 +333,23 @@ class CommercialPartnerApiKeys
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[11]={ false };
+    bool dirtyFlag_[16]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
+
         static const std::string sql="select * from " + tableName + " where id = $1";
+
+
         return sql;
     }
 
     static const std::string &sqlForDeletingByPrimaryKey()
     {
+
         static const std::string sql="delete from " + tableName + " where id = $1";
+
+
         return sql;
     }
     std::string sqlForInserting(bool &needSelection) const
@@ -278,30 +359,36 @@ class CommercialPartnerApiKeys
         needSelection = false;
         sql += "id,";
         ++parametersCount;
+
         if(!dirtyFlag_[0])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[1])
         {
             sql += "partner_id,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[2])
         {
             sql += "partner_name,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[3])
         {
             sql += "client_id,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[4])
         {
             sql += "client_secret_hash,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[5])
         {
             sql += "label,";
@@ -309,22 +396,26 @@ class CommercialPartnerApiKeys
         }
         sql += "scopes,";
         ++parametersCount;
+
         if(!dirtyFlag_[6])
         {
             needSelection=true;
         }
         sql += "allowed_ips,";
         ++parametersCount;
+
         if(!dirtyFlag_[7])
         {
             needSelection=true;
         }
         sql += "is_active,";
         ++parametersCount;
+
         if(!dirtyFlag_[8])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[9])
         {
             sql += "last_used_at,";
@@ -332,10 +423,44 @@ class CommercialPartnerApiKeys
         }
         sql += "created_at,";
         ++parametersCount;
+
         if(!dirtyFlag_[10])
         {
             needSelection=true;
         }
+
+        if(dirtyFlag_[11])
+        {
+            sql += "expires_at,";
+            ++parametersCount;
+        }
+
+        if(dirtyFlag_[12])
+        {
+            sql += "revoked_at,";
+            ++parametersCount;
+        }
+
+        if(dirtyFlag_[13])
+        {
+            sql += "revoked_by,";
+            ++parametersCount;
+        }
+        sql += "rate_limit_per_minute,";
+        ++parametersCount;
+
+        if(!dirtyFlag_[14])
+        {
+            needSelection=true;
+        }
+        sql += "environment,";
+        ++parametersCount;
+
+        if(!dirtyFlag_[15])
+        {
+            needSelection=true;
+        }
+
         if(parametersCount > 0)
         {
             sql[sql.length()-1]=')';
@@ -344,88 +469,179 @@ class CommercialPartnerApiKeys
         else
             sql += ") values (";
 
+
         int placeholder=1;
         char placeholderStr[64];
         size_t n=0;
+
         if(dirtyFlag_[0])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[1])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[2])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[3])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[4])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[5])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[6])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[7])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[8])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[9])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[10])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
+        if(dirtyFlag_[11])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
+        if(dirtyFlag_[12])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
+        if(dirtyFlag_[13])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
+        if(dirtyFlag_[14])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
+        else
+        {
+            sql +="default,";
+        }
+
+        if(dirtyFlag_[15])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
+        else
+        {
+            sql +="default,";
+        }
+
         if(parametersCount > 0)
         {
             sql.resize(sql.length() - 1);
         }
+
         if(needSelection)
         {
             sql.append(") returning *");
@@ -434,9 +650,11 @@ class CommercialPartnerApiKeys
         {
             sql.append(1, ')');
         }
+
         LOG_TRACE << sql;
         return sql;
     }
 };
 } // namespace Gnp
+
 } // namespace drogon_model

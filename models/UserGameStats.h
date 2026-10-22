@@ -1,3 +1,4 @@
+
 /**
  *
  *  UserGameStats.h
@@ -39,6 +40,8 @@ namespace drogon_model
 namespace Gnp
 {
 
+
+
 class UserGameStats
 {
   public:
@@ -57,14 +60,19 @@ class UserGameStats
         static const std::string _win_rate;
         static const std::string _last_played;
         static const std::string _updated_at;
+
     };
 
     static const int primaryKeyNumber;
     static const std::string tableName;
     static const bool hasPrimaryKey;
+
     static const std::string primaryKeyName;
+
     using PrimaryKeyType = std::string;
     const PrimaryKeyType &getPrimaryKey() const;
+
+
 
     /**
      * @brief constructor
@@ -228,6 +236,7 @@ class UserGameStats
     void setUpdatedAtToNull() noexcept;
 
 
+
     static size_t getColumnNumber() noexcept {  return 13;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
@@ -235,6 +244,7 @@ class UserGameStats
     std::string toString() const;
     Json::Value toMasqueradedJson(const std::vector<std::string> &pMasqueradingVector) const;
     /// Relationship interfaces
+
   private:
     friend drogon::orm::Mapper<UserGameStats>;
     friend drogon::orm::BaseBuilder<UserGameStats, true, true>;
@@ -263,6 +273,7 @@ class UserGameStats
     std::shared_ptr<std::string> winRate_;
     std::shared_ptr<::trantor::Date> lastPlayed_;
     std::shared_ptr<::trantor::Date> updatedAt_;
+
     struct MetaData
     {
         const std::string colName_;
@@ -278,13 +289,19 @@ class UserGameStats
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
+
         static const std::string sql="select * from " + tableName + " where id = $1";
+
+
         return sql;
     }
 
     static const std::string &sqlForDeletingByPrimaryKey()
     {
+
         static const std::string sql="delete from " + tableName + " where id = $1";
+
+
         return sql;
     }
     std::string sqlForInserting(bool &needSelection) const
@@ -294,40 +311,47 @@ class UserGameStats
         needSelection = false;
         sql += "id,";
         ++parametersCount;
+
         if(!dirtyFlag_[0])
         {
             needSelection=true;
         }
         sql += "total_points,";
         ++parametersCount;
+
         if(!dirtyFlag_[1])
         {
             needSelection=true;
         }
         sql += "games_played,";
         ++parametersCount;
+
         if(!dirtyFlag_[2])
         {
             needSelection=true;
         }
         sql += "games_won,";
         ++parametersCount;
+
         if(!dirtyFlag_[3])
         {
             needSelection=true;
         }
         sql += "games_lost,";
         ++parametersCount;
+
         if(!dirtyFlag_[4])
         {
             needSelection=true;
         }
         sql += "games_draw,";
         ++parametersCount;
+
         if(!dirtyFlag_[5])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[6])
         {
             sql += "user_id,";
@@ -335,28 +359,33 @@ class UserGameStats
         }
         sql += "game_type,";
         ++parametersCount;
+
         if(!dirtyFlag_[7])
         {
             needSelection=true;
         }
         sql += "current_streak,";
         ++parametersCount;
+
         if(!dirtyFlag_[8])
         {
             needSelection=true;
         }
         sql += "longest_streak,";
         ++parametersCount;
+
         if(!dirtyFlag_[9])
         {
             needSelection=true;
         }
         sql += "win_rate,";
         ++parametersCount;
+
         if(!dirtyFlag_[10])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[11])
         {
             sql += "last_played,";
@@ -364,10 +393,12 @@ class UserGameStats
         }
         sql += "updated_at,";
         ++parametersCount;
+
         if(!dirtyFlag_[12])
         {
             needSelection=true;
         }
+
         if(parametersCount > 0)
         {
             sql[sql.length()-1]=')';
@@ -376,122 +407,175 @@ class UserGameStats
         else
             sql += ") values (";
 
+
         int placeholder=1;
         char placeholderStr[64];
         size_t n=0;
+
         if(dirtyFlag_[0])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[1])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[2])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[3])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[4])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[5])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[6])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[7])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[8])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[9])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[10])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[11])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[12])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(parametersCount > 0)
         {
             sql.resize(sql.length() - 1);
         }
+
         if(needSelection)
         {
             sql.append(") returning *");
@@ -500,9 +584,11 @@ class UserGameStats
         {
             sql.append(1, ')');
         }
+
         LOG_TRACE << sql;
         return sql;
     }
 };
 } // namespace Gnp
+
 } // namespace drogon_model

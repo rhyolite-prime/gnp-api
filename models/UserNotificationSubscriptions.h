@@ -1,3 +1,4 @@
+
 /**
  *
  *  UserNotificationSubscriptions.h
@@ -39,6 +40,8 @@ namespace drogon_model
 namespace Gnp
 {
 
+
+
 class UserNotificationSubscriptions
 {
   public:
@@ -50,14 +53,19 @@ class UserNotificationSubscriptions
         static const std::string _subscription_status;
         static const std::string _created_at;
         static const std::string _updated_at;
+
     };
 
     static const int primaryKeyNumber;
     static const std::string tableName;
     static const bool hasPrimaryKey;
+
     static const std::string primaryKeyName;
+
     using PrimaryKeyType = std::string;
     const PrimaryKeyType &getPrimaryKey() const;
+
+
 
     /**
      * @brief constructor
@@ -155,6 +163,7 @@ class UserNotificationSubscriptions
     void setUpdatedAtToNull() noexcept;
 
 
+
     static size_t getColumnNumber() noexcept {  return 6;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
@@ -162,6 +171,7 @@ class UserNotificationSubscriptions
     std::string toString() const;
     Json::Value toMasqueradedJson(const std::vector<std::string> &pMasqueradingVector) const;
     /// Relationship interfaces
+
   private:
     friend drogon::orm::Mapper<UserNotificationSubscriptions>;
     friend drogon::orm::BaseBuilder<UserNotificationSubscriptions, true, true>;
@@ -183,6 +193,7 @@ class UserNotificationSubscriptions
     std::shared_ptr<int32_t> subscriptionStatus_;
     std::shared_ptr<::trantor::Date> createdAt_;
     std::shared_ptr<::trantor::Date> updatedAt_;
+
     struct MetaData
     {
         const std::string colName_;
@@ -198,13 +209,19 @@ class UserNotificationSubscriptions
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
+
         static const std::string sql="select * from " + tableName + " where id = $1";
+
+
         return sql;
     }
 
     static const std::string &sqlForDeletingByPrimaryKey()
     {
+
         static const std::string sql="delete from " + tableName + " where id = $1";
+
+
         return sql;
     }
     std::string sqlForInserting(bool &needSelection) const
@@ -214,20 +231,24 @@ class UserNotificationSubscriptions
         needSelection = false;
         sql += "id,";
         ++parametersCount;
+
         if(!dirtyFlag_[0])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[1])
         {
             sql += "user_id,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[2])
         {
             sql += "notification_type,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[3])
         {
             sql += "subscription_status,";
@@ -235,15 +256,18 @@ class UserNotificationSubscriptions
         }
         sql += "created_at,";
         ++parametersCount;
+
         if(!dirtyFlag_[4])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[5])
         {
             sql += "updated_at,";
             ++parametersCount;
         }
+
         if(parametersCount > 0)
         {
             sql[sql.length()-1]=')';
@@ -252,51 +276,74 @@ class UserNotificationSubscriptions
         else
             sql += ") values (";
 
+
         int placeholder=1;
         char placeholderStr[64];
         size_t n=0;
+
         if(dirtyFlag_[0])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[1])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[2])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[3])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[4])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[5])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(parametersCount > 0)
         {
             sql.resize(sql.length() - 1);
         }
+
         if(needSelection)
         {
             sql.append(") returning *");
@@ -305,9 +352,11 @@ class UserNotificationSubscriptions
         {
             sql.append(1, ')');
         }
+
         LOG_TRACE << sql;
         return sql;
     }
 };
 } // namespace Gnp
+
 } // namespace drogon_model

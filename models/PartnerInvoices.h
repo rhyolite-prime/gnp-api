@@ -1,3 +1,4 @@
+
 /**
  *
  *  PartnerInvoices.h
@@ -39,6 +40,8 @@ namespace drogon_model
 namespace Gnp
 {
 
+
+
 class PartnerInvoices
 {
   public:
@@ -60,14 +63,19 @@ class PartnerInvoices
         static const std::string _status;
         static const std::string _created_at;
         static const std::string _updated_at;
+
     };
 
     static const int primaryKeyNumber;
     static const std::string tableName;
     static const bool hasPrimaryKey;
+
     static const std::string primaryKeyName;
+
     using PrimaryKeyType = std::string;
     const PrimaryKeyType &getPrimaryKey() const;
+
+
 
     /**
      * @brief constructor
@@ -262,6 +270,7 @@ class PartnerInvoices
     void setUpdatedAtToNull() noexcept;
 
 
+
     static size_t getColumnNumber() noexcept {  return 16;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
@@ -269,6 +278,7 @@ class PartnerInvoices
     std::string toString() const;
     Json::Value toMasqueradedJson(const std::vector<std::string> &pMasqueradingVector) const;
     /// Relationship interfaces
+
   private:
     friend drogon::orm::Mapper<PartnerInvoices>;
     friend drogon::orm::BaseBuilder<PartnerInvoices, true, true>;
@@ -300,6 +310,7 @@ class PartnerInvoices
     std::shared_ptr<std::string> status_;
     std::shared_ptr<::trantor::Date> createdAt_;
     std::shared_ptr<::trantor::Date> updatedAt_;
+
     struct MetaData
     {
         const std::string colName_;
@@ -315,13 +326,19 @@ class PartnerInvoices
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
+
         static const std::string sql="select * from " + tableName + " where id = $1";
+
+
         return sql;
     }
 
     static const std::string &sqlForDeletingByPrimaryKey()
     {
+
         static const std::string sql="delete from " + tableName + " where id = $1";
+
+
         return sql;
     }
     std::string sqlForInserting(bool &needSelection) const
@@ -331,20 +348,24 @@ class PartnerInvoices
         needSelection = false;
         sql += "id,";
         ++parametersCount;
+
         if(!dirtyFlag_[0])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[1])
         {
             sql += "partner_id,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[2])
         {
             sql += "partner_name,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[3])
         {
             sql += "partner_email,";
@@ -352,30 +373,36 @@ class PartnerInvoices
         }
         sql += "billing_cycle,";
         ++parametersCount;
+
         if(!dirtyFlag_[4])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[5])
         {
             sql += "invoice_number,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[6])
         {
             sql += "description,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[7])
         {
             sql += "unit_price,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[8])
         {
             sql += "invoice_amount,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[9])
         {
             sql += "balance,";
@@ -383,15 +410,18 @@ class PartnerInvoices
         }
         sql += "currency,";
         ++parametersCount;
+
         if(!dirtyFlag_[10])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[11])
         {
             sql += "due_date,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[12])
         {
             sql += "paid_at,";
@@ -399,21 +429,25 @@ class PartnerInvoices
         }
         sql += "status,";
         ++parametersCount;
+
         if(!dirtyFlag_[13])
         {
             needSelection=true;
         }
         sql += "created_at,";
         ++parametersCount;
+
         if(!dirtyFlag_[14])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[15])
         {
             sql += "updated_at,";
             ++parametersCount;
         }
+
         if(parametersCount > 0)
         {
             sql[sql.length()-1]=')';
@@ -422,113 +456,169 @@ class PartnerInvoices
         else
             sql += ") values (";
 
+
         int placeholder=1;
         char placeholderStr[64];
         size_t n=0;
+
         if(dirtyFlag_[0])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[1])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[2])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[3])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[4])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[5])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[6])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[7])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[8])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[9])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[10])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[11])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[12])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[13])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[14])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[15])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(parametersCount > 0)
         {
             sql.resize(sql.length() - 1);
         }
+
         if(needSelection)
         {
             sql.append(") returning *");
@@ -537,9 +627,11 @@ class PartnerInvoices
         {
             sql.append(1, ')');
         }
+
         LOG_TRACE << sql;
         return sql;
     }
 };
 } // namespace Gnp
+
 } // namespace drogon_model

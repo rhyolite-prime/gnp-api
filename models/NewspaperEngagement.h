@@ -1,3 +1,4 @@
+
 /**
  *
  *  NewspaperEngagement.h
@@ -39,6 +40,8 @@ namespace drogon_model
 namespace Gnp
 {
 
+
+
 class NewspaperEngagement
 {
   public:
@@ -53,14 +56,19 @@ class NewspaperEngagement
         static const std::string _time_spent_seconds;
         static const std::string _device_type;
         static const std::string _user_agent;
+
     };
 
     static const int primaryKeyNumber;
     static const std::string tableName;
     static const bool hasPrimaryKey;
+
     static const std::string primaryKeyName;
+
     using PrimaryKeyType = std::string;
     const PrimaryKeyType &getPrimaryKey() const;
+
+
 
     /**
      * @brief constructor
@@ -186,6 +194,7 @@ class NewspaperEngagement
     void setUserAgentToNull() noexcept;
 
 
+
     static size_t getColumnNumber() noexcept {  return 9;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
@@ -193,6 +202,7 @@ class NewspaperEngagement
     std::string toString() const;
     Json::Value toMasqueradedJson(const std::vector<std::string> &pMasqueradingVector) const;
     /// Relationship interfaces
+
   private:
     friend drogon::orm::Mapper<NewspaperEngagement>;
     friend drogon::orm::BaseBuilder<NewspaperEngagement, true, true>;
@@ -217,6 +227,7 @@ class NewspaperEngagement
     std::shared_ptr<int32_t> timeSpentSeconds_;
     std::shared_ptr<std::string> deviceType_;
     std::shared_ptr<std::string> userAgent_;
+
     struct MetaData
     {
         const std::string colName_;
@@ -232,13 +243,19 @@ class NewspaperEngagement
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
+
         static const std::string sql="select * from " + tableName + " where id = $1";
+
+
         return sql;
     }
 
     static const std::string &sqlForDeletingByPrimaryKey()
     {
+
         static const std::string sql="delete from " + tableName + " where id = $1";
+
+
         return sql;
     }
     std::string sqlForInserting(bool &needSelection) const
@@ -248,20 +265,24 @@ class NewspaperEngagement
         needSelection = false;
         sql += "id,";
         ++parametersCount;
+
         if(!dirtyFlag_[0])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[1])
         {
             sql += "newspaper_id,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[2])
         {
             sql += "user_id,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[3])
         {
             sql += "partner_id,";
@@ -269,10 +290,12 @@ class NewspaperEngagement
         }
         sql += "viewed_at,";
         ++parametersCount;
+
         if(!dirtyFlag_[4])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[5])
         {
             sql += "last_viewed,";
@@ -280,21 +303,25 @@ class NewspaperEngagement
         }
         sql += "time_spent_seconds,";
         ++parametersCount;
+
         if(!dirtyFlag_[6])
         {
             needSelection=true;
         }
         sql += "device_type,";
         ++parametersCount;
+
         if(!dirtyFlag_[7])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[8])
         {
             sql += "user_agent,";
             ++parametersCount;
         }
+
         if(parametersCount > 0)
         {
             sql[sql.length()-1]=')';
@@ -303,74 +330,108 @@ class NewspaperEngagement
         else
             sql += ") values (";
 
+
         int placeholder=1;
         char placeholderStr[64];
         size_t n=0;
+
         if(dirtyFlag_[0])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[1])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[2])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[3])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[4])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[5])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[6])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[7])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[8])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(parametersCount > 0)
         {
             sql.resize(sql.length() - 1);
         }
+
         if(needSelection)
         {
             sql.append(") returning *");
@@ -379,9 +440,11 @@ class NewspaperEngagement
         {
             sql.append(1, ')');
         }
+
         LOG_TRACE << sql;
         return sql;
     }
 };
 } // namespace Gnp
+
 } // namespace drogon_model
