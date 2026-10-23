@@ -964,6 +964,55 @@ Task<HttpResponsePtr> AdminController::getSubscriberInfo(HttpRequestPtr req, con
 
 }
 
+Task<HttpResponsePtr> AdminController::getSubscriberNewspapers(HttpRequestPtr req, const std::string &userId) {
+  int pageSize = 10; // Default page size
+  int pageNo = 1;    // Default page number
+
+  if (!req->getParameter("pageSize").empty()) {
+    try {
+      pageSize = std::stoi(req->getParameter("pageSize"));
+      pageSize = std::max(1, std::min(100, pageSize)); // Limit between 1-100
+    } catch (...) {
+      // Keep default if conversion fails
+    }
+  }
+
+  if (!req->getParameter("pageNo").empty()) {
+    try {
+      pageNo = std::stoi(req->getParameter("pageNo"));
+      pageNo = std::max(1, pageNo); // Ensure page number is at least 1
+    } catch (...) {
+      // Keep default if conversion fails
+    }
+  }
+
+  // filters
+  std::string query = req->getParameter("query");
+  std::string publicationId = req->getParameter("publicationId");
+  std::string startDate = req->getParameter("startDate");
+  std::string endDate = req->getParameter("endDate");
+  std::string status = req->getParameter("status");
+  std::string isFree = req->getParameter("isFree");
+  std::string isArchived = req->getParameter("isArchived");
+
+  auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
+  auto &userService = plugin->getUserService();
+
+  auto apiResp = co_await userService.getSubscriberNewspapers(
+      userId, pageNo, pageSize, query, publicationId, startDate, endDate,
+      status, isFree, isArchived);
+
+  auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
+  const bool notFound =
+      apiResp.error.isMember("code") &&
+      (apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ||
+       apiResp.error["code"].asInt() == gnp::constants::ERR_USER_NOT_FOUND);
+  resp->setStatusCode(apiResp.success ? k200OK
+                                     : (notFound ? k404NotFound
+                                                 : k500InternalServerError));
+  co_return resp;
+}
+
 // campaigns
 
 drogon::Task<HttpResponsePtr> AdminController::getAllCampaigns(const HttpRequestPtr req) {

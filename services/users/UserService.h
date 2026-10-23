@@ -70,6 +70,16 @@ public:
 
     drogon::Task<::gnp::dto::BaseApiResponse> getSubscriberSubscriptionSummary(std::string userId);
 
+  // Admin: paginated list of newspapers a subscriber can access
+  // (union of newspaper_entitlements across the subscriber's subscription rows,
+  //  including one-time copy purchases recorded there), with filters.
+  drogon::Task<::gnp::dto::BaseApiResponse> getSubscriberNewspapers(
+      const std::string &userId, int pageNo, int pageSize,
+      const std::string &query, const std::string &publicationId,
+      const std::string &startDate, const std::string &endDate,
+      const std::string &status, const std::string &isFree,
+      const std::string &isArchived);
+
   drogon::Task<gnp::dto::BaseApiResponse> deletePartnerAdminUser(const std::string &userId, const std::string &partnerId);
 
   // auth
