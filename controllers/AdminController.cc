@@ -1,6 +1,7 @@
 #include "AdminController.h"
 
 #include "constants/ErrorCodes.h"
+#include "constants/StatusTypes.h"
 #include "dto/AffiliateSettingsDto.h"
 #include "dto/AssignPartnerSubscriberPlanDto.h"
 #include "dto/CreateCampaignDto.h"
@@ -964,6 +965,55 @@ Task<HttpResponsePtr> AdminController::getSubscriberInfo(HttpRequestPtr req, con
 
 }
 
+Task<HttpResponsePtr> AdminController::getSubscriberNewspapers(HttpRequestPtr req, const std::string &userId) {
+  int pageSize = 10; // Default page size
+  int pageNo = 1;    // Default page number
+
+  if (!req->getParameter("pageSize").empty()) {
+    try {
+      pageSize = std::stoi(req->getParameter("pageSize"));
+      pageSize = std::max(1, std::min(100, pageSize)); // Limit between 1-100
+    } catch (...) {
+      // Keep default if conversion fails
+    }
+  }
+
+  if (!req->getParameter("pageNo").empty()) {
+    try {
+      pageNo = std::stoi(req->getParameter("pageNo"));
+      pageNo = std::max(1, pageNo); // Ensure page number is at least 1
+    } catch (...) {
+      // Keep default if conversion fails
+    }
+  }
+
+  // filters
+  std::string query = req->getParameter("query");
+  std::string publicationId = req->getParameter("publicationId");
+  std::string startDate = req->getParameter("startDate");
+  std::string endDate = req->getParameter("endDate");
+  std::string status = req->getParameter("status");
+  std::string isFree = req->getParameter("isFree");
+  std::string isArchived = req->getParameter("isArchived");
+
+  auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
+  auto &userService = plugin->getUserService();
+
+  auto apiResp = co_await userService.getSubscriberNewspapers(
+      userId, pageNo, pageSize, query, publicationId, startDate, endDate,
+      status, isFree, isArchived);
+
+  auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
+  const bool notFound =
+      apiResp.error.isMember("code") &&
+      (apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ||
+       apiResp.error["code"].asInt() == gnp::constants::ERR_USER_NOT_FOUND);
+  resp->setStatusCode(apiResp.success ? k200OK
+                                     : (notFound ? k404NotFound
+                                                 : k500InternalServerError));
+  co_return resp;
+}
+
 // campaigns
 
 drogon::Task<HttpResponsePtr> AdminController::getAllCampaigns(const HttpRequestPtr req) {
@@ -1518,7 +1568,17 @@ drogon::Task<HttpResponsePtr> AdminController::getAffiliateApplicants(HttpReques
     query = "";
   }
 
-  int status = std::stoi(req->getParameter("status"));
+  // status filter (StatusTypes int). Applications live in the affiliates
+  // table as SUBMITTED(20) -> APPROVED(16) / REJECTED(17); default to the
+  // awaiting-review queue. Pass status=-1 to list every application status.
+  int status = static_cast<int>(gnp::constants::StatusTypes::SUBMITTED);
+  if (!req->getParameter("status").empty()) {
+    try {
+      status = std::stoi(req->getParameter("status"));
+    } catch (...) {
+      // Keep default if conversion fails
+    }
+  }
 
   auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
   auto &affiliateService = plugin->getAffiliateService();
@@ -1526,8 +1586,7 @@ drogon::Task<HttpResponsePtr> AdminController::getAffiliateApplicants(HttpReques
   auto apiResp = co_await affiliateService.getAllApplicants(pageNo, pageSize, query, status);
   auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
   resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
-  co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
-
+  co_return resp;
 }
 
 

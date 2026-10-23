@@ -164,15 +164,23 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::getAllApplicants(int pageNo
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Affiliates> mp(dbClient);
 
-  // 1. Build the search criteria: fetch pending applications
-  Criteria searchCriteria = Criteria(Affiliates::Cols::_status, CompareOperator::EQ, static_cast<int>(constants::StatusTypes::PENDING));
+  // 1. Build the search criteria. Applications are stored in the `affiliates`
+  //    table with StatusTypes: SUBMITTED(20) -> APPROVED(16) / REJECTED(17)
+  //    (PENDING is used by commissions, not applications). `status < 0`
+  //    lists every application status; otherwise it filters by that status.
+  Criteria searchCriteria;
+  if (status >= 0) {
+    searchCriteria = searchCriteria &&
+        Criteria(Affiliates::Cols::_status, CompareOperator::EQ, status);
+  }
   if (!query.empty()) {
     std::string likeQuery = "%" + query + "%";
 
-    searchCriteria = Criteria(Affiliates::Cols::_first_name, CompareOperator::Like, likeQuery) ||
-                     Criteria(Affiliates::Cols::_last_name, CompareOperator::Like, likeQuery) ||
-                     Criteria(Affiliates::Cols::_phone, CompareOperator::Like, likeQuery) ||
-                     Criteria(Affiliates::Cols::_email, CompareOperator::Like, likeQuery);
+    searchCriteria = searchCriteria &&
+        (Criteria(Affiliates::Cols::_first_name, CompareOperator::Like, likeQuery) ||
+         Criteria(Affiliates::Cols::_last_name, CompareOperator::Like, likeQuery) ||
+         Criteria(Affiliates::Cols::_phone, CompareOperator::Like, likeQuery) ||
+         Criteria(Affiliates::Cols::_email, CompareOperator::Like, likeQuery));
   }
 
   try {
@@ -182,6 +190,11 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::getAllApplicants(int pageNo
       response.success = true;
       response.result["data"] = Json::arrayValue;
       response.result["totalCount"] = 0;
+      response.result["pageNo"] = pageNo;
+      response.result["pageSize"] = pageSize;
+      response.result["totalPages"] = 0;
+      response.result["lowerBound"] = 0;
+      response.result["upperBound"] = 0;
       co_return response;
     }
 
@@ -232,7 +245,7 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::getAllApplicants(int pageNo
     dto::BaseApiResponse errorResponse;
     errorResponse.success = false;
     errorResponse.error["code"] = constants::ERR_DB_QUERY;
-    errorResponse.error["message"] = "Database error while fetching commercial partners.";
+    errorResponse.error["message"] = "Database error while fetching affiliate applicants.";
     errorResponse.error["detail"] = e.base().what();
     co_return errorResponse;
   }
