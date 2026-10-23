@@ -1,6 +1,7 @@
 #include "AdminController.h"
 
 #include "constants/ErrorCodes.h"
+#include "constants/StatusTypes.h"
 #include "dto/AffiliateSettingsDto.h"
 #include "dto/AssignPartnerSubscriberPlanDto.h"
 #include "dto/CreateCampaignDto.h"
@@ -1567,7 +1568,17 @@ drogon::Task<HttpResponsePtr> AdminController::getAffiliateApplicants(HttpReques
     query = "";
   }
 
-  int status = std::stoi(req->getParameter("status"));
+  // status filter (StatusTypes int). Applications live in the affiliates
+  // table as SUBMITTED(20) -> APPROVED(16) / REJECTED(17); default to the
+  // awaiting-review queue. Pass status=-1 to list every application status.
+  int status = static_cast<int>(gnp::constants::StatusTypes::SUBMITTED);
+  if (!req->getParameter("status").empty()) {
+    try {
+      status = std::stoi(req->getParameter("status"));
+    } catch (...) {
+      // Keep default if conversion fails
+    }
+  }
 
   auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
   auto &affiliateService = plugin->getAffiliateService();
@@ -1575,8 +1586,7 @@ drogon::Task<HttpResponsePtr> AdminController::getAffiliateApplicants(HttpReques
   auto apiResp = co_await affiliateService.getAllApplicants(pageNo, pageSize, query, status);
   auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
   resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
-  co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
-
+  co_return resp;
 }
 
 
