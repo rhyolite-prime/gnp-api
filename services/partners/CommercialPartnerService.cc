@@ -3717,7 +3717,8 @@ drogon::Task<::gnp::dto::BaseApiResponse> CommercialPartnerService::getPartnerAn
       Json::Value netSeries = Json::arrayValue;
       Json::Value taxSeries = Json::arrayValue;
       for (const auto &row : cmpResult) {
-        labels.append(row["partner_name"].asString());
+
+        labels.append(row["partner_name"].isNull() ? "" : row["partner_name"].as<std::string>());
         double sub = row["subtotal"].isNull() ? 0.0 : row["subtotal"].as<double>();
         netSeries.append(sub);
         taxSeries.append(sub * 0.20);
