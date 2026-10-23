@@ -2368,8 +2368,13 @@ drogon::Task<dto::BaseApiResponse> UserService::validateAdminUserCredentials(con
   gnp::dto::BaseApiResponse response;
   try {
     Users user = co_await mapper.findOne(criteria);
-    bool passwordMatches = bcrypt::validatePassword(
-        signin_dto.getPassword(), user.getValueOfPasswordHash());
+    // Normalize PHP-style "$2y$" bcrypt hashes before validating, matching
+    // validateUserCredentials — otherwise PHP-created admin accounts can
+    // never authenticate.
+    std::string storedHash = gnp::utils::PasswordUtils::normalizeBcryptHash(
+        user.getValueOfPasswordHash());
+    bool passwordMatches =
+        bcrypt::validatePassword(signin_dto.getPassword(), storedHash);
 
     if (passwordMatches) {
 
@@ -2429,6 +2434,13 @@ drogon::Task<dto::BaseApiResponse> UserService::validateAdminUserCredentials(con
     response.message = "User not found";
     response.error["code"] = constants::ERR_RESOURCE_NOT_FOUND;
     response.error["message"] = "User not found";
+  } catch (const std::exception &e) {
+    // Defensive: any non-DB failure (bcrypt, jwt-cpp, jsoncpp config access)
+    // must still produce a response instead of propagating out of the task.
+    response.success = false;
+    response.message = "An error occurred during authentication";
+    response.error["code"] = constants::ERR_INTERNAL;
+    response.error["message"] = e.what();
   }
   co_return response;
 }
