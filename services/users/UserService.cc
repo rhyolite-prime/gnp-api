@@ -8,7 +8,9 @@
 
 #include <algorithm>
 #include <cctype>
+#include <map>
 #include <random>
+#include <sstream>
 
 #include "Users.h"
 #include "bcrypt.h"
@@ -422,6 +424,255 @@ drogon::Task<::gnp::dto::BaseApiResponse> UserService::getSubscriberSubscription
   }
 }
 
+drogon::Task<::gnp::dto::BaseApiResponse> UserService::getSubscriberNewspapers(
+    const std::string &userId, int pageNo, int pageSize,
+    const std::string &query, const std::string &publicationId,
+    const std::string &startDate, const std::string &endDate,
+    const std::string &status, const std::string &isFree,
+    const std::string &isArchived) {
+
+  auto dbClient = drogon::app().getDbClient();
+  ::gnp::dto::BaseApiResponse response;
+
+  // Entitlement provenance for each newspaper the subscriber can access.
+  struct EntitlementInfo {
+    std::string uniqueId;
+    std::string subscriptionId;
+    std::string subscriptionPlanName;
+  };
+  std::map<std::string, EntitlementInfo> entitled;
+
+  try {
+    // 1. Resolve the subscriber — "Unexpected row number" means no such user.
+    CoroMapper<Users> userMapper(dbClient);
+    Users user = co_await userMapper.findByPrimaryKey(userId);
+
+    // 2. Collect newspaper entitlements across ALL subscription rows for the
+    //    user. Subscription grants and one-time copy purchases both land in
+    //    user_subscriptions.newspaper_entitlements as [{id, uniqueId}, ...]
+    //    (legacy rows may hold plain-id strings).
+    CoroMapper<UserSubscriptions> subMapper(dbClient);
+    auto subscriptions = co_await subMapper.findBy(
+        Criteria(UserSubscriptions::Cols::_user_id, CompareOperator::EQ,
+                 userId));
+
+    for (const auto &sub : subscriptions) {
+      const std::string &entStr = sub.getValueOfNewspaperEntitlements();
+      if (entStr.empty()) {
+        continue;
+      }
+
+      Json::Value entitlements;
+      Json::CharReaderBuilder readerBuilder;
+      std::string errs;
+      std::istringstream s(entStr);
+      if (!Json::parseFromStream(readerBuilder, s, entitlements, &errs) ||
+          !entitlements.isArray()) {
+        continue;
+      }
+
+      for (const auto &ent : entitlements) {
+        std::string paperId;
+        std::string uniqueId;
+        if (ent.isObject() && ent.isMember("id") && ent["id"].isString()) {
+          paperId = ent["id"].asString();
+          if (ent.isMember("uniqueId") && ent["uniqueId"].isString()) {
+            uniqueId = ent["uniqueId"].asString();
+          }
+        } else if (ent.isString()) {
+          paperId = ent.asString();
+        }
+
+        if (!paperId.empty() && entitled.find(paperId) == entitled.end()) {
+          EntitlementInfo info;
+          info.uniqueId = uniqueId;
+          info.subscriptionId = sub.getValueOfId();
+          info.subscriptionPlanName =
+              sub.getValueOfSubscriptionPlanDescription();
+          entitled[paperId] = info;
+        }
+      }
+    }
+
+    // 3. Subscriber block — present even when nothing is entitled.
+    Json::Value subscriber;
+    subscriber["id"] = user.getValueOfId();
+    subscriber["firstName"] = user.getValueOfFirstName();
+    subscriber["lastName"] = user.getValueOfLastName();
+    subscriber["email"] = user.getValueOfEmail();
+    subscriber["phoneNumber"] = user.getValueOfPhoneNumber();
+    subscriber["isActive"] = user.getValueOfIsActive();
+    response.result["subscriber"] = subscriber;
+
+    // 4. Nothing entitled → empty page.
+    if (entitled.empty()) {
+      response.success = true;
+      response.result["data"] = Json::arrayValue;
+      response.result["totalCount"] = 0;
+      response.result["pageNo"] = pageNo;
+      response.result["pageSize"] = pageSize;
+      response.result["totalPages"] = 0;
+      response.result["lowerBound"] = 0;
+      response.result["upperBound"] = 0;
+      co_return response;
+    }
+
+    std::vector<std::string> paperIds;
+    paperIds.reserve(entitled.size());
+    for (const auto &kv : entitled) {
+      paperIds.push_back(kv.first);
+    }
+
+    // 5. Scope to the entitlement set, then apply the caller's filters.
+    Criteria searchCriteria(drogon_model::Gnp::Newspapers::Cols::_id,
+                            CompareOperator::In, paperIds);
+
+    if (!query.empty()) {
+      std::string likeQuery = "%" + query + "%";
+      searchCriteria =
+          searchCriteria &&
+          (Criteria(drogon_model::Gnp::Newspapers::Cols::_title,
+                    CompareOperator::Like, likeQuery) ||
+           Criteria(drogon_model::Gnp::Newspapers::Cols::_slug,
+                    CompareOperator::Like, likeQuery) ||
+           Criteria(drogon_model::Gnp::Newspapers::Cols::_publication_name,
+                    CompareOperator::Like, likeQuery));
+    }
+
+    if (!publicationId.empty()) {
+      searchCriteria =
+          searchCriteria &&
+          Criteria(drogon_model::Gnp::Newspapers::Cols::_publication_id,
+                   CompareOperator::EQ, publicationId);
+    }
+
+    if (!startDate.empty()) {
+      searchCriteria =
+          searchCriteria &&
+          Criteria(drogon_model::Gnp::Newspapers::Cols::_publication_date,
+                   CompareOperator::GE, startDate);
+    }
+
+    if (!endDate.empty()) {
+      searchCriteria =
+          searchCriteria &&
+          Criteria(drogon_model::Gnp::Newspapers::Cols::_publication_date,
+                   CompareOperator::LE, endDate);
+    }
+
+    if (!status.empty()) {
+      bool isPublished = (status == "published");
+      searchCriteria =
+          searchCriteria &&
+          Criteria(drogon_model::Gnp::Newspapers::Cols::_is_published,
+                   CompareOperator::EQ, isPublished);
+    }
+
+    if (!isFree.empty()) {
+      bool freeCopy = (isFree == "true" || isFree == "1");
+      searchCriteria =
+          searchCriteria &&
+          Criteria(drogon_model::Gnp::Newspapers::Cols::_is_free,
+                   CompareOperator::EQ, freeCopy);
+    }
+
+    if (!isArchived.empty()) {
+      bool archived = (isArchived == "true" || isArchived == "1");
+      searchCriteria =
+          searchCriteria &&
+          Criteria(drogon_model::Gnp::Newspapers::Cols::_is_archived,
+                   CompareOperator::EQ, archived);
+    }
+
+    // 6. Paginate — newest editions first, matching listAllAsync.
+    CoroMapper<drogon_model::Gnp::Newspapers> newsMapper(dbClient);
+    size_t totalCount = co_await newsMapper.count(searchCriteria);
+
+    if (totalCount == 0) {
+      response.success = true;
+      response.result["data"] = Json::arrayValue;
+      response.result["totalCount"] = 0;
+      response.result["pageNo"] = pageNo;
+      response.result["pageSize"] = pageSize;
+      response.result["totalPages"] = 0;
+      response.result["lowerBound"] = 0;
+      response.result["upperBound"] = 0;
+      co_return response;
+    }
+
+    int offset = (pageNo - 1) * pageSize;
+    auto newspapers =
+        co_await newsMapper
+            .limit(pageSize)
+            .offset(offset)
+            .orderBy(drogon_model::Gnp::Newspapers::Cols::_publication_date,
+                     SortOrder::DESC)
+            .findBy(searchCriteria);
+
+    auto totalPages = (totalCount + pageSize - 1) / pageSize;
+
+    response.success = true;
+    response.result["totalCount"] = (Json::UInt64)totalCount;
+    response.result["pageNo"] = pageNo;
+    response.result["pageSize"] = pageSize;
+    response.result["totalPages"] = (int)totalPages;
+    response.result["lowerBound"] = pageSize * (pageNo - 1) + 1;
+    response.result["upperBound"] = (int)totalPages == pageNo
+                                        ? (Json::UInt64)totalCount
+                                        : (Json::UInt64)(pageNo * pageSize);
+
+    Json::Value data = Json::arrayValue;
+    for (const auto &paper : newspapers) {
+      Json::Value paperJson = paper.toJson();
+      Json::Value item;
+      item["id"] = paperJson["id"];
+      item["title"] = paperJson["title"];
+      item["slug"] = paperJson["slug"];
+      item["price"] = paperJson["price"];
+      item["editionNumber"] = paperJson["edition_number"];
+      item["views"] = paperJson["views"];
+      item["sales"] = paperJson["sales"];
+      item["fullDescription"] = paperJson["full_description"];
+      item["thumbnailId"] = paperJson["thumbnail_id"];
+      item["documentId"] = paperJson["document_id"];
+      item["isPublished"] = paperJson["is_published"];
+      item["publicationId"] = paperJson["publication_id"];
+      item["publicationName"] = paperJson["publication_name"];
+      item["publicationDate"] = paperJson["publication_date"];
+      item["isFree"] = paperJson["is_free"];
+      item["isArchived"] = paperJson["is_archived"];
+      item["createdAt"] = paperJson["created_at"];
+      item["modifiedAt"] = paperJson["modified_at"];
+
+      // Access provenance from the entitlement entry.
+      auto it = entitled.find(paper.getValueOfId());
+      item["uniqueId"] =
+          it != entitled.end() ? Json::Value(it->second.uniqueId)
+                               : Json::Value("");
+      item["subscriptionId"] =
+          it != entitled.end() ? Json::Value(it->second.subscriptionId)
+                               : Json::Value("");
+      item["subscriptionPlanName"] =
+          it != entitled.end() ? Json::Value(it->second.subscriptionPlanName)
+                               : Json::Value("");
+
+      data.append(item);
+    }
+    response.result["data"] = data;
+
+  } catch (const DrogonDbException &e) {
+    response.success = false;
+    if (std::string(e.base().what()) == "Unexpected row number") {
+      response.message = "Subscriber not found";
+      response.error["code"] = constants::ERR_USER_NOT_FOUND;
+    } else {
+      response.message = "Database error while fetching subscriber newspapers.";
+      response.error["code"] = constants::ERR_DB_QUERY;
+      response.error["detail"] = e.base().what();
+    }
+  }
+  co_return response;
+}
 
 drogon::Task<dto::BaseApiResponse> UserService::getDetails(const std::string &userId) {
   auto dbClient = drogon::app().getDbClient();
@@ -2117,8 +2368,13 @@ drogon::Task<dto::BaseApiResponse> UserService::validateAdminUserCredentials(con
   gnp::dto::BaseApiResponse response;
   try {
     Users user = co_await mapper.findOne(criteria);
-    bool passwordMatches = bcrypt::validatePassword(
-        signin_dto.getPassword(), user.getValueOfPasswordHash());
+    // Normalize PHP-style "$2y$" bcrypt hashes before validating, matching
+    // validateUserCredentials — otherwise PHP-created admin accounts can
+    // never authenticate.
+    std::string storedHash = gnp::utils::PasswordUtils::normalizeBcryptHash(
+        user.getValueOfPasswordHash());
+    bool passwordMatches =
+        bcrypt::validatePassword(signin_dto.getPassword(), storedHash);
 
     if (passwordMatches) {
 
@@ -2178,6 +2434,13 @@ drogon::Task<dto::BaseApiResponse> UserService::validateAdminUserCredentials(con
     response.message = "User not found";
     response.error["code"] = constants::ERR_RESOURCE_NOT_FOUND;
     response.error["message"] = "User not found";
+  } catch (const std::exception &e) {
+    // Defensive: any non-DB failure (bcrypt, jwt-cpp, jsoncpp config access)
+    // must still produce a response instead of propagating out of the task.
+    response.success = false;
+    response.message = "An error occurred during authentication";
+    response.error["code"] = constants::ERR_INTERNAL;
+    response.error["message"] = e.what();
   }
   co_return response;
 }

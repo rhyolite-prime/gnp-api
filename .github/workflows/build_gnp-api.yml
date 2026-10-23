@@ -28,10 +28,17 @@ jobs:
           
 
       # Step 3: Download and install Drogon
+      # Pinned to v1.9.13: v1.9.14 (commit c79f2d3a, PR #2560) changed
+      # HttpRequestParser's Expect: 100-continue handling — chunked requests
+      # carrying "Expect: 100-continue" no longer get the interim response and
+      # deadlock until the client times out. See
+      # docs/drogon-1.9.14-expect-100-continue-regression.md. Unpin once
+      # upstream ships a fix.
       - name: Install Drogon
         run: |
           git clone https://github.com/drogonframework/drogon.git
           cd drogon
+          git checkout v1.9.13
           git submodule update --init --recursive
           mkdir build && cd build
           cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_POSTGRESQL=ON ..

@@ -35,6 +35,7 @@ file(GLOB PERMISSION_SVC "../services/permissions/*.cc")
 file(GLOB UTILS_SVC "../utils/*.cc")
 file(GLOB JOOMLA_SVC "../services/joomla_api/*.cc")
 file(GLOB SETTING_SVC "../services/settings/*.cc")
+file(GLOB REPORTS_SVC "../services/reports/*.cc")
 file(GLOB GAMES_SVC "../services/games/*.cc")
 file(GLOB RAG_SVC "../services/rag/*.cc")
 
@@ -72,6 +73,7 @@ add_executable(${PROJECT_NAME} test_main.cc
     ${PERMISSION_SVC}
     ${SETTING_SVC}
     ${GAMES_SVC}
+    ${REPORTS_SVC}
     ${RAG_SVC}
 )
 

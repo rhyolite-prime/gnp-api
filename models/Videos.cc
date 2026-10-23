@@ -35,7 +35,7 @@ const std::string Videos::Cols::_duration = "\"duration\"";
 
 const std::string Videos::Cols::_format = "\"format\"";
 
-const std::string Videos::Cols::_thumbnail_path = "\"thumbnail_path\"";
+const std::string Videos::Cols::_thumbnail_url = "\"thumbnail_url\"";
 
 const std::string Videos::Cols::_status = "\"status\"";
 
@@ -76,7 +76,7 @@ const std::vector<typename Videos::MetaData> Videos::metaData_={
 {"file_size","int64_t","bigint",8,0,0,1},
 {"duration","int32_t","integer",4,0,0,0},
 {"format","std::string","character varying",50,0,0,0},
-{"thumbnail_path","std::string","character varying",150,0,0,0},
+{"thumbnail_url","std::string","character varying",150,0,0,0},
 {"status","int32_t","integer",4,0,0,0},
 {"views","int32_t","integer",4,0,0,0},
 {"likes","int32_t","integer",4,0,0,0},
@@ -156,10 +156,10 @@ Videos::Videos(const Row &r, const ssize_t indexOffset) noexcept
 
         }
 
-        if(!r["thumbnail_path"].isNull())
+        if(!r["thumbnail_url"].isNull())
         {
 
-            thumbnailPath_=std::make_shared<std::string>(r["thumbnail_path"].as<std::string>());
+            thumbnailUrl_=std::make_shared<std::string>(r["thumbnail_url"].as<std::string>());
 
         }
 
@@ -353,7 +353,7 @@ Videos::Videos(const Row &r, const ssize_t indexOffset) noexcept
         if(!r[index].isNull())
         {
 
-            thumbnailPath_=std::make_shared<std::string>(r[index].as<std::string>());
+            thumbnailUrl_=std::make_shared<std::string>(r[index].as<std::string>());
 
         }
 
@@ -568,7 +568,7 @@ Videos::Videos(const Json::Value &pJson, const std::vector<std::string> &pMasque
         dirtyFlag_[8] = true;
         if(!pJson[pMasqueradingVector[8]].isNull())
         {
-            thumbnailPath_=std::make_shared<std::string>(pJson[pMasqueradingVector[8]].asString());
+            thumbnailUrl_=std::make_shared<std::string>(pJson[pMasqueradingVector[8]].asString());
         }
     }
 
@@ -786,12 +786,12 @@ Videos::Videos(const Json::Value &pJson) noexcept(false)
         }
     }
 
-    if(pJson.isMember("thumbnail_path"))
+    if(pJson.isMember("thumbnail_url"))
     {
         dirtyFlag_[8]=true;
-        if(!pJson["thumbnail_path"].isNull())
+        if(!pJson["thumbnail_url"].isNull())
         {
-            thumbnailPath_=std::make_shared<std::string>(pJson["thumbnail_path"].asString());
+            thumbnailUrl_=std::make_shared<std::string>(pJson["thumbnail_url"].asString());
         }
     }
 
@@ -1019,7 +1019,7 @@ void Videos::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[8] = true;
         if(!pJson[pMasqueradingVector[8]].isNull())
         {
-            thumbnailPath_=std::make_shared<std::string>(pJson[pMasqueradingVector[8]].asString());
+            thumbnailUrl_=std::make_shared<std::string>(pJson[pMasqueradingVector[8]].asString());
         }
     }
 
@@ -1236,12 +1236,12 @@ void Videos::updateByJson(const Json::Value &pJson) noexcept(false)
         }
     }
 
-    if(pJson.isMember("thumbnail_path"))
+    if(pJson.isMember("thumbnail_url"))
     {
         dirtyFlag_[8] = true;
-        if(!pJson["thumbnail_path"].isNull())
+        if(!pJson["thumbnail_url"].isNull())
         {
-            thumbnailPath_=std::make_shared<std::string>(pJson["thumbnail_path"].asString());
+            thumbnailUrl_=std::make_shared<std::string>(pJson["thumbnail_url"].asString());
         }
     }
 
@@ -1570,30 +1570,30 @@ void Videos::setFormatToNull() noexcept
     dirtyFlag_[7] = true;
 }
 
-const std::string &Videos::getValueOfThumbnailPath() const noexcept
+const std::string &Videos::getValueOfThumbnailUrl() const noexcept
 {
     static const std::string defaultValue = std::string();
-    if(thumbnailPath_)
-        return *thumbnailPath_;
+    if(thumbnailUrl_)
+        return *thumbnailUrl_;
     return defaultValue;
 }
-const std::shared_ptr<std::string> &Videos::getThumbnailPath() const noexcept
+const std::shared_ptr<std::string> &Videos::getThumbnailUrl() const noexcept
 {
-    return thumbnailPath_;
+    return thumbnailUrl_;
 }
-void Videos::setThumbnailPath(const std::string &pThumbnailPath) noexcept
+void Videos::setThumbnailUrl(const std::string &pThumbnailUrl) noexcept
 {
-    thumbnailPath_ = std::make_shared<std::string>(pThumbnailPath);
+    thumbnailUrl_ = std::make_shared<std::string>(pThumbnailUrl);
     dirtyFlag_[8] = true;
 }
-void Videos::setThumbnailPath(std::string &&pThumbnailPath) noexcept
+void Videos::setThumbnailUrl(std::string &&pThumbnailUrl) noexcept
 {
-    thumbnailPath_ = std::make_shared<std::string>(std::move(pThumbnailPath));
+    thumbnailUrl_ = std::make_shared<std::string>(std::move(pThumbnailUrl));
     dirtyFlag_[8] = true;
 }
-void Videos::setThumbnailPathToNull() noexcept
+void Videos::setThumbnailUrlToNull() noexcept
 {
-    thumbnailPath_.reset();
+    thumbnailUrl_.reset();
     dirtyFlag_[8] = true;
 }
 
@@ -1880,7 +1880,7 @@ const std::vector<std::string> &Videos::insertColumns() noexcept
         "file_size",
         "duration",
         "format",
-        "thumbnail_path",
+        "thumbnail_url",
         "status",
         "views",
         "likes",
@@ -1998,9 +1998,9 @@ void Videos::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 
     if(dirtyFlag_[8])
     {
-        if(getThumbnailPath())
+        if(getThumbnailUrl())
         {
-            binder << getValueOfThumbnailPath();
+            binder << getValueOfThumbnailUrl();
         }
         else
         {
@@ -2350,9 +2350,9 @@ void Videos::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 
     if(dirtyFlag_[8])
     {
-        if(getThumbnailPath())
+        if(getThumbnailUrl())
         {
-            binder << getValueOfThumbnailPath();
+            binder << getValueOfThumbnailUrl();
         }
         else
         {
@@ -2585,15 +2585,15 @@ Json::Value Videos::toJson() const
         ret["format"]=Json::Value();
     }
 
-    if(getThumbnailPath())
+    if(getThumbnailUrl())
     {
 
-        ret["thumbnail_path"]=getValueOfThumbnailPath();
+        ret["thumbnail_url"]=getValueOfThumbnailUrl();
 
     }
     else
     {
-        ret["thumbnail_path"]=Json::Value();
+        ret["thumbnail_url"]=Json::Value();
     }
 
     if(getStatus())
@@ -2846,10 +2846,10 @@ Json::Value Videos::toMasqueradedJson(
 
         if(!pMasqueradingVector[8].empty())
         {
-            if(getThumbnailPath())
+            if(getThumbnailUrl())
             {
 
-                ret[pMasqueradingVector[8]]=getValueOfThumbnailPath();
+                ret[pMasqueradingVector[8]]=getValueOfThumbnailUrl();
 
             }
             else
@@ -3104,15 +3104,15 @@ Json::Value Videos::toMasqueradedJson(
         ret["format"]=Json::Value();
     }
 
-    if(getThumbnailPath())
+    if(getThumbnailUrl())
     {
 
-        ret["thumbnail_path"]=getValueOfThumbnailPath();
+        ret["thumbnail_url"]=getValueOfThumbnailUrl();
 
     }
     else
     {
-        ret["thumbnail_path"]=Json::Value();
+        ret["thumbnail_url"]=Json::Value();
     }
 
     if(getStatus())
@@ -3314,9 +3314,9 @@ bool Videos::validateJsonForCreation(const Json::Value &pJson, std::string &err)
             return false;
     }
 
-    if(pJson.isMember("thumbnail_path"))
+    if(pJson.isMember("thumbnail_url"))
     {
-        if(!validJsonOfField(8, "thumbnail_path", pJson["thumbnail_path"], err, true))
+        if(!validJsonOfField(8, "thumbnail_url", pJson["thumbnail_url"], err, true))
             return false;
     }
 
@@ -3688,9 +3688,9 @@ bool Videos::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
             return false;
     }
 
-    if(pJson.isMember("thumbnail_path"))
+    if(pJson.isMember("thumbnail_url"))
     {
-        if(!validJsonOfField(8, "thumbnail_path", pJson["thumbnail_path"], err, false))
+        if(!validJsonOfField(8, "thumbnail_url", pJson["thumbnail_url"], err, false))
             return false;
     }
 

@@ -3,6 +3,7 @@
 //
 
 #include "SubscriptionService.h"
+#include "services/reports/ReportInstrumentation.h"
 #include <jwt-cpp/jwt.h>
 
 #include "constants/ErrorCodes.h"
@@ -323,6 +324,17 @@ SubscriptionService::completeGuestOneTimeBuyAsync(
         sales++;
         newspaper.setSales(std::to_string(sales));
         co_await newspaperMapper.update(newspaper);
+        // Report telemetry: single-copy sale (edition_sales_ledger)
+        {
+          double saleAmount = 0.0;
+          double salePrice = 0.0;
+          try { saleAmount = std::stod(purchaseAttempt.getValueOfAmount()); } catch (...) {}
+          try { salePrice = std::stod(newspaper.getValueOfPrice()); } catch (...) {}
+          co_await reporting::recordEditionSale(
+              newspaper.getValueOfId(), newspaper.getValueOfPublicationId(),
+              purchaseAttempt.getValueOfUserId(), "", true, "", "",
+              salePrice, 0.0, saleAmount);
+        }
       } catch (...) {
         // Log error or handle failure to update sales (not critical to the
         // purchase flow)
@@ -551,6 +563,17 @@ SubscriptionService::completeUserOneTimeBuyAsync(const std::string &userId,
         sales++;
         newspaper.setSales(std::to_string(sales));
         co_await newspaperMapper.update(newspaper);
+        // Report telemetry: single-copy sale (edition_sales_ledger)
+        {
+          double saleAmount = 0.0;
+          double salePrice = 0.0;
+          try { saleAmount = std::stod(purchaseAttempt.getValueOfAmount()); } catch (...) {}
+          try { salePrice = std::stod(newspaper.getValueOfPrice()); } catch (...) {}
+          co_await reporting::recordEditionSale(
+              newspaper.getValueOfId(), newspaper.getValueOfPublicationId(),
+              purchaseAttempt.getValueOfUserId(), "", false, "", "",
+              salePrice, 0.0, saleAmount);
+        }
       } catch (...) {
         // Log error or handle failure to update sales
       }
@@ -706,6 +729,24 @@ SubscriptionService::fulfillSubscriptionPaymentAsync(const std::string &userId, 
       renewal.setAmountPaid(amountPaid);
       renewal.setCreatedAt(trantor::Date::now());
       co_await renewalMapper.insert(renewal);
+
+      // Report telemetry: subscription lifecycle event (subscription_lifecycle_events)
+      {
+        double mrrDelta = 0.0;
+        try { mrrDelta = std::stod(amountPaid); } catch (...) {}
+        const ::trantor::Date &startedAt = userSub.getValueOfStartDate();
+        const bool isNewSubscription =
+            startedAt.microSecondsSinceEpoch() >
+            (::trantor::Date::now().microSecondsSinceEpoch() -
+             2LL * 24 * 3600 * 1000000LL);
+        co_await reporting::recordSubscriptionLifecycleEvent(
+            userSub.getValueOfId(), userId, userSub.getValueOfPartnerId(),
+            "", userSub.getValueOfSubscriptionPlanId(),
+            isNewSubscription ? "new" : "renewal", mrrDelta,
+            paymentRecords.empty() ? std::string("")
+                                   : paymentRecords[0].getValueOfId(),
+            "");
+      }
 
       response.success = true;
       response.message = "Subscription activated successfully.";
@@ -1433,6 +1474,17 @@ drogon::Task<gnp::dto::BaseApiResponse> SubscriptionService::fulFillBuyCopy(cons
         sales++;
         newspaper.setSales(std::to_string(sales));
         co_await newspaperMapper.update(newspaper);
+        // Report telemetry: single-copy sale (edition_sales_ledger)
+        {
+          double saleAmount = 0.0;
+          double salePrice = 0.0;
+          try { saleAmount = std::stod(purchaseAttempt.getValueOfAmount()); } catch (...) {}
+          try { salePrice = std::stod(newspaper.getValueOfPrice()); } catch (...) {}
+          co_await reporting::recordEditionSale(
+              newspaper.getValueOfId(), newspaper.getValueOfPublicationId(),
+              purchaseAttempt.getValueOfUserId(), "", false, "", "",
+              salePrice, 0.0, saleAmount);
+        }
       } catch (...) {
       }
 
