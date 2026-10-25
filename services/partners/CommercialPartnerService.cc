@@ -18,6 +18,7 @@
 #include "dto/GeneratePartnerApiKeyDto.h"
 #include "dto/SendEmailDto.h"
 #include "utils/StringUtils.h"
+#include "services/reports/ReportInstrumentation.h"
 #include "plugins/GnpServicePlugin.h"
 #include "services/email/EmailService.h"
 #include "utils/CsvParser.h"
@@ -3529,11 +3530,11 @@ drogon::Task<::gnp::dto::BaseApiResponse> CommercialPartnerService::getPartnerAn
 
     // 2. Top Publications
     std::string topPubsSql =
-        "SELECT p.title, COUNT(pr.id) as read_count "
+        "SELECT p.name, COUNT(pr.id) as read_count "
         "FROM publication_reads pr "
         "JOIN publications p ON pr.publication_id = p.id "
         "WHERE pr.partner_id = $1 AND pr.read_at >= $2 "
-        "GROUP BY p.title ORDER BY read_count DESC LIMIT 5";
+        "GROUP BY p.name ORDER BY read_count DESC LIMIT 5";
     auto topRes =
         co_await dbClient->execSqlCoro(topPubsSql, partnerId, periodStart);
 
@@ -3545,7 +3546,7 @@ drogon::Task<::gnp::dto::BaseApiResponse> CommercialPartnerService::getPartnerAn
     Json::Value topPublications = Json::arrayValue;
     for (const auto &row : topRes) {
       Json::Value item;
-      item["title"] = row["title"].as<std::string>();
+      item["title"] = row["name"].as<std::string>();
       long reads = row["read_count"].as<long>();
       item["reads"] = (Json::UInt64)reads;
       item["percentage"] =
@@ -3592,7 +3593,22 @@ drogon::Task<::gnp::dto::BaseApiResponse> CommercialPartnerService::getPartnerAn
 
     auto partner = co_await partnerMapper.findByPrimaryKey(dto.getPartnerId());
 
-    // Query partner_invoices table with aggregated values
+    // Deterministic invoice number: INV-GNP-<year>-<NNNN> (year-scoped sequence).
+    const std::string yearStr =
+        trantor::Date::now().toCustomFormattedString("%Y");
+    auto seqResult = co_await dbClient->execSqlCoro(
+        "SELECT COUNT(*) AS cnt FROM partner_invoices "
+        "WHERE partner_id = $1 AND created_at >= $2::date "
+        "  AND created_at < ($2::date + INTERVAL '1 year')",
+        dto.getPartnerId(), yearStr + "-01-01");
+    const long long sequence =
+        seqResult[0]["cnt"].isNull() ? 1 : seqResult[0]["cnt"].as<long long>() + 1;
+    char invoiceNoBuf[64];
+    std::snprintf(invoiceNoBuf, sizeof(invoiceNoBuf), "INV-GNP-%s-%04lld",
+                  yearStr.c_str(), sequence);
+    const std::string invoiceNo(invoiceNoBuf);
+
+    // Query partner_invoices table with aggregated values in the billing window
     std::string sql =
         "SELECT "
         "SUM(invoice_amount) as total_invoice_amount, "
@@ -3608,16 +3624,17 @@ drogon::Task<::gnp::dto::BaseApiResponse> CommercialPartnerService::getPartnerAn
 
     Json::Value invoiceData;
 
-    // Generate invoice number
-    invoiceData["invoiceNo"] = "INV-" + std::to_string(trantor::Date::now().microSecondsSinceEpoch() / 1000).substr(0, 9);
+    invoiceData["invoiceNo"] = invoiceNo;
     invoiceData["date"] = trantor::Date::now().toCustomFormattedString("%d/%m/%Y");
     invoiceData["dueDate"] = trantor::Date::now().after(14 * 24 * 3600).toCustomFormattedString("%d/%m/%Y");
 
-    // Billed to information
-    Json::Value billedTo;
-    billedTo["name"] = partner.getValueOfName();
-    billedTo["email"] = partner.getValueOfBillingEmail();
-    invoiceData["billedTo"] = billedTo;
+    // Billed-to information (§2.3 Endpoint 1.3 payload contract)
+    invoiceData["partnerId"] = dto.getPartnerId();
+    invoiceData["partnerName"] = partner.getValueOfName();
+    invoiceData["partnerAddress"] = "";
+    invoiceData["partnerEmail"] = partner.getValueOfBillingEmail();
+    invoiceData["billedTo"]["name"] = partner.getValueOfName();
+    invoiceData["billedTo"]["email"] = partner.getValueOfBillingEmail();
 
     invoiceData["billingPeriod"] = dto.getStartDate() + " - " + dto.getEndDate();
 
@@ -3625,55 +3642,151 @@ drogon::Task<::gnp::dto::BaseApiResponse> CommercialPartnerService::getPartnerAn
     double totalInvoiceAmount = result[0]["total_invoice_amount"].isNull() ? 0.0 : result[0]["total_invoice_amount"].as<double>();
     double totalBalance = result[0]["total_balance"].isNull() ? 0.0 : result[0]["total_balance"].as<double>();
 
-    // Get partner's subscriber quota for quantity calculation
-    double subscriberQuota = partner.getValueOfSubscriberQuota();
-
-
-    // Calculate quantity: totalInvoiceAmount / subscriberQuota
-    double quantity = 0.0;
-    if (subscriberQuota > 0 && totalInvoiceAmount > 0) {
-      quantity = totalInvoiceAmount / subscriberQuota;
+    // Parse the contracted per-seat rate used to derive line quantities.
+    double unitPrice = 0.0;
+    try {
+      unitPrice = std::stod(partner.getValueOfCostPerHead());
+    } catch (...) {
+      unitPrice = 0.0;
     }
 
-    // Build single aggregated item - Clean and minimal
-    Json::Value item;
-    item["description"] = "Invoice for new and renewed subscriptions";
-    item["quantity"] = totalInvoiceAmount / std::stod(partner.getValueOfCostPerHead());
-    item["unitPrice"] = partner.getValueOfCostPerHead();
-    item["amount"] = totalInvoiceAmount;
-    item["balance"] = totalBalance;
-    item["outstanding"] = totalInvoiceAmount - totalBalance;
+    // Seat count for the lead line item.
+    auto seatResult = co_await dbClient->execSqlCoro(
+        "SELECT COUNT(*) AS seats FROM users "
+        "WHERE partner_id = $1 AND is_active = TRUE",
+        dto.getPartnerId());
+    double seatCount = seatResult[0]["seats"].isNull()
+                           ? 0.0
+                           : (double)seatResult[0]["seats"].as<long long>();
 
     Json::Value items = Json::arrayValue;
 
-    // If no invoices found, add a placeholder
     if (totalInvoiceAmount == 0) {
       Json::Value emptyItem;
       emptyItem["description"] = "No invoices found for this period";
+      emptyItem["details"] = "Adjust the billing window and try again";
       emptyItem["quantity"] = 0;
       emptyItem["unitPrice"] = 0;
       emptyItem["amount"] = 0.0;
-      emptyItem["balance"] = 0.0;
-      emptyItem["outstanding"] = 0.0;
       items.append(emptyItem);
     } else {
-      items.append(item);
+      Json::Value seatsItem;
+      seatsItem["description"] =
+          "Corporate Digital Newsstand Seats — " + partner.getValueOfName();
+      seatsItem["details"] = std::to_string((long long)seatCount) +
+                             " active employee seats × contracted enterprise rate";
+      seatsItem["quantity"] = seatCount;
+      seatsItem["unitPrice"] = unitPrice;
+      seatsItem["amount"] = totalInvoiceAmount;
+      items.append(seatsItem);
     }
 
     invoiceData["items"] = items;
 
-    // Summary calculations
-    invoiceData["subtotal"] = totalInvoiceAmount;
+    // ---- Ghana statutory tax formula ----------------------------------
+    // totalDue = subtotal + vat(15%) + getflNhil(5%) - discount
+    const double subtotal = totalInvoiceAmount;
+    const double vat = subtotal * 0.15;
+    const double getflNhil = subtotal * 0.05;
+    const double discount = subtotal * 0.05;
+    const double totalDue = subtotal + vat + getflNhil - discount;
+
+    invoiceData["subtotal"] = subtotal;
+    invoiceData["vat"] = vat;
+    invoiceData["getflNhil"] = getflNhil;
+    invoiceData["discount"] = discount;
+    invoiceData["totalDue"] = totalDue;
     invoiceData["totalBalance"] = totalBalance;
     invoiceData["outstandingBalance"] = totalInvoiceAmount - totalBalance;
 
-    // VAT calculation (15%)
-    double vat = totalInvoiceAmount * 0.15;
-    double getflNhil = totalInvoiceAmount * 0.05;
-    invoiceData["vat"] = vat;
-    invoiceData["getflNhil"] = getflNhil;
-    invoiceData["discount"] = 0.0;
-    invoiceData["totalDue"] = totalInvoiceAmount + vat;
+    // ---- Billing charts (§2.3 Endpoint 1.3 `charts`) ----------------------
+    Json::Value charts = Json::arrayValue;
+
+    {
+      // partner_billing_comparison — net subtotal vs statutory taxes per partner
+      auto cmpResult = co_await dbClient->execSqlCoro(
+          "SELECT COALESCE(cp.name, pi.partner_name, 'Unassigned') AS partner_name, "
+          "       COALESCE(SUM(pi.invoice_amount::NUMERIC), 0) AS subtotal "
+          "FROM partner_invoices pi "
+          "LEFT JOIN commercial_partners cp ON cp.id = pi.partner_id "
+          "WHERE pi.created_at >= $1 AND pi.created_at <= $2 "
+          "GROUP BY 1 ORDER BY subtotal DESC LIMIT 5",
+          dto.getStartDate(), dto.getEndDate());
+
+      Json::Value labels = Json::arrayValue;
+      Json::Value netSeries = Json::arrayValue;
+      Json::Value taxSeries = Json::arrayValue;
+      for (const auto &row : cmpResult) {
+
+        labels.append(row["partner_name"].isNull() ? "" : row["partner_name"].as<std::string>());
+        double sub = row["subtotal"].isNull() ? 0.0 : row["subtotal"].as<double>();
+        netSeries.append(sub);
+        taxSeries.append(sub * 0.20);
+      }
+
+      Json::Value chart;
+      chart["id"] = "partner_billing_comparison";
+      chart["title"] = "Partner Invoice Totals (Net vs Statutory Taxes)";
+      chart["type"] = "stacked_bar";
+      chart["labels"] = labels;
+      chart["yAxisLabel"] = "GHS";
+      Json::Value series = Json::arrayValue;
+      Json::Value netObj;
+      netObj["name"] = "Net Subtotal";
+      netObj["data"] = netSeries;
+      series.append(netObj);
+      Json::Value taxObj;
+      taxObj["name"] = "VAT + GETFund/NHIL (20%)";
+      taxObj["data"] = taxSeries;
+      series.append(taxObj);
+      chart["series"] = series;
+      charts.append(chart);
+    }
+
+    {
+      // invoice_collection_status — receivables aging breakdown
+      auto agingResult = co_await dbClient->execSqlCoro(
+          "SELECT "
+          "COALESCE(SUM(pi.balance::NUMERIC) FILTER (WHERE pi.status = 'Paid'), 0) AS paid_on_time, "
+          "COALESCE(SUM(pi.balance::NUMERIC) FILTER (WHERE pi.status <> 'Paid' "
+          "  AND pi.due_date >= NOW()), 0) AS current_due, "
+          "COALESCE(SUM(pi.balance::NUMERIC) FILTER (WHERE pi.status <> 'Paid' "
+          "  AND pi.due_date < NOW() AND pi.due_date >= NOW() - INTERVAL '30 days'), 0) AS overdue_30, "
+          "COALESCE(SUM(pi.balance::NUMERIC) FILTER (WHERE pi.status <> 'Paid' "
+          "  AND pi.due_date < NOW() - INTERVAL '30 days'), 0) AS overdue_older "
+          "FROM partner_invoices pi "
+          "WHERE pi.created_at >= $1 AND pi.created_at <= $2",
+          dto.getStartDate(), dto.getEndDate());
+
+      Json::Value itemsJson = Json::arrayValue;
+      auto addAging = [&itemsJson](const char *name, double value) {
+        Json::Value item;
+        item["name"] = name;
+        item["value"] = value;
+        itemsJson.append(item);
+      };
+      addAging("Paid on Time", agingResult[0]["paid_on_time"].isNull()
+                                  ? 0.0
+                                  : agingResult[0]["paid_on_time"].as<double>());
+      addAging("Current (Due < 14d)", agingResult[0]["current_due"].isNull()
+                                          ? 0.0
+                                          : agingResult[0]["current_due"].as<double>());
+      addAging("Overdue (15–30d)", agingResult[0]["overdue_30"].isNull()
+                                       ? 0.0
+                                       : agingResult[0]["overdue_30"].as<double>());
+      addAging("Overdue (30d+)", agingResult[0]["overdue_older"].isNull()
+                                     ? 0.0
+                                     : agingResult[0]["overdue_older"].as<double>());
+
+      Json::Value chart;
+      chart["id"] = "invoice_collection_status";
+      chart["title"] = "Receivables Aging Breakdown";
+      chart["type"] = "donut";
+      chart["items"] = itemsJson;
+      charts.append(chart);
+    }
+
+    invoiceData["charts"] = charts;
 
     response.result = invoiceData;
     co_return response;
@@ -3761,7 +3874,18 @@ drogon::Task<::gnp::dto::BaseApiResponse> CommercialPartnerService::getPartnerAn
 
     // STEP 7: Generate invoice data
     LOG_INFO << "[sendPartnerInvoiceByMail] STEP 7 — Generating invoice data";
-    std::string invoiceNo = "INV-" + std::to_string(trantor::Date::now().microSecondsSinceEpoch() / 1000).substr(0, 9);
+    std::string yearStr = trantor::Date::now().toCustomFormattedString("%Y");
+    auto seqResult = co_await dbClient->execSqlCoro(
+        "SELECT COUNT(*) AS cnt FROM partner_invoices "
+        "WHERE partner_id = $1 AND created_at >= $2::date "
+        "  AND created_at < ($2::date + INTERVAL '1 year')",
+        dto.getPartnerId(), yearStr + "-01-01");
+    long long sequence =
+        seqResult[0]["cnt"].isNull() ? 1 : seqResult[0]["cnt"].as<long long>() + 1;
+    char invoiceNoBuf[64];
+    std::snprintf(invoiceNoBuf, sizeof(invoiceNoBuf), "INV-GNP-%s-%04lld",
+                  yearStr.c_str(), sequence);
+    std::string invoiceNo(invoiceNoBuf);
     std::string dateStr = trantor::Date::now().toCustomFormattedString("%d/%m/%Y");
     std::string dueDateStr = trantor::Date::now().after(14 * 24 * 3600).toCustomFormattedString("%d/%m/%Y");
     std::string billingPeriod = dto.getStartDate() + " - " + dto.getEndDate();
@@ -3769,12 +3893,17 @@ drogon::Task<::gnp::dto::BaseApiResponse> CommercialPartnerService::getPartnerAn
              << " dateStr=" << dateStr << " dueDateStr=" << dueDateStr
              << " billingPeriod=" << billingPeriod;
 
-    // STEP 8: Calculate VAT and total
+    // STEP 8: Calculate VAT and total (Ghana statutory formula:
+    // totalDue = subtotal + vat(15%) + getflNhil(5%) - discount)
     LOG_INFO << "[sendPartnerInvoiceByMail] STEP 8 — Calculating VAT and total due";
-    double vatRate = 0.075;
-    double vat = totalInvoiceAmount * vatRate;
-    double totalDue = totalInvoiceAmount + vat;
-    LOG_INFO << "[sendPartnerInvoiceByMail] STEP 8 — vat=" << vat << " totalDue=" << totalDue;
+    double subtotal = totalInvoiceAmount;
+    double vat = subtotal * 0.15;
+    double getflNhil = subtotal * 0.05;
+    double discount = subtotal * 0.05;
+    double totalDue = subtotal + vat + getflNhil - discount;
+    LOG_INFO << "[sendPartnerInvoiceByMail] STEP 8 — subtotal=" << subtotal
+             << " vat=" << vat << " getflNhil=" << getflNhil
+             << " discount=" << discount << " totalDue=" << totalDue;
 
     // STEP 9: Build email HTML
     LOG_INFO << "[sendPartnerInvoiceByMail] STEP 9 — Building email HTML body";
@@ -4101,15 +4230,19 @@ drogon::Task<::gnp::dto::BaseApiResponse> CommercialPartnerService::getPartnerAn
     <div class="summary">
       <div class="summary-row">
         <span class="label">Subtotal</span>
-        <span class="value">GHS )html" + formatCurrency(totalInvoiceAmount) + R"html(</span>
+        <span class="value">GHS )html" + formatCurrency(subtotal) + R"html(</span>
       </div>
       <div class="summary-row">
-        <span class="label">VAT (7.5%)</span>
+        <span class="label">VAT (15%)</span>
         <span class="value">GHS )html" + formatCurrency(vat) + R"html(</span>
       </div>
       <div class="summary-row">
+        <span class="label">GETFund / NHIL (5%)</span>
+        <span class="value">GHS )html" + formatCurrency(getflNhil) + R"html(</span>
+      </div>
+      <div class="summary-row">
         <span class="label">Discount</span>
-        <span class="value">GHS 0.00</span>
+        <span class="value">GHS )html" + formatCurrency(discount) + R"html(</span>
       </div>
       <div class="summary-row total">
         <span class="label">Total Due</span>
@@ -4148,11 +4281,14 @@ drogon::Task<::gnp::dto::BaseApiResponse> CommercialPartnerService::getPartnerAn
     // STEP 11: Prepare email DTO
     LOG_INFO << "[sendPartnerInvoiceByMail] STEP 11 — Preparing SendEmailDto";
     dto::SendEmailDto emailDto;
-    //emailDto.setTo(gnp::utils::StringUtils::trim(partner.getValueOfBillingEmail()));
-    emailDto.setTo("francis.osabutey@gmail.com");
+    std::string recipientEmail = gnp::utils::StringUtils::trim(partner.getValueOfBillingEmail());
+    if (recipientEmail.empty()) {
+      recipientEmail = gnp::utils::StringUtils::trim(partner.getValueOfContactEmail());
+    }
+    emailDto.setTo(recipientEmail);
     emailDto.setSubject("Invoice " + invoiceNo + " - Graphic News Plus");
     emailDto.setBody(emailBody);
-    LOG_INFO << "[sendPartnerInvoiceByMail] STEP 11 — Email DTO prepared: to=" << "francis.osabutey@gmail.com"
+    LOG_INFO << "[sendPartnerInvoiceByMail] STEP 11 — Email DTO prepared: to=" << recipientEmail
              << " subject=" << emailDto.getSubject();
 
     // STEP 12: Send email
@@ -4170,16 +4306,25 @@ drogon::Task<::gnp::dto::BaseApiResponse> CommercialPartnerService::getPartnerAn
       co_return errorResponse;
     }
 
-    // STEP 13: Build success response
+    // STEP 13: Build success response (§2.3 Endpoint 1.3b contract:
+    // { sent, invoiceNo, recipientEmail, dispatchedAt })
     LOG_INFO << "[sendPartnerInvoiceByMail] STEP 13 — Building success response";
     gnp::dto::BaseApiResponse response;
     response.success = true;
-    response.message = "Invoice sent successfully to " + partner.getValueOfBillingEmail();
+    response.message = "Invoice sent successfully to " + recipientEmail;
+    response.result["sent"] = true;
     response.result["invoiceNo"] = invoiceNo;
-    response.result["sentTo"] = partner.getValueOfBillingEmail();
+    response.result["recipientEmail"] = recipientEmail;
+    response.result["sentTo"] = recipientEmail;
+    response.result["dispatchedAt"] = trantor::Date::now().toDbString();
     response.result["totalAmount"] = totalDue;
+
+    // Report telemetry: privileged action audit (security_audit_logs)
+    co_await reporting::recordSecurityAudit(
+        "", "billing", "INVOICE_EMAIL_DISPATCHED", "invoices", invoiceNo, "Active");
+
     LOG_INFO << "[sendPartnerInvoiceByMail] COMPLETED — invoiceNo=" << invoiceNo
-             << " sentTo=" << partner.getValueOfBillingEmail()
+             << " sentTo=" << recipientEmail
              << " totalAmount=" << totalDue;
     co_return response;
 

@@ -1,4 +1,5 @@
 #include "RagManager.h"
+#include "services/reports/ReportInstrumentation.h"
 
 #include <drogon/HttpClient.h>
 #include <drogon/HttpAppFramework.h>
@@ -1161,6 +1162,7 @@ drogon::Task<dto::BaseApiResponse> RagManager::answerArchiveQuestion(
     const std::string &userId) {
   dto::BaseApiResponse response;
   const std::string question = trim(request.getQuestion());
+  const int64_t ragStartedAt = trantor::Date::now().microSecondsSinceEpoch();
 
   if (request.hasInvalidInput()) {
     setValidationError(response, "One or more request fields have an invalid JSON type.");
@@ -1446,6 +1448,20 @@ drogon::Task<dto::BaseApiResponse> RagManager::answerArchiveQuestion(
     citations.append(std::move(citation));
   }
   response.result["citations"] = citations;
+
+  // Report telemetry: archive search & RAG query log (archive_search_and_rag_logs)
+  {
+    int targetDecade = 0;
+    if (publicationYear >= 1900 && publicationYear <= 2999) {
+      targetDecade = (publicationYear / 10) * 10;
+    }
+    const int latencyMs = static_cast<int>(
+        (trantor::Date::now().microSecondsSinceEpoch() - ragStartedAt) / 1000);
+    co_await reporting::recordArchiveQuery(
+        userId, "", "rag", question, targetDecade, publicationId,
+        static_cast<int>(sources.size()), static_cast<int>(sources.size()),
+        latencyMs, 0, -1.0);
+  }
 
   if (sources.empty()) {
     response.result["answer"] = buildExtractiveAnswer(sources);

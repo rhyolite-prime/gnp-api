@@ -55,7 +55,7 @@ class Videos
         static const std::string _file_size;
         static const std::string _duration;
         static const std::string _format;
-        static const std::string _thumbnail_path;
+        static const std::string _thumbnail_url;
         static const std::string _status;
         static const std::string _views;
         static const std::string _likes;
@@ -196,15 +196,15 @@ class Videos
     void setFormat(std::string &&pFormat) noexcept;
     void setFormatToNull() noexcept;
 
-    /**  For column thumbnail_path  */
-    ///Get the value of the column thumbnail_path, returns the default value if the column is null
-    const std::string &getValueOfThumbnailPath() const noexcept;
+    /**  For column thumbnail_url  */
+    ///Get the value of the column thumbnail_url, returns the default value if the column is null
+    const std::string &getValueOfThumbnailUrl() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getThumbnailPath() const noexcept;
-    ///Set the value of the column thumbnail_path
-    void setThumbnailPath(const std::string &pThumbnailPath) noexcept;
-    void setThumbnailPath(std::string &&pThumbnailPath) noexcept;
-    void setThumbnailPathToNull() noexcept;
+    const std::shared_ptr<std::string> &getThumbnailUrl() const noexcept;
+    ///Set the value of the column thumbnail_url
+    void setThumbnailUrl(const std::string &pThumbnailUrl) noexcept;
+    void setThumbnailUrl(std::string &&pThumbnailUrl) noexcept;
+    void setThumbnailUrlToNull() noexcept;
 
     /**  For column status  */
     ///Get the value of the column status, returns the default value if the column is null
@@ -343,7 +343,7 @@ class Videos
     std::shared_ptr<int64_t> fileSize_;
     std::shared_ptr<int32_t> duration_;
     std::shared_ptr<std::string> format_;
-    std::shared_ptr<std::string> thumbnailPath_;
+    std::shared_ptr<std::string> thumbnailUrl_;
     std::shared_ptr<int32_t> status_;
     std::shared_ptr<int32_t> views_;
     std::shared_ptr<int32_t> likes_;
@@ -443,7 +443,7 @@ class Videos
 
         if(dirtyFlag_[8])
         {
-            sql += "thumbnail_path,";
+            sql += "thumbnail_url,";
             ++parametersCount;
         }
         sql += "status,";

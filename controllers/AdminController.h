@@ -52,6 +52,7 @@ public:
   ADD_METHOD_TO(AdminController::renewUserSubscription, std::string(PREFIX) + "renew-user-subscription", Post, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::getPartnerSubscriberInfo, std::string(PREFIX) + "get-partner-subscriber-info/{1}/{2}", Get, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::getSubscriberInfo, std::string(PREFIX) + "get-subscriber-info/{1}", Get, Options, "JwtAuthFilter");
+  ADD_METHOD_TO(AdminController::getSubscriberNewspapers, std::string(PREFIX) + "get-subscriber-newspapers/{1}", Get, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::assignSubscriptionPlanToSubscriber, std::string(PREFIX) + "assign-subscriber-plan", Post, Options, "JwtAuthFilter");
   
   // campaigns
@@ -317,6 +318,7 @@ public:
 
     Task<HttpResponsePtr> getPartnerSubscriberInfo(HttpRequestPtr req, const std::string &partnerId, const std::string &userId);
     Task<HttpResponsePtr> getSubscriberInfo(HttpRequestPtr req, const std::string &userId);
+    Task<HttpResponsePtr> getSubscriberNewspapers(HttpRequestPtr req, const std::string &userId);
 
     // scheduled actions
     Task<HttpResponsePtr> regenerateNewspaperEntitlements(HttpRequestPtr req);

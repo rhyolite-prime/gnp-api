@@ -1464,38 +1464,70 @@ drogon::Task<::gnp::dto::BaseApiResponse> NewspaperService::getNewspaperEngageme
 
   try {
 
-
-    auto partner = co_await partnerMapper.findByPrimaryKey(dto.getPartnerId());
+    // partnerId is OPTIONAL: admin callers may omit it for a platform-wide
+    // engagement report (previously this crashed on the empty primary key).
+    std::string partnerId = dto.getPartnerId();
+    std::string partnerName;
+    if (!partnerId.empty()) {
+      try {
+        auto partner = co_await partnerMapper.findByPrimaryKey(partnerId);
+        partnerName = partner.getValueOfName();
+      } catch (const UnexpectedRows &) {
+        partnerName = "";
+      }
+    }
 
     // Parse dates
     trantor::Date startDateObj = trantor::Date::fromDbStringLocal(dto.getStartDate() + " 00:00:00");
     trantor::Date endDateObj = trantor::Date::fromDbStringLocal(dto.getEndDate() + " 23:59:59");
 
-    // Get partner's subscribers count
-    CoroMapper<drogon_model::Gnp::Users> userMapper(dbClient);
-    auto totalSubscribers = co_await userMapper.count(
-        Criteria(drogon_model::Gnp::Users::Cols::_partner_id, CompareOperator::EQ, dto.getPartnerId()) &&
-        Criteria(drogon_model::Gnp::Users::Cols::_is_active, CompareOperator::EQ, true));
+    // Get partner's subscribers count (only meaningful when scoped to a partner)
+    long totalSubscribers = 0;
+    if (!partnerId.empty()) {
+      CoroMapper<drogon_model::Gnp::Users> userMapper(dbClient);
+      totalSubscribers = co_await userMapper.count(
+          Criteria(drogon_model::Gnp::Users::Cols::_partner_id, CompareOperator::EQ, partnerId) &&
+          Criteria(drogon_model::Gnp::Users::Cols::_is_active, CompareOperator::EQ, true));
+    }
 
-    // Query newspaper engagement and sales data
+    // Aggregate TIMESTAMPED engagement & sales events from newspaper_engagement
+    // (viewed_at / time_spent_seconds) and edition_sales_ledger (sold_at /
+    // amount_paid) — instead of grouping the mutable cumulative counters
+    // newspapers.views / newspapers.sales by publication_date.
     std::string sql =
         "SELECT "
         "  n.id as newspaper_id, "
         "  n.title as newspaper_title, "
         "  n.publication_date, "
         "  n.price, "
-        "  n.views as total_views, "
-        "  n.sales as total_sales, "
-        "  COALESCE(n.sales / NULLIF(n.price, 0), 0) as copies_sold "
+        "  COALESCE(v.view_count, 0) as total_views, "
+        "  COALESCE(s.copies_sold, 0) as copies_sold, "
+        "  COALESCE(s.revenue, 0) as total_sales "
         "FROM newspapers n "
+        "LEFT JOIN ("
+        "  SELECT ne.newspaper_id, COUNT(*) as view_count "
+        "  FROM newspaper_engagement ne "
+        "  WHERE ne.viewed_at >= $1 AND ne.viewed_at <= $2 "
+        "    AND ($3 = '' OR ne.partner_id::text = $3) "
+        "  GROUP BY ne.newspaper_id"
+        ") v ON v.newspaper_id = n.id "
+        "LEFT JOIN ("
+        "  SELECT l.newspaper_id, COUNT(*) as copies_sold, "
+        "         SUM(l.amount_paid::NUMERIC) as revenue "
+        "  FROM edition_sales_ledger l "
+        "  WHERE l.sold_at >= $1 AND l.sold_at <= $2 "
+        "    AND ($3 = '' OR l.user_id IN ("
+        "        SELECT u.id FROM users u WHERE u.partner_id::text = $3)) "
+        "  GROUP BY l.newspaper_id"
+        ") s ON s.newspaper_id = n.id "
         "WHERE n.publication_date >= $1 "
         "  AND n.publication_date <= $2 "
         "  AND n.is_archived = false "
         "  AND n.is_published = true "
-        "ORDER BY n.publication_date DESC, n.views DESC";
+        "ORDER BY n.publication_date DESC, total_views DESC";
 
     auto result = co_await dbClient->execSqlCoro(
-        sql, startDateObj.toDbStringLocal(), endDateObj.toDbStringLocal());
+        sql, startDateObj.toDbStringLocal(), endDateObj.toDbStringLocal(), partnerId);
 
     // Build Response
     gnp::dto::BaseApiResponse response;
@@ -1505,8 +1537,8 @@ drogon::Task<::gnp::dto::BaseApiResponse> NewspaperService::getNewspaperEngageme
     Json::Value reportData;
 
     // Report Metadata
-    reportData["partnerName"] = partner.getValueOfName();
-    reportData["partnerId"] = dto.getPartnerId();
+    reportData["partnerName"] = partnerName;
+    reportData["partnerId"] = partnerId;
     reportData["reportPeriod"]["startDate"] = dto.getStartDate();
     reportData["reportPeriod"]["endDate"] = dto.getEndDate();
     reportData["reportPeriod"]["totalDays"] = (Json::Int64)((endDateObj.microSecondsSinceEpoch() - startDateObj.microSecondsSinceEpoch()) / (1000000LL * 3600 * 24)) + 1;
@@ -1640,7 +1672,6 @@ drogon::Task<::gnp::dto::BaseApiResponse> NewspaperService::getNewspaperEngageme
     co_return errorResponse;
   }
 }
-
 
 
 drogon::Task<gnp::dto::BaseApiResponse> NewspaperService::update(const dto::NewsPaperDto &dto, const std::string &id) {
