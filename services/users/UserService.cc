@@ -466,7 +466,7 @@ drogon::Task<::gnp::dto::BaseApiResponse> UserService::getSubscriberNewspapers(
       Json::CharReaderBuilder readerBuilder;
       std::string errs;
       std::istringstream s(entStr);
-      if (!Json::parseFromStream(readerBuilder, s, entitlements, &errs) ||
+      if (!Json::parseFromStream(readerBuilder, s, &entitlements, &errs) ||
           !entitlements.isArray()) {
         continue;
       }
