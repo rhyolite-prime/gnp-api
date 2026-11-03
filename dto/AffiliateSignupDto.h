@@ -21,14 +21,12 @@ namespace gnp::dto {
         [[nodiscard]] const std::string& getFirstName() const { return first_name_; }
         [[nodiscard]] const std::string& getLastName() const { return last_name_; }
         [[nodiscard]] const std::string& getEmail() const { return email_; }
-        [[nodiscard]] const std::string& getPassword() const { return password_; }
         [[nodiscard]] const std::string& getPhoneNumber() const { return phone_number_; }
 
         // Setters
         void setFirstName(const std::string& value) { first_name_ = value; }
         void setLastName(const std::string& value) { last_name_ = value; }
         void setEmail(const std::string& value) { email_ = value; }
-        void setPassword(const std::string& value) { password_ = value; }
         void setPhoneNumber(const std::string& value) { phone_number_ = value; }
 
 
@@ -37,7 +35,6 @@ namespace gnp::dto {
         std::string first_name_;
         std::string last_name_;
         std::string email_;
-        std::string password_;
         std::string phone_number_;
 
     };
@@ -55,10 +52,6 @@ namespace gnp::dto {
          if (json.isMember("email") && !json["email"].isNull()) {
              setEmail(json["email"].asString());
          }
-
-        if (json.isMember("password") && !json["password"].isNull()) {
-            setPassword(json["password"].asString());
-        }
 
         if (json.isMember("phoneNo") && !json["phoneNo"].isNull()) {
            setPhoneNumber(json["phoneNo"].asString());

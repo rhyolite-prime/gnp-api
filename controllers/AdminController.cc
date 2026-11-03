@@ -1539,6 +1539,88 @@ drogon::Task<HttpResponsePtr> AdminController::getAllAffiliates(HttpRequestPtr r
 }
 
 
+drogon::Task<HttpResponsePtr> AdminController::updateAffiliateStatus(HttpRequestPtr req) {
+
+  // --- 1. Extract parameters ---
+  std::string affiliateId = req->getParameter("id");
+  std::string statusStr   = req->getParameter("status");
+
+  // --- 2. Validate required params ---
+  if (affiliateId.empty() || statusStr.empty()) {
+    gnp::dto::BaseApiResponse badReq;
+    badReq.success = false;
+    badReq.error["code"]    = gnp::constants::ERR_VALIDATION;
+    badReq.error["message"] = "Both 'id' and 'status' query parameters are required.";
+    auto resp = HttpResponse::newHttpJsonResponse(badReq.toJson());
+    resp->setStatusCode(k400BadRequest);
+    co_return resp;
+  }
+
+  // --- 3. Parse status to int ---
+  // Valid values (StatusTypes): ARCHIVED(2), ACTIVE(11), INACTIVE(12),
+  //                             SUSPENDED(13), REJECTED(17)
+  int statusInt = -1;
+  try {
+    statusInt = std::stoi(statusStr);
+  } catch (...) {
+    gnp::dto::BaseApiResponse badReq;
+    badReq.success = false;
+    badReq.error["code"]    = gnp::constants::ERR_VALIDATION;
+    badReq.error["message"] = "Invalid 'status' value. Must be an integer (e.g. ACTIVE=11, INACTIVE=12, SUSPENDED=13, REJECTED=17, ARCHIVED=2).";
+    auto resp = HttpResponse::newHttpJsonResponse(badReq.toJson());
+    resp->setStatusCode(k400BadRequest);
+    co_return resp;
+  }
+
+  // --- 4. Whitelist allowed status transitions ---
+  static const std::set<int> kAllowedStatuses = {
+    static_cast<int>(gnp::constants::StatusTypes::ARCHIVED),   // 2
+    static_cast<int>(gnp::constants::StatusTypes::ACTIVE),     // 11
+    static_cast<int>(gnp::constants::StatusTypes::INACTIVE),   // 12
+    static_cast<int>(gnp::constants::StatusTypes::SUSPENDED),  // 13
+    static_cast<int>(gnp::constants::StatusTypes::APPROVED),   // 16 — delegates to approveApplication()
+    static_cast<int>(gnp::constants::StatusTypes::REJECTED),   // 17
+  };
+
+  if (kAllowedStatuses.find(statusInt) == kAllowedStatuses.end()) {
+    gnp::dto::BaseApiResponse badReq;
+    badReq.success = false;
+    badReq.error["code"]    = gnp::constants::ERR_VALIDATION;
+    badReq.error["message"] = "Status value not permitted. Allowed: ARCHIVED(2), ACTIVE(11), INACTIVE(12), SUSPENDED(13), REJECTED(17).";
+    auto resp = HttpResponse::newHttpJsonResponse(badReq.toJson());
+    resp->setStatusCode(k400BadRequest);
+    co_return resp;
+  }
+
+  // --- 5. Delegate to service ---
+  auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
+  auto &affiliateService = plugin->getAffiliateService();
+
+  auto apiResp = co_await affiliateService.updateAffiliateAccountStatus(affiliateId, statusInt);
+
+  // --- 6. Map service result to HTTP status code ---
+  drogon::HttpStatusCode httpCode = k200OK;
+  if (!apiResp.success) {
+    if (apiResp.error.isMember("code")) {
+      int errCode = apiResp.error["code"].asInt();
+      if (errCode == gnp::constants::ERR_RESOURCE_NOT_FOUND) {
+        httpCode = k404NotFound;
+      } else if (errCode == gnp::constants::ERR_VALIDATION) {
+        httpCode = k400BadRequest;
+      } else {
+        httpCode = k500InternalServerError;
+      }
+    } else {
+      httpCode = k500InternalServerError;
+    }
+  }
+
+  auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
+  resp->setStatusCode(httpCode);
+  co_return resp;
+
+}
+
 drogon::Task<HttpResponsePtr> AdminController::getAffiliateApplicants(HttpRequestPtr req) {
 
   int pageSize = 10; // Default page size
@@ -1642,6 +1724,7 @@ drogon::Task<HttpResponsePtr> AdminController::getAffiliateCommissions(HttpReque
   co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
 
 }
+
 
 drogon::Task<HttpResponsePtr> AdminController::getAffiliatePayouts(HttpRequestPtr req) {
 

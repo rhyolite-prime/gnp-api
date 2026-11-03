@@ -149,6 +149,7 @@ public:
 
   //affiliates
   ADD_METHOD_TO(AdminController::getAllAffiliates, std::string(PREFIX) + "get-all-affiliates", Get, Options, "JwtAuthFilter");
+  ADD_METHOD_TO(AdminController::updateAffiliateStatus, std::string(PREFIX) + "update-affiliate-status", Put, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::getAffiliateApplicants, std::string(PREFIX) + "get-affiliate-applicants", Get, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::getAffiliateCommissions, std::string(PREFIX) + "get-affiliate-commissions", Get, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::getAffiliatePayouts, std::string(PREFIX) + "get-affiliate-payouts", Get, Options, "JwtAuthFilter");
@@ -244,6 +245,7 @@ public:
 
   //affiliates
  drogon::Task<HttpResponsePtr> getAllAffiliates(HttpRequestPtr req);
+ drogon::Task<HttpResponsePtr> updateAffiliateStatus(HttpRequestPtr req);
  drogon::Task<HttpResponsePtr> getAffiliateApplicants(HttpRequestPtr req);
  drogon::Task<HttpResponsePtr> getAffiliateCommissions(HttpRequestPtr req);
  drogon::Task<HttpResponsePtr> getAffiliatePayouts(HttpRequestPtr req);

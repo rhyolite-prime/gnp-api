@@ -1008,8 +1008,12 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::updateAffiliateAccountStatu
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Affiliates> mapper(dbClient);
 
+  if (status == static_cast<int>(constants::StatusTypes::APPROVED)) {
+    co_return co_await approveApplication(id);
+  }
+
   try {
-    // 1. Validate Affiliate existence
+    // 1. Validate affiliate existence
     Affiliates affiliate;
     try {
       affiliate = co_await mapper.findByPrimaryKey(id);
@@ -1021,8 +1025,6 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::updateAffiliateAccountStatu
       co_return response;
     }
 
-    // 2. Validate status value (assuming valid statuses are 0, 1, 2, etc.)
-    // Common status mapping: 0 = Inactive, 1 = Active, 2 = Suspended, etc.
     if (status < 0) {
       dto::BaseApiResponse response;
       response.success = false;
@@ -1031,13 +1033,13 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::updateAffiliateAccountStatu
       co_return response;
     }
 
-    // 3. Update the status
+    // 2. Apply the status change
     affiliate.setStatus(status);
     affiliate.setUpdatedAt(trantor::Date::now());
 
     co_await mapper.update(affiliate);
 
-    // 4. Build success response
+    // 3. Build success response
     dto::BaseApiResponse response;
     response.success = true;
     response.result["message"] = "Affiliate account status updated successfully.";
