@@ -345,7 +345,7 @@
             "UserName": "account@graphicnewsplus.com",
             "Password": "AEjdJ^%mh43Lm8f-",
             "SenderName": "Graphic NewsPlus",
-            "AdminRecipients": ["francis.osabutey@gmail.com", "rhyoliteprime@gmail.com"]
+            "AdminRecipients": ["francis.osabutey@gmail.com", "kwabenaimhotep@gmail.com"]
         },
         "QuartzSchedulerApi": {
             "BaseUrl": "https://scheduler.richcreationsdevelopment.com",

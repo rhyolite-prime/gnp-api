@@ -226,7 +226,8 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::getAllApplicants(int pageNo
       camelCaseAffiliateApplicant["firstName"] = affiliateApplicantJson["first_name"];
       camelCaseAffiliateApplicant["lastName"] = affiliateApplicantJson["last_name"];
       camelCaseAffiliateApplicant["email"] = affiliateApplicantJson["email"];
-      camelCaseAffiliateApplicant["phone"] = affiliateApplicantJson["phone"];
+      camelCaseAffiliateApplicant["phoneNo"] = affiliateApplicantJson["phone"];
+      camelCaseAffiliateApplicant["affiliateId"] = affiliateApplicantJson["phone"];
       camelCaseAffiliateApplicant["status"] = affiliateApplicantJson["status"];
       camelCaseAffiliateApplicant["createdAt"] = affiliateApplicantJson["created_at"];
 
@@ -254,7 +255,7 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::getAllApplicants(int pageNo
 }
 
 
- drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::submitApplication(const ::gnp::dto::AffiliateSignupDto &dto) {
+ drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::submitApplication(const dto::AffiliateSignupDto &dto) {
 
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<drogon_model::Gnp::Affiliates> applicationMapper(dbClient);
@@ -276,7 +277,7 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::getAllApplicants(int pageNo
 
     // 2. Check if email already has an approved application (existing user)
     auto approvedApplications = co_await applicationMapper.findBy(
-        Criteria(drogon_model::Gnp::Affiliates::Cols::_email, CompareOperator::EQ, dto.getEmail()) && Criteria(drogon_model::Gnp::Affiliates::Cols::_status, CompareOperator::EQ, static_cast<int>(constants::StatusTypes::APPROVED)));
+        Criteria(Affiliates::Cols::_email, CompareOperator::EQ, dto.getEmail()) && Criteria(Affiliates::Cols::_status, CompareOperator::EQ, static_cast<int>(constants::StatusTypes::APPROVED)));
 
     if (!approvedApplications.empty()) {
       dto::BaseApiResponse response;
@@ -317,20 +318,79 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::getAllApplicants(int pageNo
     response.success = true;
     response.result["message"] = "Your application has been submitted successfully. We will review it and get back to you soon.";
 
-    // send admin to the affiliate informing them about their affiliate application submission request
+    // Send email notifications
+    auto &app = drogon::app();
+    auto customConfig = app.getCustomConfig();
+    Json::Value adminRecipients = customConfig["MailConfiguration"]["AdminRecipients"];
 
     auto plugin = drogon::app().getPlugin<plugins::GnpServicePlugin>();
     auto &emailService = plugin->getEmailService();
 
-    dto::SendEmailDto emailDto;
-    emailDto.setTo(standardEmail);
-    std::string emailSubject = "New Affiliate Registration on GNP";
-    emailDto.setSubject(emailSubject);
+    std::string currentYear = trantor::Date::now().toCustomFormattedString("%Y");
+    std::string submissionDate = trantor::Date::now().toCustomFormattedString("%B %d, %Y at %I:%M %p");
+    std::string applicantFullName = dto.getFirstName() + " " + dto.getLastName();
+    const std::string adminDashboardUrl = "https://new.graphicnewsplus.com/admin/affiliates";
 
-    std::string emailBody = "<p> </p>";
+    // Build Admin Email HTML Content (simplified)
+    std::string adminEmailBody =
+        "<div style=\"font-family: Arial, sans-serif; font-size: 15px; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; padding: 20px;\">\n"
+        "  <h2 style=\"color: #1a1a2e; margin-bottom: 16px;\">Graphic News Plus</h2>\n"
+        "  <p>Hello Admin,</p>\n"
+        "  <p>A new affiliate application has been submitted on <strong>Graphic News Plus</strong>.</p>\n"
+        "  <p style=\"background: #f9f9f9; padding: 15px; border-radius: 6px; border: 1px solid #eee;\">\n"
+        "    <strong>Applicant Name:</strong> " + applicantFullName + "<br>\n"
+        "    <strong>Email:</strong> " + standardEmail + "<br>\n"
+        "    <strong>Phone:</strong> " + dto.getPhoneNumber() + "<br>\n"
+        "    <strong>Submission Date:</strong> " + submissionDate + "\n"
+        "  </p>\n"
+        "  <p style=\"margin: 20px 0;\">\n"
+        "    <a href=\"" + adminDashboardUrl + "\"\n"
+        "       target=\"_blank\"\n"
+        "       style=\"background:#4f6ef7;color:#fff;padding:10px 20px;text-decoration:none;border-radius:4px;display:inline-block;\">Review Applications</a>\n"
+        "  </p>\n"
+        "  <hr style=\"border: none; border-top: 1px solid #eee; margin: 25px 0 15px 0;\">\n"
+        "  <p style=\"font-size: 12px; color: #888;\">&copy; " + currentYear + " Graphic News Plus. All rights reserved.</p>\n"
+        "</div>";
 
-    emailDto.setBody(emailBody);
-    //co_await emailService.sendEmailAsync(emailDto);
+    // Build Affiliate Email HTML Content (simplified)
+    std::string affiliateEmailBody =
+        "<div style=\"font-family: Arial, sans-serif; font-size: 15px; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; padding: 20px;\">\n"
+        "  <h2 style=\"color: #1a1a2e; margin-bottom: 16px;\">Graphic News Plus</h2>\n"
+        "  <p>Dear <strong>" + dto.getFirstName() + "</strong>,</p>\n"
+        "  <p>Thank you for applying to the <strong>Graphic News Plus Affiliate Program</strong>! We have received your application and our team is currently reviewing your details.</p>\n"
+        "  <p style=\"background: #f9f9f9; padding: 15px; border-radius: 6px; border: 1px solid #eee;\">\n"
+        "    <strong>Name:</strong> " + applicantFullName + "<br>\n"
+        "    <strong>Email:</strong> " + standardEmail + "<br>\n"
+        "    <strong>Phone:</strong> " + dto.getPhoneNumber() + "\n"
+        "  </p>\n"
+        "  <p>Once your application is approved, you will receive an email with your credentials to access the Affiliate Dashboard and start earning commissions.</p>\n"
+        "  <p>If you have any questions, please contact us at <a href=\"mailto:support@graphicnewsplus.com\" style=\"color: #4f6ef7;\">support@graphicnewsplus.com</a>.</p>\n"
+        "  <hr style=\"border: none; border-top: 1px solid #eee; margin: 25px 0 15px 0;\">\n"
+        "  <p style=\"font-size: 12px; color: #888;\">&copy; " + currentYear + " Graphic News Plus. All rights reserved.</p>\n"
+        "</div>";
+
+    // 1. Inform admin recipients
+    if (adminRecipients.isArray()) {
+      for (const auto &recipient : adminRecipients) {
+        std::string adminEmail = recipient.asString();
+        if (adminEmail.empty()) continue;
+
+        dto::SendEmailDto adminEmailDto;
+        adminEmailDto.setTo(adminEmail);
+        adminEmailDto.setSubject("New Affiliate Registration on GNP");
+        adminEmailDto.setBody(adminEmailBody);
+        co_await emailService.sendEmailAsync(adminEmailDto);
+      }
+    }
+
+    // 2. Send congratulatory / welcome message to affiliate applicant
+    if (!standardEmail.empty()) {
+      dto::SendEmailDto affiliateEmailDto;
+      affiliateEmailDto.setTo(standardEmail);
+      affiliateEmailDto.setSubject("Welcome Aboard !");
+      affiliateEmailDto.setBody(affiliateEmailBody);
+      co_await emailService.sendEmailAsync(affiliateEmailDto);
+    }
 
     co_return response;
 
@@ -945,11 +1005,16 @@ drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::approveApplication(c
 
 
 drogon::Task<dto::BaseApiResponse> AffiliateService::updateAffiliateAccountStatus(const std::string &id, int status) {
+
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Affiliates> mapper(dbClient);
 
+  if (status == static_cast<int>(constants::StatusTypes::APPROVED)) {
+    co_return co_await approveApplication(id);
+  }
+
   try {
-    // 1. Validate Affiliate existence
+    // 1. Validate affiliate existence
     Affiliates affiliate;
     try {
       affiliate = co_await mapper.findByPrimaryKey(id);
@@ -961,8 +1026,6 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::updateAffiliateAccountStatu
       co_return response;
     }
 
-    // 2. Validate status value (assuming valid statuses are 0, 1, 2, etc.)
-    // Common status mapping: 0 = Inactive, 1 = Active, 2 = Suspended, etc.
     if (status < 0) {
       dto::BaseApiResponse response;
       response.success = false;
@@ -971,13 +1034,13 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::updateAffiliateAccountStatu
       co_return response;
     }
 
-    // 3. Update the status
+    // 2. Apply the status change
     affiliate.setStatus(status);
     affiliate.setUpdatedAt(trantor::Date::now());
 
     co_await mapper.update(affiliate);
 
-    // 4. Build success response
+    // 3. Build success response
     dto::BaseApiResponse response;
     response.success = true;
     response.result["message"] = "Affiliate account status updated successfully.";
