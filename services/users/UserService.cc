@@ -1280,114 +1280,41 @@ drogon::Task<dto::BaseApiResponse> UserService::createSubscriber(const dto::Subs
       std::string paymentSection;
       if (!paymentLink.empty()) {
         paymentSection =
-            "<div style=\"background:#fff8e1;border:1px solid "
-            "#ffe082;border-radius:8px;padding:20px;margin:25px 0;\">"
-            "<p style=\"margin:0 0 "
-            "12px;font-weight:bold;color:#f57c00;\">&#9888; Your subscription "
-            "is pending payment</p>"
-            "<p style=\"margin:0 0 16px;color:#555;\">Please complete your "
-            "payment to activate your subscription.</p>"
-            "<div style=\"text-align:center;\"><a href=\"" +
-            paymentLink +
-            "\" "
-            "style=\"display:inline-block;padding:12px "
-            "30px;background-color:#D32F2F;color:#ffffff !important;"
-            "text-decoration:none;border-radius:6px;font-weight:600;font-size:"
-            "15px;\">Complete Payment</a></div>"
-            "<p style=\"margin:16px 0 "
-            "0;font-size:12px;color:#888;text-align:center;\">Or copy this "
-            "link:<br>"
-            "<a href=\"" +
-            paymentLink + "\" style=\"color:#D32F2F;word-break:break-all;\">" +
-            paymentLink +
-            "</a></p>"
-            "</div>";
+            "  <div style=\"background:#fff8e1;border:1px solid #ffe082;border-radius:6px;padding:15px;margin:20px 0;\">\n"
+            "    <p style=\"margin:0 0 10px;font-weight:bold;color:#f57c00;\">Payment Required</p>\n"
+            "    <p style=\"margin:0 0 12px;color:#555;\">Complete your payment to activate your subscription.</p>\n"
+            "    <p style=\"margin:0 0 10px;\">\n"
+            "      <a href=\"" + paymentLink + "\"\n"
+            "         target=\"_blank\"\n"
+            "         style=\"background:#D32F2F;color:#fff;padding:10px 20px;text-decoration:none;border-radius:4px;display:inline-block;\">Complete Payment</a>\n"
+            "    </p>\n"
+            "    <p style=\"margin:8px 0 0;font-size:12px;color:#888;word-break:break-all;\">Link: " + paymentLink + "</p>\n"
+            "  </div>\n";
       } else {
         paymentSection =
-            "<div style=\"background:#fff8e1;border:1px solid "
-            "#ffe082;border-radius:8px;padding:20px;margin:25px 0;\">"
-            "<p style=\"margin:0;font-weight:bold;color:#f57c00;\">&#9888; "
-            "Your subscription is pending payment</p>"
-            "<p style=\"margin:8px 0 0;color:#555;\">Our team will contact you "
-            "shortly with a payment link.</p>"
-            "</div>";
+            "  <div style=\"background:#fff8e1;border:1px solid #ffe082;border-radius:6px;padding:15px;margin:20px 0;\">\n"
+            "    <p style=\"margin:0 0 8px;font-weight:bold;color:#f57c00;\">Payment Required</p>\n"
+            "    <p style=\"margin:0;color:#555;\">Our team will contact you shortly with a payment link.</p>\n"
+            "  </div>\n";
       }
 
       // Build the payment-required email (paymentSection was set above)
       std::string emailBody =
-          "<!DOCTYPE html><html><head><meta charset=\"UTF-8\">"
-          "<meta name=\"viewport\" content=\"width=device-width, "
-          "initial-scale=1.0\">"
-          "<style>"
-          "body{margin:0;padding:0;background-color:#f4f6f8;font-family:'Segoe "
-          "UI',Arial,sans-serif;}"
-          ".wrapper{width:100%;padding:30px 0;}"
-          ".container{max-width:600px;margin:0 "
-          "auto;background:#ffffff;border-radius:10px;overflow:hidden;box-"
-          "shadow:0 8px 20px rgba(0,0,0,0.08);}"
-          ".header{background:linear-gradient(135deg,#D32F2F,#9A0007);color:#"
-          "ffffff;padding:30px 20px;text-align:center;}"
-          ".header h1{margin:0;font-size:24px;}"
-          ".content{padding:30px;color:#333;line-height:1.6;}"
-          ".credentials{background:#f9fafb;border:1px solid "
-          "#eee;padding:20px;border-radius:8px;margin:25px 0;}"
-          ".credential-item{margin-bottom:15px;}"
-          ".credential-label{font-size:13px;color:#888;margin-bottom:5px;}"
-          ".credential-value{font-size:16px;font-weight:bold;color:#D32F2F;"
-          "font-family:monospace;background:#fff;padding:8px "
-          "10px;border-radius:5px;border:1px dashed #ddd;}"
-          ".footer{background:#f4f6f8;color:#888;text-align:center;padding:"
-          "20px;font-size:12px;}"
-          "</style></head><body>"
-          "<div class=\"wrapper\"><div class=\"container\">"
-          "<div class=\"header\"><h1>Graphic News Plus</h1><p>Your Premium "
-          "News Experience</p></div>"
-          "<div class=\"content\">"
-          "<p>Hello " +
-          dto.getFirstName() +
-          ",</p>"
-          "<p>Welcome to <strong>Graphic News Plus</strong>! Your account has "
-          "been successfully created.</p>"
-          "<p>Here are your login credentials:</p>"
-          "<div class=\"credentials\">"
-          "<div class=\"credential-item\"><div "
-          "class=\"credential-label\">Username (Email)</div>"
-          "<div class=\"credential-value\">" +
-          email +
-          "</div></div>"
-          "<div class=\"credential-item\"><div "
-          "class=\"credential-label\">Password</div>"
-          "<div class=\"credential-value\">" +
-          password +
-          "</div></div>"
-          "</div>"
-          "<p>Your subscription details:</p>"
-          "<div class=\"credentials\">"
-          "<div class=\"credential-item\"><div "
-          "class=\"credential-label\">Package</div>"
-          "<div "
-          "style=\"font-size:16px;font-weight:bold;color:#333;background:#fff;"
-          "padding:8px 10px;border-radius:5px;border:1px solid #ddd;\">" +
-          plan.getValueOfName() +
-          "</div></div>"
-          "<div class=\"credential-item\"><div "
-          "class=\"credential-label\">Validity Period</div>"
-          "<div "
-          "style=\"font-size:16px;font-weight:bold;color:#333;background:#fff;"
-          "padding:8px 10px;border-radius:5px;border:1px solid #ddd;\">" +
-          startDateObj.toCustomFormattedString("%d %b %Y") + " to " +
-          endDateObj.toCustomFormattedString("%d %b %Y") +
-          "</div></div>"
-          "</div>" +
+          "<div style=\"font-family:Arial,sans-serif;font-size:15px;color:#333;line-height:1.6;max-width:600px;margin:0 auto;padding:20px;\">\n"
+          "  <h2 style=\"color:#1a1a2e;margin-bottom:16px;\">Graphic News Plus</h2>\n"
+          "  <p>Hello " + dto.getFirstName() + ",</p>\n"
+          "  <p>Welcome to <strong>Graphic News Plus</strong>! Your account has been created successfully.</p>\n"
+          "  <p style=\"background:#f9f9f9;padding:15px;border-radius:6px;border:1px solid #eee;\">\n"
+          "    <strong>Email:</strong> " + email + "<br>\n"
+          "    <strong>Password:</strong> " + password + "<br>\n"
+          "    <strong>Package:</strong> " + plan.getValueOfName() + "<br>\n"
+          "    <strong>Validity:</strong> " + startDateObj.toCustomFormattedString("%d %b %Y") + " to " + endDateObj.toCustomFormattedString("%d %b %Y") + "\n"
+          "  </p>\n" +
           paymentSection +
-          "<p style=\"font-size:13px;color:#777;\">For security reasons, "
-          "please change your password after your first login.</p>"
-          "</div>"
-          "<div class=\"footer\"><p>&copy; " +
-          trantor::Date::now().toCustomFormattedString("%Y") +
-          " Graphic News Plus</p>"
-          "<p>All rights reserved.</p></div>"
-          "</div></div></body></html>";
+          "  <p style=\"font-size:13px;color:#777;\">For security, please change your password after first login.</p>\n"
+          "  <hr style=\"border:none;border-top:1px solid #eee;margin:20px 0;\">\n"
+          "  <p style=\"font-size:12px;color:#888;\">&copy; " + trantor::Date::now().toCustomFormattedString("%Y") + " Graphic News Plus. All rights reserved.</p>\n"
+          "</div>";
 
       emailDto.setBody(emailBody);
       co_await emailService.sendEmailAsync(emailDto);
@@ -1426,97 +1353,25 @@ drogon::Task<dto::BaseApiResponse> UserService::createSubscriber(const dto::Subs
       emailDto.setSubject("Welcome to Graphic News Plus");
 
       std::string bypassEmailBody =
-          "<!DOCTYPE html><html><head><meta charset=\"UTF-8\">"
-          "<meta name=\"viewport\" content=\"width=device-width, "
-          "initial-scale=1.0\">"
-          "<style>"
-          "body{margin:0;padding:0;background-color:#f4f6f8;font-family:'Segoe "
-          "UI',Arial,sans-serif;}"
-          ".wrapper{width:100%;padding:30px 0;}"
-          ".container{max-width:600px;margin:0 "
-          "auto;background:#ffffff;border-radius:10px;overflow:hidden;box-"
-          "shadow:0 8px 20px rgba(0,0,0,0.08);}"
-          ".header{background:linear-gradient(135deg,#D32F2F,#9A0007);color:#"
-          "ffffff;padding:30px 20px;text-align:center;}"
-          ".header h1{margin:0;font-size:24px;}"
-          ".content{padding:30px;color:#333;line-height:1.6;}"
-          ".credentials{background:#f9fafb;border:1px solid "
-          "#eee;padding:20px;border-radius:8px;margin:25px 0;}"
-          ".credential-item{margin-bottom:15px;}"
-          ".credential-label{font-size:13px;color:#888;margin-bottom:5px;}"
-          ".credential-value{font-size:16px;font-weight:bold;color:#D32F2F;"
-          "font-family:monospace;background:#fff;padding:8px "
-          "10px;border-radius:5px;border:1px dashed #ddd;}"
-          ".btn{display:inline-block;padding:12px "
-          "25px;background-color:#D32F2F;color:#ffffff;text-decoration:none;"
-          "border-radius:6px;font-weight:600;font-size:14px;}"
-          ".cta{text-align:center;margin:30px 0 15px;}"
-          ".link{word-break:break-all;color:#D32F2F;}"
-          ".footer{background:#f4f6f8;color:#888;text-align:center;padding:"
-          "20px;font-size:12px;}"
-          "</style></head><body>"
-          "<div class=\"wrapper\"><div class=\"container\">"
-          "<div class=\"header\"><h1>Graphic News Plus</h1><p>Your Premium "
-          "News Experience</p></div>"
-          "<div class=\"content\">"
-          "<p>Hello " +
-          dto.getFirstName() +
-          ",</p>"
-          "<p>Welcome to <strong>Graphic News Plus</strong>! Your account has "
-          "been successfully created.</p>"
-          "<p>You can now access the platform here:</p>"
-          "<p><a href=\"https://new.graphicnewsplus.com?al=t\" "
-          "class=\"link\">https://new.graphicnewsplus.com?al=t</a></p>"
-          "<p>Here are your login credentials:</p>"
-          "<div class=\"credentials\">"
-          "<div class=\"credential-item\"><div "
-          "class=\"credential-label\">Username (Email)</div>"
-          "<div class=\"credential-value\">" +
-          email +
-          "</div></div>"
-          "<div class=\"credential-item\"><div "
-          "class=\"credential-label\">Password</div>"
-          "<div class=\"credential-value\">" +
-          password +
-          "</div></div>"
-          "</div>"
-          "<p>Your subscription details:</p>"
-          "<div class=\"credentials\">"
-          "<div class=\"credential-item\"><div "
-          "class=\"credential-label\">Package</div>"
-          "<div "
-          "style=\"font-size:16px;font-weight:bold;color:#333;background:#fff;"
-          "padding:8px 10px;border-radius:5px;border:1px solid #ddd;\">" +
-          plan.getValueOfName() +
-          "</div></div>"
-          "<div class=\"credential-item\"><div "
-          "class=\"credential-label\">Validity Period</div>"
-          "<div "
-          "style=\"font-size:16px;font-weight:bold;color:#333;background:#fff;"
-          "padding:8px 10px;border-radius:5px;border:1px solid #ddd;\">" +
-          startDateObj.toCustomFormattedString("%d %b %Y") + " to " +
-          endDateObj.toCustomFormattedString("%d %b %Y") +
-          "</div></div>"
-          "</div>"
-          "<p>For security reasons, please change your password immediately "
-          "after your first login.</p>"
-          "<div class=\"cta\">"
-          "<a href=\"https://new.graphicnewsplus.com?al=t\" "
-          "style=\"color:#ffffff !important;text-decoration:none;\" "
-          "class=\"btn\">Login to Your Account</a>"
-          "</div>"
-          "<p style=\"font-size:13px;color:#777;\">If the button above doesn't "
-          "work, copy and paste this link into your browser:<br>"
-          "<a href=\"https://new.graphicnewsplus.com?al=t\" "
-          "class=\"link\">https://new.graphicnewsplus.com?al=t</a></p>"
-          "<p>Enjoy unlimited access to curated, high-quality news content "
-          "tailored for you.</p>"
-          "</div>"
-          "<div class=\"footer\"><p>&copy; " +
-          trantor::Date::now().toCustomFormattedString("%Y") +
-          " Graphic News Plus</p>"
-          "<p>All rights reserved.</p></div>"
-          "</div></div></body></html>";
+          "<div style=\"font-family:Arial,sans-serif;font-size:15px;color:#333;line-height:1.6;max-width:600px;margin:0 auto;padding:20px;\">\n"
+          "  <h2 style=\"color:#1a1a2e;margin-bottom:16px;\">Graphic News Plus</h2>\n"
+          "  <p>Hello " + dto.getFirstName() + ",</p>\n"
+          "  <p>Welcome to <strong>Graphic News Plus</strong>! Your account has been created and subscription is active.</p>\n"
+          "  <p style=\"background:#f9f9f9;padding:15px;border-radius:6px;border:1px solid #eee;\">\n"
+          "    <strong>Email:</strong> " + email + "<br>\n"
+          "    <strong>Password:</strong> " + password + "<br>\n"
+          "    <strong>Package:</strong> " + plan.getValueOfName() + "<br>\n"
+          "    <strong>Validity:</strong> " + startDateObj.toCustomFormattedString("%d %b %Y") + " to " + endDateObj.toCustomFormattedString("%d %b %Y") + "\n"
+          "  </p>\n"
+          "  <p style=\"margin:20px 0;\">\n"
+          "    <a href=\"https://new.graphicnewsplus.com?al=t\"\n"
+          "       target=\"_blank\"\n"
+          "       style=\"background:#D32F2F;color:#fff;padding:10px 20px;text-decoration:none;border-radius:4px;display:inline-block;\">Login to Your Account</a>\n"
+          "  </p>\n"
+          "  <p style=\"font-size:13px;color:#777;\">For security, please change your password after first login.</p>\n"
+          "  <hr style=\"border:none;border-top:1px solid #eee;margin:20px 0;\">\n"
+          "  <p style=\"font-size:12px;color:#888;\">&copy; " + trantor::Date::now().toCustomFormattedString("%Y") + " Graphic News Plus. All rights reserved.</p>\n"
+          "</div>";
 
       emailDto.setBody(bypassEmailBody);
       co_await emailService.sendEmailAsync(emailDto);
@@ -1874,61 +1729,23 @@ drogon::Task<dto::BaseApiResponse> UserService::invitePartnerAdminUser(const dto
         user.getValueOfId();
 
     std::string emailBody =
-        R"(
-        <!DOCTYPE html>
-        <html>
-        <head>
-        <style>
-          body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
-          .container { max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-          .header { background-color: #80004d; color: #ffffff; padding: 20px; text-align: center; }
-          .content { padding: 30px; color: #333333; }
-          .cta-container { text-align: center; margin: 25px 0; }
-          .cta-button { display: inline-block; padding: 12px 25px; background-color: #80004d; color: #ffffff !important; text-decoration: none; border-radius: 5px; font-weight: bold; }
-          .link-box { background-color: #f9f9f9; padding: 12px; border-radius: 5px; margin-top: 15px; font-size: 13px; word-break: break-all; color: #80004d; }
-          .footer { background-color: #f4f4f4; color: #666666; padding: 10px; text-align: center; font-size: 12px; }
-        </style>
-        </head>
-        <body>
-        <div class="container">
-          <div class="header">
-            <h1>GNP Administrative Invitation</h1>
-          </div>
-
-          <div class="content">
-            <p>Hello )" +
-        userDto.getFirstName() + R"(,</p>
-
-            <p>You have been invited to join )" +
-        partnerInfo.getValueOfName() +
-        R"( on <strong>Graphic News Plus</strong> as an Administrative user.</p>
-
-            <p>This role gives you access to manage users, configurations, and platform operations.</p>
-
-            <p>Click the button below to accept your invitation and complete your account setup:</p>
-
-            <div class="cta-container">
-              <a href=")" +
-        invitationLink + R"(" class="cta-button">Accept Invitation</a>
-            </div>
-
-            <p>If the button above does not work, copy and paste the link below into your browser:</p>
-
-            <div class="link-box">)" +
-        invitationLink + R"(</div>
-
-            <p>If you did not expect this invitation, you can safely ignore this email.</p>
-          </div>
-
-          <div class="footer">
-            &copy; )" +
-        trantor::Date::now().toCustomFormattedString("%Y") +
-        R"( GNP. All rights reserved.
-          </div>
-        </div>
-        </body>
-        </html>
-    )";
+        "<div style=\"font-family:Arial,sans-serif;font-size:15px;color:#333;line-height:1.6;max-width:600px;margin:0 auto;padding:20px;\">\n"
+        "  <h2 style=\"color:#80004d;margin-bottom:16px;\">Graphic News Plus</h2>\n"
+        "  <p>Hello " + userDto.getFirstName() + ",</p>\n"
+        "  <p>You have been invited to join <strong>" + partnerInfo.getValueOfName() + "</strong> on <strong>Graphic News Plus</strong> as an Administrative user.</p>\n"
+        "  <p>This role gives you access to manage users, configurations, and platform operations.</p>\n"
+        "  <p style=\"margin:20px 0;\">\n"
+        "    <a href=\"" + invitationLink + "\"\n"
+        "       target=\"_blank\"\n"
+        "       style=\"background:#80004d;color:#fff;padding:10px 20px;text-decoration:none;border-radius:4px;display:inline-block;\">Accept Invitation</a>\n"
+        "  </p>\n"
+        "  <p style=\"font-size:13px;color:#777;word-break:break-all;\">If the button does not work, copy this link into your browser:<br>\n"
+        "    " + invitationLink + "\n"
+        "  </p>\n"
+        "  <p style=\"font-size:13px;color:#888;\">If you did not expect this invitation, you can safely ignore this email.</p>\n"
+        "  <hr style=\"border:none;border-top:1px solid #eee;margin:20px 0;\">\n"
+        "  <p style=\"font-size:12px;color:#888;\">&copy; " + trantor::Date::now().toCustomFormattedString("%Y") + " Graphic News Plus. All rights reserved.</p>\n"
+        "</div>";
 
     emailDto.setBody(emailBody);
 
@@ -2445,8 +2262,7 @@ drogon::Task<dto::BaseApiResponse> UserService::validateAdminUserCredentials(con
   co_return response;
 }
 
-drogon::Task<dto::BaseApiResponse>
-UserService::validatePartnerUserCredentials(const dto::SigninDto &signin_dto) {
+drogon::Task<dto::BaseApiResponse> UserService::validatePartnerUserCredentials(const dto::SigninDto &signin_dto) {
 
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Users> mapper(dbClient);
@@ -2528,48 +2344,18 @@ UserService::validatePartnerUserCredentials(const dto::SigninDto &signin_dto) {
         emailDto.setSubject("Your OTP for Graphic News Plus Verification");
 
         std::string emailBody =
-            R"(
-            <!DOCTYPE html>
-            <html>
-            <head>
-            <style>
-              body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 0; }
-              .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-              .header { background-color: #ffffff; padding: 30px 20px 20px; text-align: center; border-bottom: 1px solid #f0f0f0; }
-              .header img { height: 60px; margin-bottom: 15px; border-radius: 8px; }
-              .header h1 { margin: 0; font-size: 24px; font-weight: 600; color: #1a1a1a; }
-              .content { padding: 40px 30px; text-align: center; color: #4a4a4a; line-height: 1.6; }
-              .content p { margin: 0 0 15px; font-size: 16px; }
-              .otp-container { margin: 30px 0; padding: 20px; background-color: #fdf2f2; border-radius: 8px; border: 1px dashed #f5c6c6; }
-              .otp { font-size: 36px; font-weight: bold; color: #D32F2F; letter-spacing: 8px; margin: 0; }
-              .footer { background-color: #f9f9f9; color: #999999; padding: 20px; text-align: center; font-size: 13px; border-top: 1px solid #eeeeee; }
-            </style>
-            </head>
-            <body>
-            <div class="container">
-              <div class="header">
-                <img src="https://dev.graphicnewsplus.com/favicon-mag.png" style="height: 35px;width: 35px;" alt="Graphic News Plus Logo">
-                <h1>Graphic News Plus</h1>
-              </div>
-              <div class="content">
-                <p>Hello )" +
-            user.getValueOfFirstName() + R"(,</p>
-                <p>Your One-Time Password (OTP) for verification is:</p>
-                <div class="otp-container">
-                  <div class="otp">)" +
-            otp + R"(</div>
-                </div>
-                <p>This code will expire in 5 minutes.</p>
-                <p>If you did not request this code, please ignore this email.</p>
-              </div>
-              <div class="footer"> &copy; )" +
-            trantor::Date::now().toCustomFormattedString("%Y") +
-            R"( Graphic News Plus. All rights reserved.
-              </div>
-            </div>
-            </body>
-            </html>
-            )";
+            "<div style=\"font-family:Arial,sans-serif;font-size:15px;color:#333;line-height:1.6;max-width:600px;margin:0 auto;padding:20px;\">\n"
+            "  <h2 style=\"color:#1a1a2e;margin-bottom:16px;\">Graphic News Plus</h2>\n"
+            "  <p>Hello " + user.getValueOfFirstName() + ",</p>\n"
+            "  <p>Your One-Time Password (OTP) for verification is:</p>\n"
+            "  <p style=\"background:#fdf2f2;border:1px dashed #f5c6c6;border-radius:6px;padding:15px;\">\n"
+            "    <span style=\"display:block;text-align:center;font-size:28px;font-weight:bold;color:#D32F2F;letter-spacing:6px;\">" + otp + "</span>\n"
+            "  </p>\n"
+            "  <p style=\"font-size:13px;color:#777;\">This code will expire in 5 minutes.</p>\n"
+            "  <p style=\"font-size:13px;color:#888;\">If you did not request this code, please ignore this email.</p>\n"
+            "  <hr style=\"border:none;border-top:1px solid #eee;margin:20px 0;\">\n"
+            "  <p style=\"font-size:12px;color:#888;\">&copy; " + trantor::Date::now().toCustomFormattedString("%Y") + " Graphic News Plus. All rights reserved.</p>\n"
+            "</div>";
 
         emailDto.setBody(emailBody);
 
@@ -2702,48 +2488,18 @@ UserService::validateAffiliateUserCredentials(
         emailDto.setSubject("Your OTP for Graphic News Plus Verification");
 
         std::string emailBody =
-            R"(
-            <!DOCTYPE html>
-            <html>
-            <head>
-            <style>
-              body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 0; }
-              .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-              .header { background-color: #ffffff; padding: 30px 20px 20px; text-align: center; border-bottom: 1px solid #f0f0f0; }
-              .header img { height: 60px; margin-bottom: 15px; border-radius: 8px; }
-              .header h1 { margin: 0; font-size: 24px; font-weight: 600; color: #1a1a1a; }
-              .content { padding: 40px 30px; text-align: center; color: #4a4a4a; line-height: 1.6; }
-              .content p { margin: 0 0 15px; font-size: 16px; }
-              .otp-container { margin: 30px 0; padding: 20px; background-color: #fdf2f2; border-radius: 8px; border: 1px dashed #f5c6c6; }
-              .otp { font-size: 36px; font-weight: bold; color: #D32F2F; letter-spacing: 8px; margin: 0; }
-              .footer { background-color: #f9f9f9; color: #999999; padding: 20px; text-align: center; font-size: 13px; border-top: 1px solid #eeeeee; }
-            </style>
-            </head>
-            <body>
-            <div class="container">
-              <div class="header">
-                <img src="https://dev.graphicnewsplus.com/favicon-mag.png" style="height: 35px;width: 35px;" alt="Graphic News Plus Logo">
-                <h1>Graphic News Plus</h1>
-              </div>
-              <div class="content">
-                <p>Hello )" +
-            user.getValueOfFirstName() + R"(,</p>
-                <p>Your One-Time Password (OTP) for verification is:</p>
-                <div class="otp-container">
-                  <div class="otp">)" +
-            otp + R"(</div>
-                </div>
-                <p>This code will expire in 5 minutes.</p>
-                <p>If you did not request this code, please ignore this email.</p>
-              </div>
-              <div class="footer"> &copy; )" +
-            trantor::Date::now().toCustomFormattedString("%Y") +
-            R"( Graphic News Plus. All rights reserved.
-              </div>
-            </div>
-            </body>
-            </html>
-            )";
+            "<div style=\"font-family:Arial,sans-serif;font-size:15px;color:#333;line-height:1.6;max-width:600px;margin:0 auto;padding:20px;\">\n"
+            "  <h2 style=\"color:#1a1a2e;margin-bottom:16px;\">Graphic News Plus</h2>\n"
+            "  <p>Hello " + user.getValueOfFirstName() + ",</p>\n"
+            "  <p>Your One-Time Password (OTP) for verification is:</p>\n"
+            "  <p style=\"background:#fdf2f2;border:1px dashed #f5c6c6;border-radius:6px;padding:15px;\">\n"
+            "    <span style=\"display:block;text-align:center;font-size:28px;font-weight:bold;color:#D32F2F;letter-spacing:6px;\">" + otp + "</span>\n"
+            "  </p>\n"
+            "  <p style=\"font-size:13px;color:#777;\">This code will expire in 5 minutes.</p>\n"
+            "  <p style=\"font-size:13px;color:#888;\">If you did not request this code, please ignore this email.</p>\n"
+            "  <hr style=\"border:none;border-top:1px solid #eee;margin:20px 0;\">\n"
+            "  <p style=\"font-size:12px;color:#888;\">&copy; " + trantor::Date::now().toCustomFormattedString("%Y") + " Graphic News Plus. All rights reserved.</p>\n"
+            "</div>";
 
         emailDto.setBody(emailBody);
 
@@ -3090,61 +2846,25 @@ UserService::resetUserPassword(const std::string &userId) {
     emailDto.setTo(gnp::utils::StringUtils::trim(user.getValueOfEmail()));
     emailDto.setSubject("Graphic News Plus - Password Reset");
 
-    std::string emailBody = R"html(
-      <!DOCTYPE html>
-      <html>
-      <head>
-      <meta charset="UTF-8">
-      <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
-        .container { max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .header { background-color: #D32F2F; color: #ffffff; padding: 20px; text-align: center; }
-        .content { padding: 30px; color: #333333; }
-        .credentials { background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0; }
-        .credential-item { margin: 10px 0; }
-        .credential-label { font-weight: bold; color: #666; }
-        .credential-value { font-size: 18px; color: #D32F2F; font-family: monospace; }
-        .footer { background-color: #f4f4f4; color: #666666; padding: 10px; text-align: center; font-size: 12px; }
-      </style>
-      </head>
-      <body>
-      <div class="container">
-        <div class="header">
-          <h1>Graphic News Plus</h1>
-        </div>
-        <div class="content">
-          <p>Hello )html" + user.getValueOfFirstName() +
-                            R"html(,</p>
-          <p>Your password for Graphic News Plus has been reset by an administrator.</p>
-          <p>Below are your new login credentials:</p>
-          <div class="credentials">
-            <div class="credential-item">
-              <div class="credential-label">Username:</div>
-              <div class="credential-value">)html" +
-                            user.getValueOfUsername() + R"html(</div>
-            </div>
-            <div class="credential-item">
-              <div class="credential-label">Email:</div>
-              <div class="credential-value">)html" +
-                            user.getValueOfEmail() + R"html(</div>
-            </div>
-            <div class="credential-item">
-              <div class="credential-label">New Password:</div>
-              <div class="credential-value">)html" +
-                            newPassword + R"html(</div>
-            </div>
-          </div>
-          <p>Please keep these credentials secure and change your password after your next login.</p>
-          <p>You can access the platform at: <a href="https://new.graphicnewsplus.com">https://new.graphicnewsplus.com</a></p>
-        </div>
-        <div class="footer">
-          &copy; )html" + trantor::Date::now().toCustomFormattedString("%Y") +
-                            R"html( Graphic News Plus. All rights reserved.
-        </div>
-      </div>
-      </body>
-      </html>
-    )html";
+    std::string emailBody =
+        "<div style=\"font-family:Arial,sans-serif;font-size:15px;color:#333;line-height:1.6;max-width:600px;margin:0 auto;padding:20px;\">\n"
+        "  <h2 style=\"color:#1a1a2e;margin-bottom:16px;\">Graphic News Plus</h2>\n"
+        "  <p>Hello " + user.getValueOfFirstName() + ",</p>\n"
+        "  <p>Your password for Graphic News Plus has been reset by an administrator.</p>\n"
+        "  <p style=\"background:#f9f9f9;padding:15px;border-radius:6px;border:1px solid #eee;\">\n"
+        "    <strong>Username:</strong> " + user.getValueOfUsername() + "<br>\n"
+        "    <strong>Email:</strong> " + user.getValueOfEmail() + "<br>\n"
+        "    <strong>New Password:</strong> " + newPassword + "\n"
+        "  </p>\n"
+        "  <p style=\"margin:20px 0;\">\n"
+        "    <a href=\"https://new.graphicnewsplus.com\"\n"
+        "       target=\"_blank\"\n"
+        "       style=\"background:#D32F2F;color:#fff;padding:10px 20px;text-decoration:none;border-radius:4px;display:inline-block;\">Login to Your Account</a>\n"
+        "  </p>\n"
+        "  <p style=\"font-size:13px;color:#777;\">Please keep these credentials secure and change your password after your next login.</p>\n"
+        "  <hr style=\"border:none;border-top:1px solid #eee;margin:20px 0;\">\n"
+        "  <p style=\"font-size:12px;color:#888;\">&copy; " + trantor::Date::now().toCustomFormattedString("%Y") + " Graphic News Plus. All rights reserved.</p>\n"
+        "</div>";
 
     emailDto.setBody(emailBody);
     co_await emailService.sendEmailAsync(emailDto);
@@ -3682,47 +3402,18 @@ void UserService::sendOtp(
               // 4. Send Email
               // HTML Body with Red Theme
               std::string emailBody =
-                  R"(
-                  <!DOCTYPE html>
-                  <html>
-                  <head>
-                  <style>
-                    body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 0; }
-                    .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-                    .header { background-color: #ffffff; padding: 30px 20px 20px; text-align: center; border-bottom: 1px solid #f0f0f0; }
-                    .header img { height: 60px; margin-bottom: 15px; border-radius: 8px; }
-                    .header h1 { margin: 0; font-size: 24px; font-weight: 600; color: #1a1a1a; }
-                    .content { padding: 40px 30px; text-align: center; color: #4a4a4a; line-height: 1.6; }
-                    .content p { margin: 0 0 15px; font-size: 16px; }
-                    .otp-container { margin: 30px 0; padding: 20px; background-color: #fdf2f2; border-radius: 8px; border: 1px dashed #f5c6c6; }
-                    .otp { font-size: 36px; font-weight: bold; color: #D32F2F; letter-spacing: 8px; margin: 0; }
-                    .footer { background-color: #f9f9f9; color: #999999; padding: 20px; text-align: center; font-size: 13px; border-top: 1px solid #eeeeee; }
-                  </style>
-                  </head>
-                  <body>
-                  <div class="container">
-                    <div class="header">
-                      <img src="https://dev.graphicnewsplus.com/favicon-mag.png" alt="Graphic News Plus Logo">
-                      <h1>Graphic News Plus</h1>
-                    </div>
-                    <div class="content">
-                      <p>Hello Reader,</p>
-                      <p>Your One-Time Password (OTP) for verification is:</p>
-                      <div class="otp-container">
-                        <div class="otp">)" +
-                  otp + R"(</div>
-                      </div>
-                      <p>This code will expire in 5 minutes.</p>
-                      <p>If you did not request this code, please ignore this email.</p>
-                    </div>
-                    <div class="footer"> &copy; )" +
-                  trantor::Date::now().toCustomFormattedString("%Y") +
-                  R"( Graphic News Plus. All rights reserved.
-                    </div>
-                  </div>
-                  </body>
-                  </html>
-                  )";
+                  "<div style=\"font-family:Arial,sans-serif;font-size:15px;color:#333;line-height:1.6;max-width:600px;margin:0 auto;padding:20px;\">\n"
+                  "  <h2 style=\"color:#1a1a2e;margin-bottom:16px;\">Graphic News Plus</h2>\n"
+                  "  <p>Hello Reader,</p>\n"
+                  "  <p>Your One-Time Password (OTP) for verification is:</p>\n"
+                  "  <p style=\"background:#fdf2f2;border:1px dashed #f5c6c6;border-radius:6px;padding:15px;\">\n"
+                  "    <span style=\"display:block;text-align:center;font-size:28px;font-weight:bold;color:#D32F2F;letter-spacing:6px;\">" + otp + "</span>\n"
+                  "  </p>\n"
+                  "  <p style=\"font-size:13px;color:#777;\">This code will expire in 5 minutes.</p>\n"
+                  "  <p style=\"font-size:13px;color:#888;\">If you did not request this code, please ignore this email.</p>\n"
+                  "  <hr style=\"border:none;border-top:1px solid #eee;margin:20px 0;\">\n"
+                  "  <p style=\"font-size:12px;color:#888;\">&copy; " + trantor::Date::now().toCustomFormattedString("%Y") + " Graphic News Plus. All rights reserved.</p>\n"
+                  "</div>";
 
               auto emailService =
                   std::make_shared<gnp::services::EmailService>();
