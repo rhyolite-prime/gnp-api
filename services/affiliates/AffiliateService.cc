@@ -1005,6 +1005,7 @@ drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::approveApplication(c
 
 
 drogon::Task<dto::BaseApiResponse> AffiliateService::updateAffiliateAccountStatus(const std::string &id, int status) {
+
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Affiliates> mapper(dbClient);
 
