@@ -62,7 +62,46 @@ drogon::Task<HttpResponsePtr> NewsPapersController::getAll(const HttpRequestPtr 
   co_return resp;
 }
 
+Task<HttpResponsePtr> NewsPapersController::getAllVideos(HttpRequestPtr req) {
 
+  int pageSize = 10; // Default page size
+  int pageNo = 1;    //  Default page number
+
+  if (!req->getParameter("pageSize").empty()) {
+    try {
+      pageSize = std::stoi(req->getParameter("pageSize"));
+      pageSize = std::max(1, std::min(100, pageSize)); // Limit between 1-100
+    } catch (...) {
+      // Keep default if conversion fails
+    }
+  }
+
+  if (!req->getParameter("pageNo").empty()) {
+    try {
+      pageNo = std::stoi(req->getParameter("pageNo"));
+      pageNo = std::max(1, pageNo); // Ensure page number is at least 1
+    } catch (...) {
+      // Keep default if conversion fails
+    }
+  }
+
+  std::string query = req->getParameter("query");
+  if (query.empty()) {
+    query = "";
+  }
+
+
+
+  auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
+  auto &videoService = plugin->getVideoService();
+
+  auto apiResp = co_await videoService.getAll(pageNo, pageSize, query);
+
+  auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
+  resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
+  co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
+
+}
 
 drogon::Task<HttpResponsePtr> NewsPapersController::getLatest(const HttpRequestPtr req) {
   int pageSize = 10; // Default page size
