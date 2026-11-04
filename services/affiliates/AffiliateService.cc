@@ -19,6 +19,7 @@
 #include "constants/StatusTypes.h"
 #include "plugins/GnpServicePlugin.h"
 #include "utils/IdGeneratorUtils.h"
+#include "utils/PasswordUtils.h"
 #include "utils/TimeUtils.h"
 
 using namespace drogon::orm;
@@ -1223,10 +1224,118 @@ drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::deleteAffiliate(cons
 
 drogon::Task<dto::BaseApiResponse> AffiliateService::resetAffiliateUserPassword(const std::string &id) {
 
-  //reset password
+  auto dbClient = drogon::app().getDbClient();
+  CoroMapper<Affiliates> affiliateMapper(dbClient);
+  CoroMapper<drogon_model::Gnp::Users> userMapper(dbClient);
 
-  //send an email
+  try {
+    // 1. Fetch the affiliate
+    Affiliates affiliate;
+    try {
+      affiliate = co_await affiliateMapper.findByPrimaryKey(id);
+    } catch (const UnexpectedRows &) {
+      dto::BaseApiResponse response;
+      response.success = false;
+      response.error["code"] = constants::ERR_RESOURCE_NOT_FOUND;
+      response.error["message"] = "Affiliate not found.";
+      co_return response;
+    }
 
+    // 2. Ensure the affiliate has a linked user account (created on approval)
+    if (!affiliate.getUserId() || affiliate.getUserId()->empty()) {
+      dto::BaseApiResponse response;
+      response.success = false;
+      response.error["code"] = constants::ERR_VALIDATION;
+      response.error["message"] = "Affiliate does not have a user account yet. Only approved affiliates can have their password reset.";
+      co_return response;
+    }
+
+    // 3. Fetch the linked user account
+    drogon_model::Gnp::Users user;
+    try {
+      user = co_await userMapper.findByPrimaryKey(affiliate.getValueOfUserId());
+    } catch (const UnexpectedRows &) {
+      dto::BaseApiResponse response;
+      response.success = false;
+      response.error["code"] = constants::ERR_RESOURCE_NOT_FOUND;
+      response.error["message"] = "Affiliate user account not found.";
+      co_return response;
+    }
+
+    // 4. Generate a new random password and update the user's credentials
+    std::string newPassword = gnp::utils::PasswordUtils::generateRandomPassword(8);
+
+    user.setPasswordHash(bcrypt::generateHash(newPassword));
+    user.setIsLockedOut(false); // allow login with the new credentials
+    user.setUpdatedAt(trantor::Date::now());
+    co_await userMapper.update(user);
+
+    // 5. Send email with the new credentials
+    const std::string loginUrl = "https://dev.graphicnewsplus.com/affiliates/login";
+    std::string currentYear = trantor::Date::now().toCustomFormattedString("%Y");
+
+    std::string htmlBody =
+        "<div style=\"font-family: Arial, sans-serif; font-size: 15px; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; padding: 20px;\">\n"
+        "  <h2 style=\"color: #1a1a2e; margin-bottom: 16px;\">Graphic News Plus</h2>\n"
+        "  <p>Dear <strong>" + affiliate.getValueOfFirstName() + " " + affiliate.getValueOfLastName() + "</strong>,</p>\n"
+        "  <p>Your affiliate account password has been reset by an administrator. You can now access the <strong>Affiliate Dashboard</strong> using the credentials below:</p>\n"
+        "  <p style=\"background: #f0f4ff; padding: 15px; border-radius: 6px; border: 1px solid #dce3f5;\">\n"
+        "    <strong>Login URL:</strong> <a href=\"" + loginUrl + "\" target=\"_blank\" style=\"color:#4f6ef7;\">" + loginUrl + "</a><br>\n"
+        "    <strong>Username:</strong> " + user.getValueOfUsername() + "<br>\n"
+        "    <strong>Temporary Password:</strong> " + newPassword + "<br>\n"
+        "    <strong>Affiliate ID:</strong> " + affiliate.getValueOfAffiliateId() + "\n"
+        "  </p>\n"
+        "  <p style=\"margin: 20px 0;\">\n"
+        "    <a href=\"" + loginUrl + "\"\n"
+        "       target=\"_blank\"\n"
+        "       style=\"background:#4f6ef7;color:#fff;padding:12px 24px;text-decoration:none;border-radius:4px;display:inline-block;font-weight:bold;\">Go to Affiliate Dashboard</a>\n"
+        "  </p>\n"
+        "  <p style=\"font-size: 13px; color: #777;\">&#128274; For security reasons, please change your password immediately after logging in.</p>\n"
+        "  <p style=\"font-size: 13px; color: #777;\">If you did not expect this change, please contact us immediately at <a href=\"mailto:support@graphicnewsplus.com\" style=\"color: #4f6ef7;\">support@graphicnewsplus.com</a>.</p>\n"
+        "  <hr style=\"border: none; border-top: 1px solid #eee; margin: 25px 0 15px 0;\">\n"
+        "  <p style=\"font-size: 12px; color: #888;\">&copy; " + currentYear + " Graphic News Plus. All rights reserved.</p>\n"
+        "</div>";
+
+    dto::SendEmailDto emailDto;
+    emailDto.setTo(user.getValueOfEmail());
+    emailDto.setSubject("Graphic News Plus - Affiliate Password Reset");
+    emailDto.setBody(htmlBody);
+
+    if (!emailDto.getTo().empty()) {
+      auto plugin = drogon::app().getPlugin<plugins::GnpServicePlugin>();
+      if (plugin) {
+        auto &emailService = plugin->getEmailService();
+        co_await emailService.sendEmailAsync(emailDto);
+      } else {
+        EmailService emailService;
+        co_await emailService.sendEmailAsync(emailDto);
+      }
+    }
+
+    // 6. Build success response
+    dto::BaseApiResponse response;
+    response.success = true;
+    response.result["message"] = "Affiliate password reset successfully. New credentials have been sent to the affiliate's email.";
+    response.result["affiliateId"] = id;
+    response.result["userId"] = user.getValueOfId();
+    response.result["generatedPassword"] = newPassword;
+    co_return response;
+
+  } catch (const DrogonDbException &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_DB_QUERY;
+    errorResponse.error["message"] = "Database error while resetting affiliate user password.";
+    errorResponse.error["detail"] = e.base().what();
+    co_return errorResponse;
+  } catch (const std::exception &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_INTERNAL;
+    errorResponse.error["message"] = "Internal error.";
+    errorResponse.error["detail"] = e.what();
+    co_return errorResponse;
+  }
 }
 
 
