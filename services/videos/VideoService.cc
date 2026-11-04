@@ -117,7 +117,7 @@ drogon::Task<dto::BaseApiResponse> VideoService::getVideoDetails(const std::stri
         auto video = co_await mapper.findByPrimaryKey(id);
         dto::BaseApiResponse response;
         response.success = true;
-        response.result = video.toJson();
+        response.result = toCamelCase(video.toJson());
         co_return response;
     } catch (const UnexpectedRows &) {
         co_return failure(constants::ERR_RESOURCE_NOT_FOUND, "Video not found.");
