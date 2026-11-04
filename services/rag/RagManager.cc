@@ -1302,9 +1302,9 @@ drogon::Task<dto::BaseApiResponse> RagManager::answerArchiveQuestion(
     }
 
     if (useVectorSearch) {
+      const std::vector<std::string> embeddingInputs = {question};
       const auto queryVectors = co_await callOllamaEmbeddings(
-          baseUrl, embeddingPath, embeddingModel,
-          std::vector<std::string>{question});
+          baseUrl, embeddingPath, embeddingModel, embeddingInputs);
       if (queryVectors.size() == 1) {
         const std::string chunkQuery = !eventQuery.empty()
             ? eventQuery : broadQuery;
@@ -1350,8 +1350,9 @@ drogon::Task<dto::BaseApiResponse> RagManager::answerArchiveQuestion(
             "AND ($8 = '' OR nd.publication_date <= NULLIF($8, '')::date) "
             "ORDER BY c.embedding <=> q.embedding LIMIT $10";
         try {
+          const std::string queryVectorText = vectorLiteral(queryVectors.front());
           const auto vectorRows = co_await dbClient->execSqlCoro(
-              vectorSql, vectorLiteral(queryVectors.front()), publicationId,
+              vectorSql, queryVectorText, publicationId,
               publicationName, dateFrom, dateTo, publicationDate, yearStart,
               yearEnd, embeddingModel, candidateLimitArg);
           std::vector<RagSource> vectorLane;
@@ -1457,8 +1458,10 @@ drogon::Task<dto::BaseApiResponse> RagManager::answerArchiveQuestion(
     }
     const int latencyMs = static_cast<int>(
         (trantor::Date::now().microSecondsSinceEpoch() - ragStartedAt) / 1000);
+    static const std::string kEmptyPartnerId = "";
+    static const std::string kQueryTypeRag = "rag";
     co_await reporting::recordArchiveQuery(
-        userId, "", "rag", question, targetDecade, publicationId,
+        userId, kEmptyPartnerId, kQueryTypeRag, question, targetDecade, publicationId,
         static_cast<int>(sources.size()), static_cast<int>(sources.size()),
         latencyMs, 0, -1.0);
   }
@@ -1571,6 +1574,7 @@ drogon::Task<dto::BaseApiResponse> RagManager::indexPendingArchiveBatch(
   size_t claimed = 0;
 
   try {
+    const std::string batchSizeStr = std::to_string(batchSize);
     const auto queueRows = co_await dbClient->execSqlCoro(
         "WITH picked AS ("
         "  SELECT detail_id FROM public.newspaper_archive_rag_index_queue "
@@ -1581,7 +1585,7 @@ drogon::Task<dto::BaseApiResponse> RagManager::indexPendingArchiveBatch(
         "SET claimed_at = NOW(), attempts = q.attempts + 1, last_error = NULL "
         "FROM picked p WHERE q.detail_id = p.detail_id "
         "RETURNING q.detail_id::text AS detail_id",
-        std::to_string(batchSize));
+        batchSizeStr);
     claimed = queueRows.size();
 
     for (const auto &queueRow : queueRows) {
@@ -1650,11 +1654,13 @@ drogon::Task<dto::BaseApiResponse> RagManager::indexPendingArchiveBatch(
         }
 
         if (embeddings.size() != chunks.size()) {
+          static const std::string kEmbeddingErrorMsg =
+              "Ollama embedding failed or returned an unexpected vector dimension.";
           co_await dbClient->execSqlCoro(
               "UPDATE public.newspaper_archive_rag_index_queue "
               "SET claimed_at = NULL, last_error = $2 "
               "WHERE detail_id = $1::uuid",
-              detailId, "Ollama embedding failed or returned an unexpected vector dimension.");
+              detailId, kEmbeddingErrorMsg);
           ++failed;
           continue;
         }
@@ -1665,13 +1671,14 @@ drogon::Task<dto::BaseApiResponse> RagManager::indexPendingArchiveBatch(
             "DELETE FROM public.newspaper_archive_rag_chunks WHERE detail_id = $1::uuid",
             detailId);
         for (size_t i = 0; i < chunks.size(); ++i) {
+          const std::string embeddingVectorText = vectorLiteral(embeddings[i]);
           co_await dbClient->execSqlCoro(
               "INSERT INTO public.newspaper_archive_rag_chunks "
               "(detail_id, chunk_index, chunk_text, source_hash, embedding_model, "
               " embedding, chunk_count) "
               "VALUES ($1::uuid, $2, $3, $4, $5, $6::vector, $7)",
               detailId, static_cast<int>(i), chunks[i], sourceHash,
-              embeddingModel, vectorLiteral(embeddings[i]),
+              embeddingModel, embeddingVectorText,
               static_cast<int>(chunks.size()));
         }
         co_await dbClient->execSqlCoro(

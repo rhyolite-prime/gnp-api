@@ -22,7 +22,9 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y cmake g++ libjsoncpp-dev uuid-dev openssl libssl-dev zlib1g-dev
+          sudo apt install -y cmake gcc-12 g++-12 libjsoncpp-dev uuid-dev openssl libssl-dev zlib1g-dev
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 100
           sudo apt install postgresql libhiredis-dev  doxygen graphviz dia
           sudo apt-get install -y libmupdf-dev libfreetype-dev libharfbuzz-dev libjbig2dec0-dev libgumbo-dev libmujs-dev libopenjp2-7-dev libjpeg-dev
           
