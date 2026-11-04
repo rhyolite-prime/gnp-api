@@ -134,6 +134,16 @@ drogon::Task<HttpResponsePtr> NewsPapersController::getLatest(const HttpRequestP
   co_return resp;
 }
 
+drogon::Task<HttpResponsePtr> NewsPapersController::getVideoDetails(const HttpRequestPtr req, const std::string &videoId) {
+
+  auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
+  auto &videoService = plugin->getVideoService();
+
+  auto result = co_await videoService.getVideoDetails(videoId);
+
+  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+  co_return resp;
+}
 
 
 drogon::Task<HttpResponsePtr> NewsPapersController::getTopStories(const HttpRequestPtr req) {

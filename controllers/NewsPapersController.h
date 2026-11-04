@@ -42,6 +42,7 @@ public:
 
   // handler methods
   drogon::Task<HttpResponsePtr> getAllVideos(HttpRequestPtr req);
+  drogon::Task<HttpResponsePtr> getVideoDetails(HttpRequestPtr req, const std::string &videoId);
   drogon::Task<HttpResponsePtr> getAll(HttpRequestPtr req);
   drogon::Task<HttpResponsePtr> getLatest(HttpRequestPtr req);
   drogon::Task<HttpResponsePtr> getTopStories(HttpRequestPtr req);
