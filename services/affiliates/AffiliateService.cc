@@ -168,10 +168,57 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::getAll(int pageNo, int page
   }
 }
 
-  drogon::Task<dto::BaseApiResponse> AffiliateService::getAffiliateAccountDetails(const std::string &id) {
 
-  //return the row that matches the primary key
+drogon::Task<dto::BaseApiResponse> AffiliateService::getAffiliateAccountDetails(const std::string &id) {
 
+  auto dbClient = drogon::app().getDbClient();
+  CoroMapper<Affiliates> mapper(dbClient);
+
+  try {
+    Affiliates affiliate;
+    try {
+      affiliate = co_await mapper.findByPrimaryKey(id);
+    } catch (const UnexpectedRows &) {
+      dto::BaseApiResponse response;
+      response.success = false;
+      response.error["code"] = constants::ERR_RESOURCE_NOT_FOUND;
+      response.error["message"] = "Affiliate not found.";
+      co_return response;
+    }
+
+    const Json::Value row = affiliate.toJson();
+    Json::Value details;
+    details["id"] = row["id"];
+    details["firstName"] = row["first_name"];
+    details["lastName"] = row["last_name"];
+    details["email"] = row["email"];
+    details["phoneNo"] = row["phone"];
+    details["status"] = row["status"];
+    details["totalEarnings"] = row["total_earnings"];
+    details["walletBalance"] = row["wallet_balance"];
+    details["dateJoined"] = row["date_joined"];
+    details["accountType"] = row["account_type"];
+    details["accountName"] = row["account_name"];
+    details["accountProvider"] = row["account_provider"];
+    details["bankCode"] = row["bank_code"];
+    details["affiliateId"] = row["affiliate_id"];
+    details["profileImage"] = row["profile_image"];
+    details["userId"] = row["user_id"];
+    details["requireTwoFactorAuth"] = row["require_two_factor_auth"];
+    details["createdAt"] = row["created_at"];
+
+    dto::BaseApiResponse response;
+    response.success = true;
+    response.result["data"] = details;
+    co_return response;
+  } catch (const DrogonDbException &e) {
+    dto::BaseApiResponse response;
+    response.success = false;
+    response.error["code"] = constants::ERR_DB_QUERY;
+    response.error["message"] = "Database error while fetching affiliate account details.";
+    response.error["detail"] = e.base().what();
+    co_return response;
+  }
 }
 
 
