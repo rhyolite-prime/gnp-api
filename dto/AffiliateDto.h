@@ -63,23 +63,7 @@ inline void AffiliateDto::fromJson(const Json::Value &json) {
     setPhone(json["phone"].asString());
   }
 
-  if (json.isMember("status") && !json["status"].isNull()) {
-    setStatus(json["status"].asInt());
-  }
 
-
-  if (json.isMember("dateJoined") && !json["dateJoined"].isNull()) {
-
-    std::string dateStr = json["dateJoined"].asString();
-    if (dateStr.find('T') != std::string::npos) {
-      std::replace(dateStr.begin(), dateStr.end(), 'T', ' ');
-      if (dateStr.length() == 16) dateStr += ":00";
-    } else if (dateStr.length() == 10) {
-      dateStr += " 00:00:00";
-    }
-
-    date_joined_ = trantor::Date::fromDbString(dateStr);
-  }
 }
 
 } // namespace gnp::dto
