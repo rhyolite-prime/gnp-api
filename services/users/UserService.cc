@@ -1279,42 +1279,34 @@ drogon::Task<dto::BaseApiResponse> UserService::createSubscriber(const dto::Subs
 
       std::string paymentSection;
       if (!paymentLink.empty()) {
-        paymentSection =
-            "  <div style=\"background:#fff8e1;border:1px solid #ffe082;border-radius:6px;padding:15px;margin:20px 0;\">\n"
-            "    <p style=\"margin:0 0 10px;font-weight:bold;color:#f57c00;\">Payment Required</p>\n"
-            "    <p style=\"margin:0 0 12px;color:#555;\">Complete your payment to activate your subscription.</p>\n"
-            "    <p style=\"margin:0 0 10px;\">\n"
-            "      <a href=\"" + paymentLink + "\"\n"
-            "         target=\"_blank\"\n"
-            "         style=\"background:#D32F2F;color:#fff;padding:10px 20px;text-decoration:none;border-radius:4px;display:inline-block;\">Complete Payment</a>\n"
-            "    </p>\n"
-            "    <p style=\"margin:8px 0 0;font-size:12px;color:#888;word-break:break-all;\">Link: " + paymentLink + "</p>\n"
-            "  </div>\n";
+        paymentSection += "<p><strong>Payment Required</strong></p>\n";
+        paymentSection += "<p>Complete your payment to activate your subscription.</p>\n";
+        paymentSection += "<p><a href=\"" + paymentLink + "\">Complete Payment</a></p>\n";
+        paymentSection += "<p>Or copy this link: " + paymentLink + "</p>\n";
       } else {
-        paymentSection =
-            "  <div style=\"background:#fff8e1;border:1px solid #ffe082;border-radius:6px;padding:15px;margin:20px 0;\">\n"
-            "    <p style=\"margin:0 0 8px;font-weight:bold;color:#f57c00;\">Payment Required</p>\n"
-            "    <p style=\"margin:0;color:#555;\">Our team will contact you shortly with a payment link.</p>\n"
-            "  </div>\n";
+        paymentSection += "<p><strong>Payment Required</strong></p>\n";
+        paymentSection += "<p>Our team will contact you shortly with a payment link.</p>\n";
       }
 
       // Build the payment-required email (paymentSection was set above)
-      std::string emailBody =
-          "<div style=\"font-family:Arial,sans-serif;font-size:15px;color:#333;line-height:1.6;max-width:600px;margin:0 auto;padding:20px;\">\n"
-          "  <h2 style=\"color:#1a1a2e;margin-bottom:16px;\">Graphic News Plus</h2>\n"
-          "  <p>Hello " + dto.getFirstName() + ",</p>\n"
-          "  <p>Welcome to <strong>Graphic News Plus</strong>! Your account has been created successfully.</p>\n"
-          "  <p style=\"background:#f9f9f9;padding:15px;border-radius:6px;border:1px solid #eee;\">\n"
-          "    <strong>Email:</strong> " + email + "<br>\n"
-          "    <strong>Password:</strong> " + password + "<br>\n"
-          "    <strong>Package:</strong> " + plan.getValueOfName() + "<br>\n"
-          "    <strong>Validity:</strong> " + startDateObj.toCustomFormattedString("%d %b %Y") + " to " + endDateObj.toCustomFormattedString("%d %b %Y") + "\n"
-          "  </p>\n" +
-          paymentSection +
-          "  <p style=\"font-size:13px;color:#777;\">For security, please change your password after first login.</p>\n"
-          "  <hr style=\"border:none;border-top:1px solid #eee;margin:20px 0;\">\n"
-          "  <p style=\"font-size:12px;color:#888;\">&copy; " + trantor::Date::now().toCustomFormattedString("%Y") + " Graphic News Plus. All rights reserved.</p>\n"
-          "</div>";
+      std::string validityStart1 = startDateObj.toCustomFormattedString("%d %b %Y");
+      std::string validityEnd1   = endDateObj.toCustomFormattedString("%d %b %Y");
+      std::string copyrightYr1   = trantor::Date::now().toCustomFormattedString("%Y");
+      std::string emailBody;
+      emailBody += "<div>\n";
+      emailBody += "<h2>Graphic News Plus</h2>\n";
+      emailBody += "<p>Hello " + dto.getFirstName() + ",</p>\n";
+      emailBody += "<p>Welcome to <strong>Graphic News Plus</strong>!";
+      emailBody += " Your account has been created successfully.</p>\n";
+      emailBody += "<p><strong>Email:</strong> " + email + "<br>\n";
+      emailBody += "<strong>Password:</strong> " + password + "<br>\n";
+      emailBody += "<strong>Package:</strong> " + plan.getValueOfName() + "<br>\n";
+      emailBody += "<strong>Validity:</strong> " + validityStart1 + " to " + validityEnd1 + "</p>\n";
+      emailBody += paymentSection;
+      emailBody += "<p>For security, please change your password after first login.</p>\n";
+      emailBody += "<hr>\n";
+      emailBody += "<p>&copy; " + copyrightYr1 + " Graphic News Plus. All rights reserved.</p>\n";
+      emailBody += "</div>";
 
       emailDto.setBody(emailBody);
       co_await emailService.sendEmailAsync(emailDto);
@@ -1352,26 +1344,26 @@ drogon::Task<dto::BaseApiResponse> UserService::createSubscriber(const dto::Subs
       // Standard welcome email (no payment section)
       emailDto.setSubject("Welcome to Graphic News Plus");
 
-      std::string bypassEmailBody =
-          "<div style=\"font-family:Arial,sans-serif;font-size:15px;color:#333;line-height:1.6;max-width:600px;margin:0 auto;padding:20px;\">\n"
-          "  <h2 style=\"color:#1a1a2e;margin-bottom:16px;\">Graphic News Plus</h2>\n"
-          "  <p>Hello " + dto.getFirstName() + ",</p>\n"
-          "  <p>Welcome to <strong>Graphic News Plus</strong>! Your account has been created and subscription is active.</p>\n"
-          "  <p style=\"background:#f9f9f9;padding:15px;border-radius:6px;border:1px solid #eee;\">\n"
-          "    <strong>Email:</strong> " + email + "<br>\n"
-          "    <strong>Password:</strong> " + password + "<br>\n"
-          "    <strong>Package:</strong> " + plan.getValueOfName() + "<br>\n"
-          "    <strong>Validity:</strong> " + startDateObj.toCustomFormattedString("%d %b %Y") + " to " + endDateObj.toCustomFormattedString("%d %b %Y") + "\n"
-          "  </p>\n"
-          "  <p style=\"margin:20px 0;\">\n"
-          "    <a href=\"https://new.graphicnewsplus.com?al=t\"\n"
-          "       target=\"_blank\"\n"
-          "       style=\"background:#D32F2F;color:#fff;padding:10px 20px;text-decoration:none;border-radius:4px;display:inline-block;\">Login to Your Account</a>\n"
-          "  </p>\n"
-          "  <p style=\"font-size:13px;color:#777;\">For security, please change your password after first login.</p>\n"
-          "  <hr style=\"border:none;border-top:1px solid #eee;margin:20px 0;\">\n"
-          "  <p style=\"font-size:12px;color:#888;\">&copy; " + trantor::Date::now().toCustomFormattedString("%Y") + " Graphic News Plus. All rights reserved.</p>\n"
-          "</div>";
+      std::string validityStart2 = startDateObj.toCustomFormattedString("%d %b %Y");
+      std::string validityEnd2   = endDateObj.toCustomFormattedString("%d %b %Y");
+      std::string copyrightYr2   = trantor::Date::now().toCustomFormattedString("%Y");
+      std::string bypassEmailBody;
+      bypassEmailBody += "<div>\n";
+      bypassEmailBody += "<h2>Graphic News Plus</h2>\n";
+      bypassEmailBody += "<p>Hello " + dto.getFirstName() + ",</p>\n";
+      bypassEmailBody += "<p>Welcome to <strong>Graphic News Plus</strong>!";
+      bypassEmailBody += " Your account has been created and subscription is active.</p>\n";
+      bypassEmailBody += "<p><strong>Email:</strong> " + email + "<br>\n";
+      bypassEmailBody += "<strong>Password:</strong> " + password + "<br>\n";
+      bypassEmailBody += "<strong>Package:</strong> " + plan.getValueOfName() + "<br>\n";
+      bypassEmailBody += "<strong>Validity:</strong> " + validityStart2;
+      bypassEmailBody += " to " + validityEnd2 + "</p>\n";
+      bypassEmailBody += "<p><a href=\"https://new.graphicnewsplus.com?al=t\">";
+      bypassEmailBody += "Login to Your Account</a></p>\n";
+      bypassEmailBody += "<p>For security, please change your password after first login.</p>\n";
+      bypassEmailBody += "<hr>\n";
+      bypassEmailBody += "<p>&copy; " + copyrightYr2 + " Graphic News Plus. All rights reserved.</p>\n";
+      bypassEmailBody += "</div>";
 
       emailDto.setBody(bypassEmailBody);
       co_await emailService.sendEmailAsync(emailDto);
@@ -1728,24 +1720,24 @@ drogon::Task<dto::BaseApiResponse> UserService::invitePartnerAdminUser(const dto
         "https://dev.graphicnewsplus.com/admin/accept-invitation?id=" +
         user.getValueOfId();
 
-    std::string emailBody =
-        "<div style=\"font-family:Arial,sans-serif;font-size:15px;color:#333;line-height:1.6;max-width:600px;margin:0 auto;padding:20px;\">\n"
-        "  <h2 style=\"color:#80004d;margin-bottom:16px;\">Graphic News Plus</h2>\n"
-        "  <p>Hello " + userDto.getFirstName() + ",</p>\n"
-        "  <p>You have been invited to join <strong>" + partnerInfo.getValueOfName() + "</strong> on <strong>Graphic News Plus</strong> as an Administrative user.</p>\n"
-        "  <p>This role gives you access to manage users, configurations, and platform operations.</p>\n"
-        "  <p style=\"margin:20px 0;\">\n"
-        "    <a href=\"" + invitationLink + "\"\n"
-        "       target=\"_blank\"\n"
-        "       style=\"background:#80004d;color:#fff;padding:10px 20px;text-decoration:none;border-radius:4px;display:inline-block;\">Accept Invitation</a>\n"
-        "  </p>\n"
-        "  <p style=\"font-size:13px;color:#777;word-break:break-all;\">If the button does not work, copy this link into your browser:<br>\n"
-        "    " + invitationLink + "\n"
-        "  </p>\n"
-        "  <p style=\"font-size:13px;color:#888;\">If you did not expect this invitation, you can safely ignore this email.</p>\n"
-        "  <hr style=\"border:none;border-top:1px solid #eee;margin:20px 0;\">\n"
-        "  <p style=\"font-size:12px;color:#888;\">&copy; " + trantor::Date::now().toCustomFormattedString("%Y") + " Graphic News Plus. All rights reserved.</p>\n"
-        "</div>";
+    std::string copyrightYr3 = trantor::Date::now().toCustomFormattedString("%Y");
+    std::string emailBody;
+    emailBody += "<div>\n";
+    emailBody += "<h2>Graphic News Plus</h2>\n";
+    emailBody += "<p>Hello " + userDto.getFirstName() + ",</p>\n";
+    emailBody += "<p>You have been invited to join <strong>";
+    emailBody += partnerInfo.getValueOfName();
+    emailBody += "</strong> on <strong>Graphic News Plus</strong>";
+    emailBody += " as an Administrative user.</p>\n";
+    emailBody += "<p>This role gives you access to manage users,";
+    emailBody += " configurations, and platform operations.</p>\n";
+    emailBody += "<p><a href=\"" + invitationLink + "\">Accept Invitation</a></p>\n";
+    emailBody += "<p>If the button does not work, copy this link:<br>\n";
+    emailBody += invitationLink + "</p>\n";
+    emailBody += "<p>If you did not expect this invitation, you can safely ignore this email.</p>\n";
+    emailBody += "<hr>\n";
+    emailBody += "<p>&copy; " + copyrightYr3 + " Graphic News Plus. All rights reserved.</p>\n";
+    emailBody += "</div>";
 
     emailDto.setBody(emailBody);
 
@@ -2343,19 +2335,19 @@ drogon::Task<dto::BaseApiResponse> UserService::validatePartnerUserCredentials(c
         emailDto.setTo(user.getValueOfEmail());
         emailDto.setSubject("Your OTP for Graphic News Plus Verification");
 
-        std::string emailBody =
-            "<div style=\"font-family:Arial,sans-serif;font-size:15px;color:#333;line-height:1.6;max-width:600px;margin:0 auto;padding:20px;\">\n"
-            "  <h2 style=\"color:#1a1a2e;margin-bottom:16px;\">Graphic News Plus</h2>\n"
-            "  <p>Hello " + user.getValueOfFirstName() + ",</p>\n"
-            "  <p>Your One-Time Password (OTP) for verification is:</p>\n"
-            "  <p style=\"background:#fdf2f2;border:1px dashed #f5c6c6;border-radius:6px;padding:15px;\">\n"
-            "    <span style=\"display:block;text-align:center;font-size:28px;font-weight:bold;color:#D32F2F;letter-spacing:6px;\">" + otp + "</span>\n"
-            "  </p>\n"
-            "  <p style=\"font-size:13px;color:#777;\">This code will expire in 5 minutes.</p>\n"
-            "  <p style=\"font-size:13px;color:#888;\">If you did not request this code, please ignore this email.</p>\n"
-            "  <hr style=\"border:none;border-top:1px solid #eee;margin:20px 0;\">\n"
-            "  <p style=\"font-size:12px;color:#888;\">&copy; " + trantor::Date::now().toCustomFormattedString("%Y") + " Graphic News Plus. All rights reserved.</p>\n"
-            "</div>";
+        std::string copyrightYrOtp = trantor::Date::now().toCustomFormattedString("%Y");
+        std::string emailBody;
+        emailBody += "<div>\n";
+        emailBody += "<h2>Graphic News Plus</h2>\n";
+        emailBody += "<p>Hello " + user.getValueOfFirstName() + ",</p>\n";
+        emailBody += "<p>Your One-Time Password (OTP) for verification is:</p>\n";
+        emailBody += "<p><strong>" + otp + "</strong></p>\n";
+        emailBody += "<p>This code will expire in 5 minutes.</p>\n";
+        emailBody += "<p>If you did not request this code, please ignore this email.</p>\n";
+        emailBody += "<hr>\n";
+        emailBody += "<p>&copy; " + copyrightYrOtp;
+        emailBody += " Graphic News Plus. All rights reserved.</p>\n";
+        emailBody += "</div>";
 
         emailDto.setBody(emailBody);
 
@@ -2486,19 +2478,19 @@ drogon::Task<dto::BaseApiResponse> UserService::validateAffiliateUserCredentials
         emailDto.setTo(user.getValueOfEmail());
         emailDto.setSubject("Your OTP for Graphic News Plus Verification");
 
-        std::string emailBody =
-            "<div style=\"font-family:Arial,sans-serif;font-size:15px;color:#333;line-height:1.6;max-width:600px;margin:0 auto;padding:20px;\">\n"
-            "  <h2 style=\"color:#1a1a2e;margin-bottom:16px;\">Graphic News Plus</h2>\n"
-            "  <p>Hello " + user.getValueOfFirstName() + ",</p>\n"
-            "  <p>Your One-Time Password (OTP) for verification is:</p>\n"
-            "  <p style=\"background:#fdf2f2;border:1px dashed #f5c6c6;border-radius:6px;padding:15px;\">\n"
-            "    <span style=\"display:block;text-align:center;font-size:28px;font-weight:bold;color:#D32F2F;letter-spacing:6px;\">" + otp + "</span>\n"
-            "  </p>\n"
-            "  <p style=\"font-size:13px;color:#777;\">This code will expire in 5 minutes.</p>\n"
-            "  <p style=\"font-size:13px;color:#888;\">If you did not request this code, please ignore this email.</p>\n"
-            "  <hr style=\"border:none;border-top:1px solid #eee;margin:20px 0;\">\n"
-            "  <p style=\"font-size:12px;color:#888;\">&copy; " + trantor::Date::now().toCustomFormattedString("%Y") + " Graphic News Plus. All rights reserved.</p>\n"
-            "</div>";
+        std::string copyrightYrOtp = trantor::Date::now().toCustomFormattedString("%Y");
+        std::string emailBody;
+        emailBody += "<div>\n";
+        emailBody += "<h2>Graphic News Plus</h2>\n";
+        emailBody += "<p>Hello " + user.getValueOfFirstName() + ",</p>\n";
+        emailBody += "<p>Your One-Time Password (OTP) for verification is:</p>\n";
+        emailBody += "<p><strong>" + otp + "</strong></p>\n";
+        emailBody += "<p>This code will expire in 5 minutes.</p>\n";
+        emailBody += "<p>If you did not request this code, please ignore this email.</p>\n";
+        emailBody += "<hr>\n";
+        emailBody += "<p>&copy; " + copyrightYrOtp;
+        emailBody += " Graphic News Plus. All rights reserved.</p>\n";
+        emailBody += "</div>";
 
         emailDto.setBody(emailBody);
 
@@ -2845,25 +2837,20 @@ UserService::resetUserPassword(const std::string &userId) {
     emailDto.setTo(gnp::utils::StringUtils::trim(user.getValueOfEmail()));
     emailDto.setSubject("Graphic News Plus - Password Reset");
 
-    std::string emailBody =
-        "<div style=\"font-family:Arial,sans-serif;font-size:15px;color:#333;line-height:1.6;max-width:600px;margin:0 auto;padding:20px;\">\n"
-        "  <h2 style=\"color:#1a1a2e;margin-bottom:16px;\">Graphic News Plus</h2>\n"
-        "  <p>Hello " + user.getValueOfFirstName() + ",</p>\n"
-        "  <p>Your password for Graphic News Plus has been reset by an administrator.</p>\n"
-        "  <p style=\"background:#f9f9f9;padding:15px;border-radius:6px;border:1px solid #eee;\">\n"
-        "    <strong>Username:</strong> " + user.getValueOfUsername() + "<br>\n"
-        "    <strong>Email:</strong> " + user.getValueOfEmail() + "<br>\n"
-        "    <strong>New Password:</strong> " + newPassword + "\n"
-        "  </p>\n"
-        "  <p style=\"margin:20px 0;\">\n"
-        "    <a href=\"https://new.graphicnewsplus.com\"\n"
-        "       target=\"_blank\"\n"
-        "       style=\"background:#D32F2F;color:#fff;padding:10px 20px;text-decoration:none;border-radius:4px;display:inline-block;\">Login to Your Account</a>\n"
-        "  </p>\n"
-        "  <p style=\"font-size:13px;color:#777;\">Please keep these credentials secure and change your password after your next login.</p>\n"
-        "  <hr style=\"border:none;border-top:1px solid #eee;margin:20px 0;\">\n"
-        "  <p style=\"font-size:12px;color:#888;\">&copy; " + trantor::Date::now().toCustomFormattedString("%Y") + " Graphic News Plus. All rights reserved.</p>\n"
-        "</div>";
+    std::string copyrightYr5 = trantor::Date::now().toCustomFormattedString("%Y");
+    std::string emailBody;
+    emailBody += "<div>\n";
+    emailBody += "<h2>Graphic News Plus</h2>\n";
+    emailBody += "<p>Hello " + user.getValueOfFirstName() + ",</p>\n";
+    emailBody += "<p>Your password for Graphic News Plus has been reset by an administrator.</p>\n";
+    emailBody += "<p><strong>Username:</strong> " + user.getValueOfUsername() + "<br>\n";
+    emailBody += "<strong>Email:</strong> " + user.getValueOfEmail() + "<br>\n";
+    emailBody += "<strong>New Password:</strong> " + newPassword + "</p>\n";
+    emailBody += "<p><a href=\"https://new.graphicnewsplus.com\">Login to Your Account</a></p>\n";
+    emailBody += "<p>Please keep these credentials secure and change your password after your next login.</p>\n";
+    emailBody += "<hr>\n";
+    emailBody += "<p>&copy; " + copyrightYr5 + " Graphic News Plus. All rights reserved.</p>\n";
+    emailBody += "</div>";
 
     emailDto.setBody(emailBody);
     co_await emailService.sendEmailAsync(emailDto);
@@ -3400,19 +3387,19 @@ void UserService::sendOtp(
 
               // 4. Send Email
               // HTML Body with Red Theme
-              std::string emailBody =
-                  "<div style=\"font-family:Arial,sans-serif;font-size:15px;color:#333;line-height:1.6;max-width:600px;margin:0 auto;padding:20px;\">\n"
-                  "  <h2 style=\"color:#1a1a2e;margin-bottom:16px;\">Graphic News Plus</h2>\n"
-                  "  <p>Hello Reader,</p>\n"
-                  "  <p>Your One-Time Password (OTP) for verification is:</p>\n"
-                  "  <p style=\"background:#fdf2f2;border:1px dashed #f5c6c6;border-radius:6px;padding:15px;\">\n"
-                  "    <span style=\"display:block;text-align:center;font-size:28px;font-weight:bold;color:#D32F2F;letter-spacing:6px;\">" + otp + "</span>\n"
-                  "  </p>\n"
-                  "  <p style=\"font-size:13px;color:#777;\">This code will expire in 5 minutes.</p>\n"
-                  "  <p style=\"font-size:13px;color:#888;\">If you did not request this code, please ignore this email.</p>\n"
-                  "  <hr style=\"border:none;border-top:1px solid #eee;margin:20px 0;\">\n"
-                  "  <p style=\"font-size:12px;color:#888;\">&copy; " + trantor::Date::now().toCustomFormattedString("%Y") + " Graphic News Plus. All rights reserved.</p>\n"
-                  "</div>";
+              std::string copyrightYr6 = trantor::Date::now().toCustomFormattedString("%Y");
+              std::string emailBody;
+              emailBody += "<div>\n";
+              emailBody += "<h2>Graphic News Plus</h2>\n";
+              emailBody += "<p>Hello Reader,</p>\n";
+              emailBody += "<p>Your One-Time Password (OTP) for verification is:</p>\n";
+              emailBody += "<p><strong>" + otp + "</strong></p>\n";
+              emailBody += "<p>This code will expire in 5 minutes.</p>\n";
+              emailBody += "<p>If you did not request this code, please ignore this email.</p>\n";
+              emailBody += "<hr>\n";
+              emailBody += "<p>&copy; " + copyrightYr6;
+              emailBody += " Graphic News Plus. All rights reserved.</p>\n";
+              emailBody += "</div>";
 
               auto emailService =
                   std::make_shared<gnp::services::EmailService>();
