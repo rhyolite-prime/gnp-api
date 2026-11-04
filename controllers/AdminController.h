@@ -149,7 +149,7 @@ public:
 
   //affiliates
   ADD_METHOD_TO(AdminController::getAllAffiliates, std::string(PREFIX) + "get-all-affiliates", Get, Options, "JwtAuthFilter");
-  ADD_METHOD_TO(AdminController::updateAffiliateStatus, std::string(PREFIX) + "update-affiliate-status", Put, Options, "JwtAuthFilter");
+  ADD_METHOD_TO(AdminController::updateAffiliateStatus, std::string(PREFIX) + "update-affiliate-status/{1}/{2}", Get, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::getAffiliateApplicants, std::string(PREFIX) + "get-affiliate-applicants", Get, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::getAffiliateCommissions, std::string(PREFIX) + "get-affiliate-commissions", Get, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::getAffiliatePayouts, std::string(PREFIX) + "get-affiliate-payouts", Get, Options, "JwtAuthFilter");
@@ -160,7 +160,8 @@ public:
   ADD_METHOD_TO(AdminController::createAffiliate, std::string(PREFIX) + "create-affiliate", Post, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::updateAffiliate, std::string(PREFIX) + "update-affiliate/{1}", Post, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::updateAffiliateProfileImage, std::string(PREFIX) + "update-affiliate-profile-image/{1}", Post, Options, "JwtAuthFilter");
-  ADD_METHOD_TO(AdminController::deleteAffiliate, std::string(PREFIX) + "delete-affiliate", Delete, Options, "JwtAuthFilter");
+  ADD_METHOD_TO(AdminController::deleteAffiliate, std::string(PREFIX) + "delete-affiliate/{1}", Delete, Options, "JwtAuthFilter");
+  ADD_METHOD_TO(AdminController::resetAffiliatePassword, std::string(PREFIX) + "reset-affiliate-password/{1}", Get, Options, "JwtAuthFilter");
 
    // archive RAG indexing maintenance
    ADD_METHOD_TO(AdminController::indexArchiveRag, std::string(PREFIX) + "rag/index-pending", Post, Options, "JwtAuthFilter");
@@ -207,8 +208,6 @@ public:
   drogon::Task<HttpResponsePtr> lockUserAccount(HttpRequestPtr req);
   drogon::Task<HttpResponsePtr> unLockUserAccount(HttpRequestPtr req);
 
-
-
   // publications ...
 
   Task<HttpResponsePtr> getAllPublications(HttpRequestPtr req);
@@ -245,7 +244,7 @@ public:
 
   //affiliates
  drogon::Task<HttpResponsePtr> getAllAffiliates(HttpRequestPtr req);
- drogon::Task<HttpResponsePtr> updateAffiliateStatus(HttpRequestPtr req);
+ drogon::Task<HttpResponsePtr> updateAffiliateStatus(HttpRequestPtr req, const std::string &affiliateId, const int &status);
  drogon::Task<HttpResponsePtr> getAffiliateApplicants(HttpRequestPtr req);
  drogon::Task<HttpResponsePtr> getAffiliateCommissions(HttpRequestPtr req);
  drogon::Task<HttpResponsePtr> getAffiliatePayouts(HttpRequestPtr req);
@@ -256,7 +255,8 @@ public:
  drogon::Task<HttpResponsePtr> createAffiliate(HttpRequestPtr req);
  drogon::Task<HttpResponsePtr> updateAffiliate(HttpRequestPtr req, const std::string &affiliateId);
  drogon::Task<HttpResponsePtr> updateAffiliateProfileImage(HttpRequestPtr req, const std::string &affiliateId);
- drogon::Task<HttpResponsePtr> deleteAffiliate(HttpRequestPtr req);
+ drogon::Task<HttpResponsePtr> deleteAffiliate(HttpRequestPtr req, const std::string &affiliateId);
+ drogon::Task<HttpResponsePtr> resetAffiliatePassword(HttpRequestPtr req, const std::string &affiliateId);
 
   drogon::Task<HttpResponsePtr> assignPartnerSubscribersPlan(HttpRequestPtr req);
   drogon::Task<HttpResponsePtr> updatePartner(HttpRequestPtr req);
