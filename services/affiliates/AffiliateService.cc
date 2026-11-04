@@ -168,6 +168,12 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::getAll(int pageNo, int page
   }
 }
 
+  drogon::Task<dto::BaseApiResponse> AffiliateService::getAffiliateAccountDetails(const std::string &id) {
+
+  //return the row that matches the primary key
+
+}
+
 
 drogon::Task<dto::BaseApiResponse> AffiliateService::getAllApplicants(int pageNo, int pageSize, const std::string &query, int status) {
 
