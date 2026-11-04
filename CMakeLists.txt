@@ -188,6 +188,7 @@ add_executable(${PROJECT_NAME} main.cc
         dto/UserGroupDto.h
         services/sms_gateway/SmsGatewayApi.h
         services/sms_gateway/SmsGatewayApi.cc
+        dto/VideoDto.h
         services/videos/VideoService.h
         services/videos/VideoService.cc
 )

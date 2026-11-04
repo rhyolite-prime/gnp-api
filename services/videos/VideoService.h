@@ -7,7 +7,7 @@
 #include <drogon/utils/coroutine.h>
 
 #include "dto/BaseApiResponse.h"
-#include "dto/NewsPaperDto.h"
+#include "dto/VideoDto.h"
 
 namespace gnp::services {
 
