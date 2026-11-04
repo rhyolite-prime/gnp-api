@@ -1220,6 +1220,11 @@ drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::deleteAffiliate(cons
 }
 
 
+drogon::Task<dto::BaseApiResponse> AffiliateService::getAdminDashboardData() {
+
+
+
+}
 
 drogon::Task<dto::BaseApiResponse> AffiliateService::resetAffiliateUserPassword(const std::string &id) {
 
