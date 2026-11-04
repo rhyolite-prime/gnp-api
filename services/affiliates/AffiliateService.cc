@@ -9,6 +9,9 @@
 #include "models/AffiliateCommissions.h"
 #include "models/AffiliatePayouts.h"
 #include "models/Affiliates.h"
+#include <algorithm>
+#include <cmath>
+#include <iterator>
 #include "services/email/EmailService.h"
 #include "services/users/UserService.h"
 #include <drogon/orm/CoroMapper.h>
@@ -2076,28 +2079,180 @@ drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::issueBulkPayout() {
 }
 
 
+namespace {
+
+Json::Value affiliateSettingsJson(const drogon::orm::Row &row) {
+  Json::Value data;
+  data["id"] = row["id"].as<std::string>();
+  data["defaultCommissionRate"] = row["default_commission_rate"].as<double>();
+  data["minimumPayoutAmount"] = row["minimum_payout_amount"].as<double>();
+  data["maximumPayoutAmount"] = row["maximum_payout_amount"].as<double>();
+  data["payoutSchedule"] = row["payout_schedule"].isNull()
+      ? Json::Value(Json::nullValue) : Json::Value(row["payout_schedule"].as<int>());
+  data["sessionDuration"] = row["session_duration"].isNull()
+      ? Json::Value(Json::nullValue) : Json::Value(row["session_duration"].as<int>());
+  data["termsAndConditions"] = row["terms_and_conditions"].as<std::string>();
+  return data;
+}
+
+} // namespace
+
 drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::getAffiliateSettings() {
-
   dto::BaseApiResponse response;
-  response.success = true;
-  response.result["message"] = "Bulk payout processing completed.";
-
+  try {
+    const auto rows = co_await drogon::app().getDbClient()->execSqlCoro(
+        "SELECT * FROM affiliate_program_settings ORDER BY id LIMIT 1");
+    response.success = true;
+    response.result["data"] = rows.empty()
+        ? Json::Value(Json::nullValue) : affiliateSettingsJson(rows[0]);
+  } catch (const DrogonDbException &e) {
+    response.error["code"] = constants::ERR_DB_QUERY;
+    response.error["message"] = "Database error while fetching affiliate settings.";
+    response.error["detail"] = e.base().what();
+  }
   co_return response;
-
 }
 
-
-
- drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::createAffiliateSettings(const ::gnp::dto::AffiliateSettingsDto &dto) {
-
+drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::createAffiliateSettings(
+    const ::gnp::dto::AffiliateSettingsDto &dto) {
   dto::BaseApiResponse response;
-  response.success = true;
-  response.result["message"] = "Bulk payout processing completed.";
+  const auto &values = dto.values();
+  auto invalid = [&](const std::string &message) {
+    response.error["code"] = constants::ERR_VALIDATION;
+    response.error["message"] = message;
+  };
+  if (!values.isObject() || values.empty()) {
+    invalid("Provide affiliate program settings as a non-empty JSON object.");
+    co_return response;
+  }
 
-  co_return response;
+  const std::string keys[] = {"defaultCommissionRate", "minimumPayoutAmount",
+      "maximumPayoutAmount", "payoutSchedule", "sessionDuration", "termsAndConditions"};
+  for (const auto &key : values.getMemberNames()) {
+    if (std::find(std::begin(keys), std::end(keys), key) == std::end(keys)) {
+      invalid("Unknown affiliate setting: " + key);
+      co_return response;
+    }
+  }
 
+  // Empty strings denote omitted fields only in the SQL bindings. Supplied
+  // values must be valid; null must not silently erase NOT NULL columns.
+  auto decimal = [&](const char *name, std::string &out) {
+    if (!values.isMember(name)) return true;
+    const auto &v = values[name];
+    if (!(v.isNumeric() || v.isString())) return false;
+    out = v.asString();
+    try {
+      size_t used = 0;
+      const double number = std::stod(out, &used);
+      return used == out.size() && std::isfinite(number) && number >= 0;
+    } catch (const std::exception &) {
+      return false;
+    }
+  };
+  std::string rate, minimum, maximum;
+  if (!decimal("defaultCommissionRate", rate) ||
+      !decimal("minimumPayoutAmount", minimum) ||
+      !decimal("maximumPayoutAmount", maximum)) {
+    invalid("Commission rate and payout amounts must be non-negative numbers.");
+    co_return response;
+  }
+  auto integer = [&](const char *name, std::string &out) {
+    if (!values.isMember(name)) return true;
+    const auto &v = values[name];
+    if (!v.isInt() || v.asInt() < 0) return false;
+    out = std::to_string(v.asInt());
+    return true;
+  };
+  std::string schedule, duration;
+  if (!integer("payoutSchedule", schedule) ||
+      !integer("sessionDuration", duration)) {
+    invalid("Payout schedule and session duration must be non-negative integers.");
+    co_return response;
+  }
+  std::string terms;
+  if (values.isMember("termsAndConditions")) {
+    if (!values["termsAndConditions"].isString() ||
+        values["termsAndConditions"].asString().size() > 1000) {
+      invalid("Terms and conditions must be a string of at most 1000 characters.");
+      co_return response;
+    }
+    terms = values["termsAndConditions"].asString();
+  }
+
+  try {
+    auto transaction = co_await drogon::app().getDbClient()->newTransactionCoro();
+    // Serialize writers (including the initially empty table) before deciding
+    // whether to insert or update. All reads and writes use this transaction.
+    co_await transaction->execSqlCoro("SELECT pg_advisory_xact_lock(73194824)");
+    const auto existing = co_await transaction->execSqlCoro(
+        "SELECT * FROM affiliate_program_settings ORDER BY id LIMIT 1 FOR UPDATE");
+    drogon::orm::Result saved(nullptr);
+    if (existing.empty()) {
+      if (rate.empty() || minimum.empty() || maximum.empty() ||
+          !values.isMember("termsAndConditions")) {
+        invalid("defaultCommissionRate, minimumPayoutAmount, maximumPayoutAmount and termsAndConditions are required when creating settings.");
+        transaction->rollback();
+        co_return response;
+      }
+      if (std::stod(minimum) > std::stod(maximum)) {
+        invalid("minimumPayoutAmount must not exceed maximumPayoutAmount.");
+        transaction->rollback();
+        co_return response;
+      }
+      saved = co_await transaction->execSqlCoro(
+          "INSERT INTO affiliate_program_settings "
+          "(id, default_commission_rate, minimum_payout_amount, "
+          "maximum_payout_amount, payout_schedule, session_duration, terms_and_conditions) "
+          "VALUES ($1::uuid, $2::numeric, $3::numeric, $4::numeric, "
+          "NULLIF($5, '')::integer, NULLIF($6, '')::integer, $7) RETURNING *",
+          gnp::utils::IdGeneratorUtils::generateGuid(), rate, minimum, maximum,
+          schedule, duration, terms);
+    } else {
+      const auto &row = existing[0];
+      const double effectiveMin = minimum.empty()
+          ? row["minimum_payout_amount"].as<double>() : std::stod(minimum);
+      const double effectiveMax = maximum.empty()
+          ? row["maximum_payout_amount"].as<double>() : std::stod(maximum);
+      if (effectiveMin > effectiveMax) {
+        invalid("minimumPayoutAmount must not exceed maximumPayoutAmount.");
+        transaction->rollback();
+        co_return response;
+      }
+      const auto id = row["id"].as<std::string>();
+      saved = co_await transaction->execSqlCoro(
+          "UPDATE affiliate_program_settings SET "
+          "default_commission_rate = COALESCE(NULLIF($2, '')::numeric, default_commission_rate), "
+          "minimum_payout_amount = COALESCE(NULLIF($3, '')::numeric, minimum_payout_amount), "
+          "maximum_payout_amount = COALESCE(NULLIF($4, '')::numeric, maximum_payout_amount), "
+          "payout_schedule = COALESCE(NULLIF($5, '')::integer, payout_schedule), "
+          "session_duration = COALESCE(NULLIF($6, '')::integer, session_duration), "
+          "terms_and_conditions = CASE WHEN $7::boolean THEN $8::text "
+          "ELSE terms_and_conditions END "
+          "WHERE id = $1::uuid RETURNING *",
+          id, rate, minimum, maximum, schedule, duration,
+          values.isMember("termsAndConditions"), terms);
+      // Consolidate any older rows created before singleton writes were used.
+      co_await transaction->execSqlCoro(
+          "DELETE FROM affiliate_program_settings WHERE id <> $1::uuid", id);
+    }
+    response.success = true;
+    response.result["data"] = affiliateSettingsJson(saved[0]);
+    response.message = "Affiliate program settings saved successfully.";
+    // Drogon commits the transaction when the last reference leaves scope.
+    co_return response;
+  } catch (const DrogonDbException &e) {
+    response.error["code"] = constants::ERR_DB_QUERY;
+    response.error["message"] = "Database error while saving affiliate settings.";
+    response.error["detail"] = e.base().what();
+    co_return response;
+  } catch (const std::exception &e) {
+    response.error["code"] = constants::ERR_INTERNAL;
+    response.error["message"] = "Error while saving affiliate settings.";
+    response.error["detail"] = e.what();
+    co_return response;
+  }
 }
-
 
 
 } // namespace gnp::services

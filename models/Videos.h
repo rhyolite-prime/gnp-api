@@ -53,7 +53,7 @@ class Videos
         static const std::string _file_name;
         static const std::string _file_path;
         static const std::string _file_size;
-        static const std::string _duration;
+        static const std::string _duration_in_mins;
         static const std::string _format;
         static const std::string _thumbnail_url;
         static const std::string _status;
@@ -171,20 +171,21 @@ class Videos
 
     /**  For column file_size  */
     ///Get the value of the column file_size, returns the default value if the column is null
-    const int64_t &getValueOfFileSize() const noexcept;
+    const int32_t &getValueOfFileSize() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<int64_t> &getFileSize() const noexcept;
+    const std::shared_ptr<int32_t> &getFileSize() const noexcept;
     ///Set the value of the column file_size
-    void setFileSize(const int64_t &pFileSize) noexcept;
+    void setFileSize(const int32_t &pFileSize) noexcept;
+    void setFileSizeToNull() noexcept;
 
-    /**  For column duration  */
-    ///Get the value of the column duration, returns the default value if the column is null
-    const int32_t &getValueOfDuration() const noexcept;
+    /**  For column duration_in_mins  */
+    ///Get the value of the column duration_in_mins, returns the default value if the column is null
+    const int32_t &getValueOfDurationInMins() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<int32_t> &getDuration() const noexcept;
-    ///Set the value of the column duration
-    void setDuration(const int32_t &pDuration) noexcept;
-    void setDurationToNull() noexcept;
+    const std::shared_ptr<int32_t> &getDurationInMins() const noexcept;
+    ///Set the value of the column duration_in_mins
+    void setDurationInMins(const int32_t &pDurationInMins) noexcept;
+    void setDurationInMinsToNull() noexcept;
 
     /**  For column format  */
     ///Get the value of the column format, returns the default value if the column is null
@@ -340,8 +341,8 @@ class Videos
     std::shared_ptr<std::string> description_;
     std::shared_ptr<std::string> fileName_;
     std::shared_ptr<std::string> filePath_;
-    std::shared_ptr<int64_t> fileSize_;
-    std::shared_ptr<int32_t> duration_;
+    std::shared_ptr<int32_t> fileSize_;
+    std::shared_ptr<int32_t> durationInMins_;
     std::shared_ptr<std::string> format_;
     std::shared_ptr<std::string> thumbnailUrl_;
     std::shared_ptr<int32_t> status_;
@@ -422,16 +423,17 @@ class Videos
             sql += "file_path,";
             ++parametersCount;
         }
+        sql += "file_size,";
+        ++parametersCount;
 
-        if(dirtyFlag_[5])
+        if(!dirtyFlag_[5])
         {
-            sql += "file_size,";
-            ++parametersCount;
+            needSelection=true;
         }
 
         if(dirtyFlag_[6])
         {
-            sql += "duration,";
+            sql += "duration_in_mins,";
             ++parametersCount;
         }
 
@@ -585,6 +587,11 @@ class Videos
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
 
+        }
+
+        else
+        {
+            sql +="default,";
         }
 
         if(dirtyFlag_[6])

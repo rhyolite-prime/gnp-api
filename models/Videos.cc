@@ -31,7 +31,7 @@ const std::string Videos::Cols::_file_path = "\"file_path\"";
 
 const std::string Videos::Cols::_file_size = "\"file_size\"";
 
-const std::string Videos::Cols::_duration = "\"duration\"";
+const std::string Videos::Cols::_duration_in_mins = "\"duration_in_mins\"";
 
 const std::string Videos::Cols::_format = "\"format\"";
 
@@ -73,8 +73,8 @@ const std::vector<typename Videos::MetaData> Videos::metaData_={
 {"description","std::string","text",0,0,0,0},
 {"file_name","std::string","character varying",255,0,0,1},
 {"file_path","std::string","character varying",1000,0,0,1},
-{"file_size","int64_t","bigint",8,0,0,1},
-{"duration","int32_t","integer",4,0,0,0},
+{"file_size","int32_t","integer",4,0,0,0},
+{"duration_in_mins","int32_t","integer",4,0,0,0},
 {"format","std::string","character varying",50,0,0,0},
 {"thumbnail_url","std::string","character varying",150,0,0,0},
 {"status","int32_t","integer",4,0,0,0},
@@ -138,14 +138,14 @@ Videos::Videos(const Row &r, const ssize_t indexOffset) noexcept
         if(!r["file_size"].isNull())
         {
 
-            fileSize_=std::make_shared<int64_t>(r["file_size"].as<int64_t>());
+            fileSize_=std::make_shared<int32_t>(r["file_size"].as<int32_t>());
 
         }
 
-        if(!r["duration"].isNull())
+        if(!r["duration_in_mins"].isNull())
         {
 
-            duration_=std::make_shared<int32_t>(r["duration"].as<int32_t>());
+            durationInMins_=std::make_shared<int32_t>(r["duration_in_mins"].as<int32_t>());
 
         }
 
@@ -329,7 +329,7 @@ Videos::Videos(const Row &r, const ssize_t indexOffset) noexcept
         if(!r[index].isNull())
         {
 
-            fileSize_=std::make_shared<int64_t>(r[index].as<int64_t>());
+            fileSize_=std::make_shared<int32_t>(r[index].as<int32_t>());
 
         }
 
@@ -337,7 +337,7 @@ Videos::Videos(const Row &r, const ssize_t indexOffset) noexcept
         if(!r[index].isNull())
         {
 
-            duration_=std::make_shared<int32_t>(r[index].as<int32_t>());
+            durationInMins_=std::make_shared<int32_t>(r[index].as<int32_t>());
 
         }
 
@@ -541,7 +541,7 @@ Videos::Videos(const Json::Value &pJson, const std::vector<std::string> &pMasque
         dirtyFlag_[5] = true;
         if(!pJson[pMasqueradingVector[5]].isNull())
         {
-            fileSize_=std::make_shared<int64_t>((int64_t)pJson[pMasqueradingVector[5]].asInt64());
+            fileSize_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[5]].asInt64());
         }
     }
 
@@ -550,7 +550,7 @@ Videos::Videos(const Json::Value &pJson, const std::vector<std::string> &pMasque
         dirtyFlag_[6] = true;
         if(!pJson[pMasqueradingVector[6]].isNull())
         {
-            duration_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[6]].asInt64());
+            durationInMins_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[6]].asInt64());
         }
     }
 
@@ -764,16 +764,16 @@ Videos::Videos(const Json::Value &pJson) noexcept(false)
         dirtyFlag_[5]=true;
         if(!pJson["file_size"].isNull())
         {
-            fileSize_=std::make_shared<int64_t>((int64_t)pJson["file_size"].asInt64());
+            fileSize_=std::make_shared<int32_t>((int32_t)pJson["file_size"].asInt64());
         }
     }
 
-    if(pJson.isMember("duration"))
+    if(pJson.isMember("duration_in_mins"))
     {
         dirtyFlag_[6]=true;
-        if(!pJson["duration"].isNull())
+        if(!pJson["duration_in_mins"].isNull())
         {
-            duration_=std::make_shared<int32_t>((int32_t)pJson["duration"].asInt64());
+            durationInMins_=std::make_shared<int32_t>((int32_t)pJson["duration_in_mins"].asInt64());
         }
     }
 
@@ -992,7 +992,7 @@ void Videos::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[5] = true;
         if(!pJson[pMasqueradingVector[5]].isNull())
         {
-            fileSize_=std::make_shared<int64_t>((int64_t)pJson[pMasqueradingVector[5]].asInt64());
+            fileSize_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[5]].asInt64());
         }
     }
 
@@ -1001,7 +1001,7 @@ void Videos::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[6] = true;
         if(!pJson[pMasqueradingVector[6]].isNull())
         {
-            duration_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[6]].asInt64());
+            durationInMins_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[6]].asInt64());
         }
     }
 
@@ -1214,16 +1214,16 @@ void Videos::updateByJson(const Json::Value &pJson) noexcept(false)
         dirtyFlag_[5] = true;
         if(!pJson["file_size"].isNull())
         {
-            fileSize_=std::make_shared<int64_t>((int64_t)pJson["file_size"].asInt64());
+            fileSize_=std::make_shared<int32_t>((int32_t)pJson["file_size"].asInt64());
         }
     }
 
-    if(pJson.isMember("duration"))
+    if(pJson.isMember("duration_in_mins"))
     {
         dirtyFlag_[6] = true;
-        if(!pJson["duration"].isNull())
+        if(!pJson["duration_in_mins"].isNull())
         {
-            duration_=std::make_shared<int32_t>((int32_t)pJson["duration"].asInt64());
+            durationInMins_=std::make_shared<int32_t>((int32_t)pJson["duration_in_mins"].asInt64());
         }
     }
 
@@ -1504,42 +1504,47 @@ void Videos::setFilePath(std::string &&pFilePath) noexcept
     dirtyFlag_[4] = true;
 }
 
-const int64_t &Videos::getValueOfFileSize() const noexcept
+const int32_t &Videos::getValueOfFileSize() const noexcept
 {
-    static const int64_t defaultValue = int64_t();
+    static const int32_t defaultValue = int32_t();
     if(fileSize_)
         return *fileSize_;
     return defaultValue;
 }
-const std::shared_ptr<int64_t> &Videos::getFileSize() const noexcept
+const std::shared_ptr<int32_t> &Videos::getFileSize() const noexcept
 {
     return fileSize_;
 }
-void Videos::setFileSize(const int64_t &pFileSize) noexcept
+void Videos::setFileSize(const int32_t &pFileSize) noexcept
 {
-    fileSize_ = std::make_shared<int64_t>(pFileSize);
+    fileSize_ = std::make_shared<int32_t>(pFileSize);
+    dirtyFlag_[5] = true;
+}
+void Videos::setFileSizeToNull() noexcept
+{
+    fileSize_.reset();
     dirtyFlag_[5] = true;
 }
 
-const int32_t &Videos::getValueOfDuration() const noexcept
+const int32_t &Videos::getValueOfDurationInMins() const noexcept
 {
     static const int32_t defaultValue = int32_t();
-    if(duration_)
-        return *duration_;
+    if(durationInMins_)
+        return *durationInMins_;
     return defaultValue;
 }
-const std::shared_ptr<int32_t> &Videos::getDuration() const noexcept
+const std::shared_ptr<int32_t> &Videos::getDurationInMins() const noexcept
 {
-    return duration_;
+    return durationInMins_;
 }
-void Videos::setDuration(const int32_t &pDuration) noexcept
+void Videos::setDurationInMins(const int32_t &pDurationInMins) noexcept
 {
-    duration_ = std::make_shared<int32_t>(pDuration);
+    durationInMins_ = std::make_shared<int32_t>(pDurationInMins);
     dirtyFlag_[6] = true;
 }
-void Videos::setDurationToNull() noexcept
+void Videos::setDurationInMinsToNull() noexcept
 {
-    duration_.reset();
+    durationInMins_.reset();
     dirtyFlag_[6] = true;
 }
 
@@ -1878,7 +1883,7 @@ const std::vector<std::string> &Videos::insertColumns() noexcept
         "file_name",
         "file_path",
         "file_size",
-        "duration",
+        "duration_in_mins",
         "format",
         "thumbnail_url",
         "status",
@@ -1974,9 +1979,9 @@ void Videos::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 
     if(dirtyFlag_[6])
     {
-        if(getDuration())
+        if(getDurationInMins())
         {
-            binder << getValueOfDuration();
+            binder << getValueOfDurationInMins();
         }
         else
         {
@@ -2326,9 +2331,9 @@ void Videos::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 
     if(dirtyFlag_[6])
     {
-        if(getDuration())
+        if(getDurationInMins())
         {
-            binder << getValueOfDuration();
+            binder << getValueOfDurationInMins();
         }
         else
         {
@@ -2555,7 +2560,7 @@ Json::Value Videos::toJson() const
     if(getFileSize())
     {
 
-        ret["file_size"]=(Json::Int64)getValueOfFileSize();
+        ret["file_size"]=getValueOfFileSize();
 
     }
     else
@@ -2563,15 +2568,15 @@ Json::Value Videos::toJson() const
         ret["file_size"]=Json::Value();
     }
 
-    if(getDuration())
+    if(getDurationInMins())
     {
 
-        ret["duration"]=getValueOfDuration();
+        ret["duration_in_mins"]=getValueOfDurationInMins();
 
     }
     else
     {
-        ret["duration"]=Json::Value();
+        ret["duration_in_mins"]=Json::Value();
     }
 
     if(getFormat())
@@ -2807,7 +2812,7 @@ Json::Value Videos::toMasqueradedJson(
             if(getFileSize())
             {
 
-                ret[pMasqueradingVector[5]]=(Json::Int64)getValueOfFileSize();
+                ret[pMasqueradingVector[5]]=getValueOfFileSize();
 
             }
             else
@@ -2818,10 +2823,10 @@ Json::Value Videos::toMasqueradedJson(
 
         if(!pMasqueradingVector[6].empty())
         {
-            if(getDuration())
+            if(getDurationInMins())
             {
 
-                ret[pMasqueradingVector[6]]=getValueOfDuration();
+                ret[pMasqueradingVector[6]]=getValueOfDurationInMins();
 
             }
             else
@@ -3074,7 +3079,7 @@ Json::Value Videos::toMasqueradedJson(
     if(getFileSize())
     {
 
-        ret["file_size"]=(Json::Int64)getValueOfFileSize();
+        ret["file_size"]=getValueOfFileSize();
 
     }
     else
@@ -3082,15 +3087,15 @@ Json::Value Videos::toMasqueradedJson(
         ret["file_size"]=Json::Value();
     }
 
-    if(getDuration())
+    if(getDurationInMins())
     {
 
-        ret["duration"]=getValueOfDuration();
+        ret["duration_in_mins"]=getValueOfDurationInMins();
 
     }
     else
     {
-        ret["duration"]=Json::Value();
+        ret["duration_in_mins"]=Json::Value();
     }
 
     if(getFormat())
@@ -3296,15 +3301,9 @@ bool Videos::validateJsonForCreation(const Json::Value &pJson, std::string &err)
             return false;
     }
 
-    else
+    if(pJson.isMember("duration_in_mins"))
     {
-        err="The file_size column cannot be null";
-        return false;
-    }
-
-    if(pJson.isMember("duration"))
-    {
-        if(!validJsonOfField(6, "duration", pJson["duration"], err, true))
+        if(!validJsonOfField(6, "duration_in_mins", pJson["duration_in_mins"], err, true))
             return false;
     }
 
@@ -3474,12 +3473,6 @@ bool Videos::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, true))
                   return false;
           }
-
-        else
-        {
-            err="The " + pMasqueradingVector[5] + " column cannot be null";
-            return false;
-        }
 
       }
 
@@ -3676,9 +3669,9 @@ bool Videos::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
             return false;
     }
 
-    if(pJson.isMember("duration"))
+    if(pJson.isMember("duration_in_mins"))
     {
-        if(!validJsonOfField(6, "duration", pJson["duration"], err, false))
+        if(!validJsonOfField(6, "duration_in_mins", pJson["duration_in_mins"], err, false))
             return false;
     }
 
@@ -4023,11 +4016,10 @@ bool Videos::validJsonOfField(size_t index,
 
             if(pJson.isNull())
             {
-                err="The " + fieldName + " column cannot be null";
-                return false;
+                return true;
             }
 
-            if(!pJson.isInt64())
+            if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;

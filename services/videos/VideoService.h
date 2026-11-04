@@ -12,8 +12,9 @@
 namespace gnp::services {
 
     class VideoService {
-
+    public:
         drogon::Task<dto::BaseApiResponse> getAll(int pageNo, int pageSize, const std::string &query);
+        drogon::Task<dto::BaseApiResponse> getVideoDetails(const std::string &id);
         drogon::Task<dto::BaseApiResponse> create(const dto::VideoDto &dto);
         drogon::Task<dto::BaseApiResponse> update(const dto::VideoDto &dto, const std::string &id);
         drogon::Task<dto::BaseApiResponse> deleteVideo(const std::string &id);

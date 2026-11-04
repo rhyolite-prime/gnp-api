@@ -43,6 +43,7 @@
 #include "services/games/GameManager.h"
 #include "services/users/UserService.h"
 #include "services/user_invitations/AdminUserInvitationService.h"
+#include "services/videos/VideoService.h"
 #include "utils/PasswordUtils.h"
 
 namespace gnp::plugins {
@@ -86,6 +87,7 @@ public:
   ::gnp::services::ContentService &getContentService() { return contentService_; }
   ::gnp::services::TelegramService &getTelegramService() { return telegramService_; }
   ::gnp::services::PermissionService &getPermissionService() { return permissionService_; }
+  ::gnp::services::VideoService &getVideoService() { return videoService_; }
   ::gnp::services::JoomlaApi &getJoomlaApi() { return joomlaApi_; }
   ::gnp::services::GameManager &getGameManager() { return gameManager_; }
   ::gnp::services::RagManager &getRagManager() { return ragManager_; }
@@ -122,6 +124,7 @@ private:
   ::gnp::services::G3StorageService g3StorageService_;
   ::gnp::services::SettingService settingService_;
   ::gnp::services::TelegramService telegramService_;
+  ::gnp::services::VideoService videoService_;
   ::gnp::services::JoomlaApi joomlaApi_;
   ::gnp::services::GameManager gameManager_;
   ::gnp::services::RagManager ragManager_;
