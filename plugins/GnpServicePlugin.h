@@ -90,7 +90,7 @@ public:
   ::gnp::services::VideoService &getVideoService() { return videoService_; }
   ::gnp::services::JoomlaApi &getJoomlaApi() { return joomlaApi_; }
   ::gnp::services::GameManager &getGameManager() { return gameManager_; }
-  ::gnp::services::RagManager &getRagManager() { return ragManager_; }
+  //services::RagManager &getRagManager() { return ragManager_; }
 
 private:
   services::RedisCacheManager redisCacheService_;
@@ -127,7 +127,7 @@ private:
   ::gnp::services::VideoService videoService_;
   ::gnp::services::JoomlaApi joomlaApi_;
   ::gnp::services::GameManager gameManager_;
-  ::gnp::services::RagManager ragManager_;
+  //services::RagManager ragManager_;
 };
 
 } // namespace gnp::plugins

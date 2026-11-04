@@ -447,41 +447,41 @@ drogon::Task<HttpResponsePtr> NewsPapersController::searchArchives(HttpRequestPt
 }
 
 
-drogon::Task<HttpResponsePtr> NewsPapersController::askArchives(HttpRequestPtr req) {
-  const auto jsonBody = req->getJsonObject();
-  if (!jsonBody) {
-    gnp::dto::BaseApiResponse response;
-    response.success = false;
-    response.message = "Invalid JSON body.";
-    response.error["code"] = gnp::constants::ERR_VALIDATION;
-    response.error["message"] = "Expected a JSON object with a question field.";
-    auto httpResponse = HttpResponse::newHttpJsonResponse(response.toJson());
-    httpResponse->setStatusCode(k400BadRequest);
-    co_return httpResponse;
-  }
-
-  gnp::dto::RagQueryDto dto(*jsonBody);
-  std::string userId;
-  try {
-    userId = req->attributes()->get<std::string>("userId");
-  } catch (...) {
-    // Authentication is enforced by JwtAuthFilter; keep this optional for
-    // valid tokens that do not carry the userId claim.
-  }
-
-  auto plugin = app().getPlugin<gnp::plugins::GnpServicePlugin>();
-  auto &ragManager = plugin->getRagManager();
-  auto result = co_await ragManager.answerArchiveQuestion(dto, userId);
-
-  auto httpResponse = HttpResponse::newHttpJsonResponse(result.toJson());
-  if (!result.success) {
-    const int errorCode = result.error["code"].asInt();
-    httpResponse->setStatusCode(
-        errorCode == gnp::constants::ERR_VALIDATION ? k400BadRequest
-                                                    : k500InternalServerError);
-  }
-  co_return httpResponse;
-}
+// drogon::Task<HttpResponsePtr> NewsPapersController::askArchives(HttpRequestPtr req) {
+//   const auto jsonBody = req->getJsonObject();
+//   if (!jsonBody) {
+//     gnp::dto::BaseApiResponse response;
+//     response.success = false;
+//     response.message = "Invalid JSON body.";
+//     response.error["code"] = gnp::constants::ERR_VALIDATION;
+//     response.error["message"] = "Expected a JSON object with a question field.";
+//     auto httpResponse = HttpResponse::newHttpJsonResponse(response.toJson());
+//     httpResponse->setStatusCode(k400BadRequest);
+//     co_return httpResponse;
+//   }
+//
+//   gnp::dto::RagQueryDto dto(*jsonBody);
+//   std::string userId;
+//   try {
+//     userId = req->attributes()->get<std::string>("userId");
+//   } catch (...) {
+//     // Authentication is enforced by JwtAuthFilter; keep this optional for
+//     // valid tokens that do not carry the userId claim.
+//   }
+//
+//   auto plugin = app().getPlugin<gnp::plugins::GnpServicePlugin>();
+//   auto &ragManager = plugin->getRagManager();
+//   auto result = co_await ragManager.answerArchiveQuestion(dto, userId);
+//
+//   auto httpResponse = HttpResponse::newHttpJsonResponse(result.toJson());
+//   if (!result.success) {
+//     const int errorCode = result.error["code"].asInt();
+//     httpResponse->setStatusCode(
+//         errorCode == gnp::constants::ERR_VALIDATION ? k400BadRequest
+//                                                     : k500InternalServerError);
+//   }
+//   co_return httpResponse;
+// }
 
 
 void NewsPapersController::update(
