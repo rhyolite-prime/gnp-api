@@ -2001,7 +2001,8 @@ drogon::Task<std::string> GameManager::ensureDailyChallenges() {
     const char *rotation[] = {"riddle", "crossword", "sudoku", "word_search", "riddle", "crossword", "sudoku"};
     const std::string featured = rotation[std::clamp(dow, 0, 6)];
     const char *types[] = {"sudoku", "word_search", "crossword", "riddle"};
-    Corpus corpus = co_await PublicationLexicon::load("", "", {});
+    static const std::vector<std::string> kEmptyTopics;
+    Corpus corpus = co_await PublicationLexicon::load("", "", kEmptyTopics);
     for (const char *type : types) {
         auto existing = co_await db->execSqlCoro(
             "SELECT id::text AS id FROM daily_challenges WHERE game_type = $1 AND created_at = CURRENT_DATE ORDER BY id LIMIT 1",
