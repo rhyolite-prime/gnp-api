@@ -127,6 +127,12 @@ public:
     ADD_METHOD_TO(AdminController::updateCoupon, std::string(PREFIX) + "update-coupon", Post, Options, "JwtAuthFilter");
     ADD_METHOD_TO(AdminController::deleteCoupon, std::string(PREFIX) + "delete-coupon", Delete, Options, "JwtAuthFilter");
 
+   //videos
+   ADD_METHOD_TO(AdminController::getAllVideos, std::string(PREFIX) + "get-all-videos", Get, Options, "JwtAuthFilter");
+   ADD_METHOD_TO(AdminController::createVideo, std::string(PREFIX) + "create-video", Post, Options, "JwtAuthFilter");
+   ADD_METHOD_TO(AdminController::updateVideo, std::string(PREFIX) + "update-video", Post, Options, "JwtAuthFilter");
+   ADD_METHOD_TO(AdminController::deleteVideo, std::string(PREFIX) + "delete-video", Delete, Options, "JwtAuthFilter");
+
     //admin roles
     ADD_METHOD_TO(AdminController::getAllRoles, std::string(PREFIX) + "get-all-roles", Get, Options, "JwtAuthFilter");
     ADD_METHOD_TO(AdminController::getAllPermissions, std::string(PREFIX) + "get-all-permissions", Get, Options, "JwtAuthFilter");
@@ -228,6 +234,12 @@ public:
   drogon::Task<HttpResponsePtr> createCampaign(HttpRequestPtr req);
   drogon::Task<HttpResponsePtr> publishCampaign(HttpRequestPtr req);
   drogon::Task<HttpResponsePtr> deleteCampaign(HttpRequestPtr req);
+
+ // videos ...
+ drogon::Task<HttpResponsePtr> getAllVideos(HttpRequestPtr req);
+ drogon::Task<HttpResponsePtr> createVideo(HttpRequestPtr req);
+ drogon::Task<HttpResponsePtr> updateVideo(HttpRequestPtr req, const std::string &videoId);
+ drogon::Task<HttpResponsePtr> deleteVideo(HttpRequestPtr req, const std::string &videoId);
 
   // commercial partners ...
   drogon::Task<HttpResponsePtr> getAllPartners(HttpRequestPtr req);

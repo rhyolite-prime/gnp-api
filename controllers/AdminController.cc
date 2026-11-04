@@ -796,7 +796,8 @@ drogon::Task<HttpResponsePtr> AdminController::deleteSubscriptionPlan(HttpReques
 
 //coupons
 
-drogon::Task<HttpResponsePtr> AdminController::getAllCoupons(HttpRequestPtr req) {
+
+Task<HttpResponsePtr> AdminController::getAllCoupons(HttpRequestPtr req) {
 
   int pageSize = 10; // Default page size
   int pageNo = 1;    //  Default page number
@@ -871,7 +872,7 @@ Task<HttpResponsePtr> AdminController::createCoupon(HttpRequestPtr req) {
   co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
 }
 
-drogon::Task<HttpResponsePtr> AdminController::updateCoupon(HttpRequestPtr req) {
+Task<HttpResponsePtr> AdminController::updateCoupon(HttpRequestPtr req) {
 
   auto jsonBody = req->getJsonObject();
 
@@ -897,7 +898,7 @@ drogon::Task<HttpResponsePtr> AdminController::updateCoupon(HttpRequestPtr req) 
   co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
 }
 
-drogon::Task<HttpResponsePtr> AdminController::deleteCoupon(HttpRequestPtr req) {
+Task<HttpResponsePtr> AdminController::deleteCoupon(HttpRequestPtr req) {
 
   auto id = req->getParameter("id");
 
@@ -919,6 +920,124 @@ drogon::Task<HttpResponsePtr> AdminController::deleteCoupon(HttpRequestPtr req) 
   co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
 }
 
+
+//videos
+
+
+Task<HttpResponsePtr> AdminController::getAllVideos(HttpRequestPtr req) {
+
+  int pageSize = 10; // Default page size
+  int pageNo = 1;    //  Default page number
+
+  if (!req->getParameter("pageSize").empty()) {
+    try {
+      pageSize = std::stoi(req->getParameter("pageSize"));
+      pageSize = std::max(1, std::min(100, pageSize)); // Limit between 1-100
+    } catch (...) {
+      // Keep default if conversion fails
+    }
+  }
+
+  if (!req->getParameter("pageNo").empty()) {
+    try {
+      pageNo = std::stoi(req->getParameter("pageNo"));
+      pageNo = std::max(1, pageNo); // Ensure page number is at least 1
+    } catch (...) {
+      // Keep default if conversion fails
+    }
+  }
+
+  std::string query = req->getParameter("query");
+  if (query.empty()) {
+    query = "";
+  }
+
+
+
+  auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
+  auto &videoService = plugin->getVideoService();
+
+  auto apiResp = co_await videoService.getAll(pageNo, pageSize, query);
+
+  auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
+  resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
+  co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
+
+}
+
+Task<HttpResponsePtr> AdminController::createVideo(HttpRequestPtr req) {
+
+  auto jsonBody = req->getJsonObject();
+
+  if (!jsonBody) {
+    gnp::dto::BaseApiResponse response;
+    response.success = false;
+    response.error["message"] = "Invalid JSON body";
+    auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+    resp->setStatusCode(k400BadRequest);
+    co_return resp;
+  }
+
+  gnp::dto::VideoDto dto;
+
+  dto.fromJson(*jsonBody);
+
+  auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
+  auto &videoService = plugin->getVideoService();
+
+  auto apiResp = co_await videoService.create(dto);
+  auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
+  resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
+  co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
+}
+
+Task<HttpResponsePtr> AdminController::updateVideo(HttpRequestPtr req, const std::string &videoId) {
+
+  auto jsonBody = req->getJsonObject();
+
+  if (!jsonBody) {
+    gnp::dto::BaseApiResponse response;
+    response.success = false;
+    response.error["message"] = "Invalid JSON body";
+    auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+    resp->setStatusCode(k400BadRequest);
+    co_return resp;
+  }
+
+  gnp::dto::VideoDto dto;
+
+  dto.fromJson(*jsonBody);
+
+  auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
+  auto &videoService = plugin->getVideoService();
+
+  auto apiResp = co_await videoService.update(dto, videoId);
+  auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
+  resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
+  co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
+}
+
+Task<HttpResponsePtr> AdminController::deleteVideo(HttpRequestPtr req, const std::string &videoId) {
+
+  auto id = req->getParameter("id");
+
+  if (id.empty()) {
+    gnp::dto::BaseApiResponse response;
+    response.success = false;
+    response.error["message"] = "Missing required parameter: id";
+    auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+    resp->setStatusCode(k400BadRequest);
+    co_return resp;
+  }
+
+  auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
+  auto &videoService = plugin->getVideoService();
+
+  auto apiResp = co_await videoService.deleteVideo(id);
+  auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
+  resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
+  co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
+}
 
 
 // user subscription
