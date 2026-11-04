@@ -21,6 +21,8 @@ public:
 
   drogon::Task<dto::BaseApiResponse> getAll(int pageNo, int pageSize, const std::string &query, int status, const std::string &sortBy);
 
+  drogon::Task<dto::BaseApiResponse> getAdminDashboardData();
+
   drogon::Task<dto::BaseApiResponse> getAllApplicants(int pageNo, int pageSize, const std::string &query, int status);
 
   drogon::Task<::gnp::dto::BaseApiResponse> submitApplication(const ::gnp::dto::AffiliateSignupDto &dto);

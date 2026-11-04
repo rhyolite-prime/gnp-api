@@ -1639,6 +1639,18 @@ drogon::Task<HttpResponsePtr> AdminController::getAffiliateApplicants(HttpReques
 }
 
 
+drogon::Task<HttpResponsePtr> AdminController::getAffiliateDashboardData(HttpRequestPtr req) {
+
+
+  auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
+  auto &affiliateService = plugin->getAffiliateService();
+
+  auto apiResp = co_await affiliateService.getAdminDashboardData();
+  auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
+  resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
+  co_return resp;
+}
+
 drogon::Task<HttpResponsePtr> AdminController::getAffiliateCommissions(HttpRequestPtr req) {
 
   int pageSize = 10; // Default page size
@@ -1872,17 +1884,17 @@ drogon::Task<HttpResponsePtr> AdminController::resetAffiliatePassword(HttpReques
   if (affiliateId.empty()) {
     auto resp = HttpResponse::newHttpResponse();
     resp->setStatusCode(k400BadRequest);
-    resp->setBody("Missing required parameters: partnerId or subscriberId");
+    resp->setBody("Missing required parameter: affiliateId");
     co_return resp;
   }
 
   auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
   auto &affiliateService = plugin->getAffiliateService();
 
-  auto apiResp = co_await affiliateService.deleteAffiliate(affiliateId);
+  auto apiResp = co_await affiliateService.resetAffiliateUserPassword(affiliateId);
   auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
   resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
-  co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
+  co_return resp;
 
 }
 

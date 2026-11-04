@@ -151,6 +151,7 @@ public:
   ADD_METHOD_TO(AdminController::getAllAffiliates, std::string(PREFIX) + "get-all-affiliates", Get, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::updateAffiliateStatus, std::string(PREFIX) + "update-affiliate-status/{1}/{2}", Get, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::getAffiliateApplicants, std::string(PREFIX) + "get-affiliate-applicants", Get, Options, "JwtAuthFilter");
+   ADD_METHOD_TO(AdminController::getAffiliateDashboardData, std::string(PREFIX) + "get-affiliate-dashboard-data", Get, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::getAffiliateCommissions, std::string(PREFIX) + "get-affiliate-commissions", Get, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::getAffiliatePayouts, std::string(PREFIX) + "get-affiliate-payouts", Get, Options, "JwtAuthFilter");
   ADD_METHOD_TO(AdminController::getAffiliateProgramSettings, std::string(PREFIX) + "get-affiliate-program-settings", Get, Options, "JwtAuthFilter");
@@ -246,6 +247,7 @@ public:
  drogon::Task<HttpResponsePtr> getAllAffiliates(HttpRequestPtr req);
  drogon::Task<HttpResponsePtr> updateAffiliateStatus(HttpRequestPtr req, const std::string &affiliateId, const int &status);
  drogon::Task<HttpResponsePtr> getAffiliateApplicants(HttpRequestPtr req);
+ drogon::Task<HttpResponsePtr> getAffiliateDashboardData(HttpRequestPtr req);
  drogon::Task<HttpResponsePtr> getAffiliateCommissions(HttpRequestPtr req);
  drogon::Task<HttpResponsePtr> getAffiliatePayouts(HttpRequestPtr req);
  drogon::Task<HttpResponsePtr> getAffiliateProgramSettings(HttpRequestPtr req);
