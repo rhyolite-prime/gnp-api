@@ -43,7 +43,7 @@ inline Totals calculate(std::int64_t subtotal) {
     };
     const auto vat = percentage(15);
     const auto levy = percentage(5);
-    const auto discount = percentage(5);
+    const std::int64_t discount = 0;
     return {subtotal, vat, levy, discount, subtotal + vat + levy - discount};
 }
 
