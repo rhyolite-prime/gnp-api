@@ -31,7 +31,7 @@ public:
 
   ADD_METHOD_TO(NewsPapersController::searchArchives, std::string(PREFIX) + "search-archives", Post, Options);
 
-  ADD_METHOD_TO(NewsPapersController::askArchives, std::string(PREFIX) + "ask-archives", Post, Options, "JwtAuthFilter");
+  //ADD_METHOD_TO(NewsPapersController::askArchives, std::string(PREFIX) + "ask-archives", Post, Options, "JwtAuthFilter");
 
   ADD_METHOD_TO(NewsPapersController::getAllVideos, std::string(PREFIX) + "get-all-videos", Get);
   ADD_METHOD_TO(NewsPapersController::unPublish, std::string(PREFIX) + "unpublish", Get);
@@ -42,6 +42,7 @@ public:
 
   // handler methods
   drogon::Task<HttpResponsePtr> getAllVideos(HttpRequestPtr req);
+  drogon::Task<HttpResponsePtr> getVideoDetails(HttpRequestPtr req, const std::string &videoId);
   drogon::Task<HttpResponsePtr> getAll(HttpRequestPtr req);
   drogon::Task<HttpResponsePtr> getLatest(HttpRequestPtr req);
   drogon::Task<HttpResponsePtr> getTopStories(HttpRequestPtr req);
@@ -55,7 +56,7 @@ public:
   drogon::Task<HttpResponsePtr> trackUserEngagement(HttpRequestPtr req);
   drogon::Task<HttpResponsePtr> updateUserEngagement(HttpRequestPtr req);
   drogon::Task<HttpResponsePtr> searchArchives(HttpRequestPtr req);
-  drogon::Task<HttpResponsePtr> askArchives(HttpRequestPtr req);
+  //drogon::Task<HttpResponsePtr> askArchives(HttpRequestPtr req);
   void  incrementViewCount(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
   void update(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
   drogon::Task<HttpResponsePtr> deleteNewsPaper(HttpRequestPtr req);
