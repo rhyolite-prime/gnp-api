@@ -9,6 +9,7 @@
 #include "UserGroups.h"
 
 #include <drogon/utils/Utilities.h>
+#include "utils/Utf8Length.h"
 
 #include <string>
 
@@ -2360,7 +2361,7 @@ bool UserGroups::validJsonOfField(size_t index,
                 return false;
             }
 
-            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 255)
+            if(pJson.isString() && gnp::utils::utf8Length(pJson.asCString()) > 255)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
@@ -2383,7 +2384,7 @@ bool UserGroups::validJsonOfField(size_t index,
                 return false;
             }
 
-            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 250)
+            if(pJson.isString() && gnp::utils::utf8Length(pJson.asCString()) > 250)
             {
                 err="String length exceeds limit for the " +
                     fieldName +

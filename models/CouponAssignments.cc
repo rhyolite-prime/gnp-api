@@ -9,6 +9,7 @@
 #include "CouponAssignments.h"
 
 #include <drogon/utils/Utilities.h>
+#include "utils/Utf8Length.h"
 
 #include <string>
 
@@ -1428,7 +1429,7 @@ bool CouponAssignments::validJsonOfField(size_t index,
                 return false;
             }
 
-            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 150)
+            if(pJson.isString() && gnp::utils::utf8Length(pJson.asCString()) > 150)
             {
                 err="String length exceeds limit for the " +
                     fieldName +

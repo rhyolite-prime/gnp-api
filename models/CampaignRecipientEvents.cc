@@ -15,6 +15,7 @@
 #include "Users.h"
 
 #include <drogon/utils/Utilities.h>
+#include "utils/Utf8Length.h"
 
 #include <string>
 
@@ -1791,7 +1792,7 @@ bool CampaignRecipientEvents::validJsonOfField(size_t index,
                 return false;
             }
 
-            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 30)
+            if(pJson.isString() && gnp::utils::utf8Length(pJson.asCString()) > 30)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
@@ -1815,7 +1816,7 @@ bool CampaignRecipientEvents::validJsonOfField(size_t index,
                 return false;
             }
 
-            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 30)
+            if(pJson.isString() && gnp::utils::utf8Length(pJson.asCString()) > 30)
             {
                 err="String length exceeds limit for the " +
                     fieldName +

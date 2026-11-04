@@ -4,6 +4,9 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+add_executable(utf8_length_test test_utf8_length.cc)
+target_include_directories(utf8_length_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)
+
 file(GLOB CTL_SRC "../controllers/*.cc")
 file(GLOB FILTER_SRC "../filters/*.cc")
 file(GLOB PLUGIN_SRC "../plugins/*.cc")
@@ -42,6 +45,7 @@ file(GLOB RAG_SVC "../services/rag/*.cc")
 
 add_executable(${PROJECT_NAME} test_main.cc
         test_video_dto.cc
+        test_report_and_model_compat.cc
         ../services/videos/VideoService.cc
         ${CTL_SRC}
     ${FILTER_SRC}
