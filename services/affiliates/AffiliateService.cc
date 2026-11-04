@@ -1374,8 +1374,68 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::getAdminDashboardData(
       else item["date"] = std::to_string(seconds / 86400) + " days ago";
       recent.append(item);
     }
+    // The cards may be unbounded, but a chart needs a finite window. With no
+    // bounds show the last 30 calendar days; with only endDate show the 30 days
+    // ending there; with only startDate show through today.
+    const auto range = co_await dbClient->execSqlCoro(
+        "WITH input AS (SELECT NULLIF($1, '')::date AS requested_start, "
+        "NULLIF($2, '')::date AS requested_end), "
+        "bounds AS (SELECT COALESCE(requested_start, "
+        "COALESCE(requested_end, CURRENT_DATE) - 29) AS start_date, "
+        "COALESCE(requested_end, GREATEST(CURRENT_DATE, "
+        "COALESCE(requested_start, CURRENT_DATE))) AS end_date FROM input) "
+        "SELECT start_date::text AS start_date, end_date::text AS end_date, "
+        "end_date - start_date + 1 AS days FROM bounds",
+        startDate, endDate);
+    const std::string trendStart = range[0]["start_date"].as<std::string>();
+    const std::string trendEnd = range[0]["end_date"].as<std::string>();
+    const int days = range[0]["days"].as<int>();
+
+    // Bucket widths keep the chart readable for arbitrary custom ranges.
+    // Weeks are consecutive seven-day windows anchored at trendStart; months
+    // and years use calendar boundaries. generate_series fills empty buckets.
+    std::string seriesStart = "$1::date";
+    std::string step = "1 day";
+    std::string bucket = "c.created_at::date";
+    if (days > 730) {
+      seriesStart = "date_trunc('year', $1::date)::date";
+      step = "1 year";
+      bucket = "date_trunc('year', c.created_at)::date";
+    } else if (days > 180) {
+      seriesStart = "date_trunc('month', $1::date)::date";
+      step = "1 month";
+      bucket = "date_trunc('month', c.created_at)::date";
+    } else if (days > 31) {
+      step = "7 days";
+      bucket = "($1::date + ((c.created_at::date - $1::date) / 7) * 7)";
+    }
+    const auto trendRows = co_await dbClient->execSqlCoro(
+        "WITH buckets AS (SELECT generate_series(" + seriesStart +
+        ", $2::date, interval '" + step + "')::date AS bucket_start), "
+        "totals AS (SELECT " + bucket + " AS bucket_start, SUM(c.amount) AS amount "
+        "FROM affiliate_commissions c WHERE c.status <> 17 "
+        "AND c.created_at >= $1::date AND c.created_at < $2::date + 1 "
+        "GROUP BY 1) "
+        "SELECT b.bucket_start::text AS bucket_start, COALESCE(t.amount, 0) AS amount "
+        "FROM buckets b LEFT JOIN totals t ON t.bucket_start = b.bucket_start "
+        "ORDER BY b.bucket_start", trendStart, trendEnd);
+    Json::Value xAxisData(Json::arrayValue);
+    Json::Value data(Json::arrayValue);
+    for (const auto &point : trendRows) {
+      const std::string date = point["bucket_start"].as<std::string>();
+      if (days > 730) xAxisData.append(date.substr(0, 4));
+      else if (days > 180) xAxisData.append(date.substr(0, 7));
+      else if (days > 31) xAxisData.append("Week " + std::to_string(xAxisData.size() + 1));
+      else xAxisData.append(date);
+      data.append(point["amount"].as<double>());
+    }
+    Json::Value commissionTrend;
+    commissionTrend["xAxisData"] = xAxisData;
+    commissionTrend["data"] = data;
+
     dto::BaseApiResponse response;
     response.success = true;
+    response.result["commissionTrend"] = commissionTrend;
     response.result["stats"] = stats;
     response.result["recentActivity"] = recent;
     response.result["topAffiliates"] = top;
