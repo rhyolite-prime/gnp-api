@@ -3692,8 +3692,8 @@ drogon::Task<::gnp::dto::BaseApiResponse> CommercialPartnerService::getPartnerAn
     invoiceData["totalDue"] = currency(totals.totalDue);
     invoiceData["taxPolicy"]["vatPercent"] = 15;
     invoiceData["taxPolicy"]["getflNhilPercent"] = 5;
-    invoiceData["taxPolicy"]["discountPercent"] = 5;
-    invoiceData["taxPolicy"]["note"] = "Tax and discount are a report preview; stored invoices and balances are pre-tax.";
+    invoiceData["taxPolicy"]["discountPercent"] = 0;
+    invoiceData["taxPolicy"]["note"] = "Tax is a report preview; no discount is applied. Stored invoices and balances are pre-tax.";
     // Stored invoices and payments are pre-tax. Do not claim that tax on the
     // preview has already been billed or is part of the receivable balance.
     invoiceData["totalBalance"] = currency(totalBalancePesewas);
