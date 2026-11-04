@@ -33,6 +33,7 @@ public:
 
   ADD_METHOD_TO(NewsPapersController::askArchives, std::string(PREFIX) + "ask-archives", Post, Options, "JwtAuthFilter");
 
+  ADD_METHOD_TO(NewsPapersController::getAllVideos, std::string(PREFIX) + "get-all-videos", Get);
   ADD_METHOD_TO(NewsPapersController::unPublish, std::string(PREFIX) + "unpublish", Get);
   ADD_METHOD_TO(NewsPapersController::ingestPublication, std::string(PREFIX) + "ingest", Post);
   ADD_METHOD_TO(NewsPapersController::update, std::string(PREFIX) + "update", Post);
@@ -40,6 +41,7 @@ public:
   METHOD_LIST_END
 
   // handler methods
+  drogon::Task<HttpResponsePtr> getAllVideos(HttpRequestPtr req);
   drogon::Task<HttpResponsePtr> getAll(HttpRequestPtr req);
   drogon::Task<HttpResponsePtr> getLatest(HttpRequestPtr req);
   drogon::Task<HttpResponsePtr> getTopStories(HttpRequestPtr req);

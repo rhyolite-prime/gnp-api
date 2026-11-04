@@ -394,43 +394,41 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::getAllApplicants(int pageNo
     std::string applicantFullName = dto.getFirstName() + " " + dto.getLastName();
     const std::string adminDashboardUrl = "https://new.graphicnewsplus.com/admin/affiliates";
 
-    // Build Admin Email HTML Content (simplified)
-    std::string adminEmailBody =
-        "<div style=\"font-family: Arial, sans-serif; font-size: 15px; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; padding: 20px;\">\n"
-        "  <h2 style=\"color: #1a1a2e; margin-bottom: 16px;\">Graphic News Plus</h2>\n"
-        "  <p>Hello Admin,</p>\n"
-        "  <p>A new affiliate application has been submitted on <strong>Graphic News Plus</strong>.</p>\n"
-        "  <p style=\"background: #f9f9f9; padding: 15px; border-radius: 6px; border: 1px solid #eee;\">\n"
-        "    <strong>Applicant Name:</strong> " + applicantFullName + "<br>\n"
-        "    <strong>Email:</strong> " + standardEmail + "<br>\n"
-        "    <strong>Phone:</strong> " + dto.getPhoneNumber() + "<br>\n"
-        "    <strong>Submission Date:</strong> " + submissionDate + "\n"
-        "  </p>\n"
-        "  <p style=\"margin: 20px 0;\">\n"
-        "    <a href=\"" + adminDashboardUrl + "\"\n"
-        "       target=\"_blank\"\n"
-        "       style=\"background:#4f6ef7;color:#fff;padding:10px 20px;text-decoration:none;border-radius:4px;display:inline-block;\">Review Applications</a>\n"
-        "  </p>\n"
-        "  <hr style=\"border: none; border-top: 1px solid #eee; margin: 25px 0 15px 0;\">\n"
-        "  <p style=\"font-size: 12px; color: #888;\">&copy; " + currentYear + " Graphic News Plus. All rights reserved.</p>\n"
-        "</div>";
+    // Build Admin Email HTML Content
+    std::string adminEmailBody;
+    adminEmailBody += "<div>\n";
+    adminEmailBody += "<h2>Graphic News Plus</h2>\n";
+    adminEmailBody += "<p>Hello Admin,</p>\n";
+    adminEmailBody += "<p>A new affiliate application has been submitted on ";
+    adminEmailBody += "<strong>Graphic News Plus</strong>.</p>\n";
+    adminEmailBody += "<p><strong>Applicant Name:</strong> " + applicantFullName + "<br>\n";
+    adminEmailBody += "<strong>Email:</strong> " + standardEmail + "<br>\n";
+    adminEmailBody += "<strong>Phone:</strong> " + dto.getPhoneNumber() + "<br>\n";
+    adminEmailBody += "<strong>Submission Date:</strong> " + submissionDate + "</p>\n";
+    adminEmailBody += "<p><a href=\"" + adminDashboardUrl + "\">Review Applications</a></p>\n";
+    adminEmailBody += "<hr>\n";
+    adminEmailBody += "<p>&copy; " + currentYear + " Graphic News Plus. All rights reserved.</p>\n";
+    adminEmailBody += "</div>";
 
-    // Build Affiliate Email HTML Content (simplified)
-    std::string affiliateEmailBody =
-        "<div style=\"font-family: Arial, sans-serif; font-size: 15px; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; padding: 20px;\">\n"
-        "  <h2 style=\"color: #1a1a2e; margin-bottom: 16px;\">Graphic News Plus</h2>\n"
-        "  <p>Dear <strong>" + dto.getFirstName() + "</strong>,</p>\n"
-        "  <p>Thank you for applying to the <strong>Graphic News Plus Affiliate Program</strong>! We have received your application and our team is currently reviewing your details.</p>\n"
-        "  <p style=\"background: #f9f9f9; padding: 15px; border-radius: 6px; border: 1px solid #eee;\">\n"
-        "    <strong>Name:</strong> " + applicantFullName + "<br>\n"
-        "    <strong>Email:</strong> " + standardEmail + "<br>\n"
-        "    <strong>Phone:</strong> " + dto.getPhoneNumber() + "\n"
-        "  </p>\n"
-        "  <p>Once your application is approved, you will receive an email with your credentials to access the Affiliate Dashboard and start earning commissions.</p>\n"
-        "  <p>If you have any questions, please contact us at <a href=\"mailto:support@graphicnewsplus.com\" style=\"color: #4f6ef7;\">support@graphicnewsplus.com</a>.</p>\n"
-        "  <hr style=\"border: none; border-top: 1px solid #eee; margin: 25px 0 15px 0;\">\n"
-        "  <p style=\"font-size: 12px; color: #888;\">&copy; " + currentYear + " Graphic News Plus. All rights reserved.</p>\n"
-        "</div>";
+    // Build Affiliate Email HTML Content
+    std::string affiliateEmailBody;
+    affiliateEmailBody += "<div>\n";
+    affiliateEmailBody += "<h2>Graphic News Plus</h2>\n";
+    affiliateEmailBody += "<p>Dear <strong>" + dto.getFirstName() + "</strong>,</p>\n";
+    affiliateEmailBody += "<p>Thank you for applying to the ";
+    affiliateEmailBody += "<strong>Graphic News Plus Affiliate Program</strong>!";
+    affiliateEmailBody += " We have received your application and our team is reviewing it.</p>\n";
+    affiliateEmailBody += "<p><strong>Name:</strong> " + applicantFullName + "<br>\n";
+    affiliateEmailBody += "<strong>Email:</strong> " + standardEmail + "<br>\n";
+    affiliateEmailBody += "<strong>Phone:</strong> " + dto.getPhoneNumber() + "</p>\n";
+    affiliateEmailBody += "<p>Once approved, you will receive an email with your credentials";
+    affiliateEmailBody += " to access the Affiliate Dashboard.</p>\n";
+    affiliateEmailBody += "<p>Questions? Contact us at ";
+    affiliateEmailBody += "<a href=\"mailto:support@graphicnewsplus.com\">";
+    affiliateEmailBody += "support@graphicnewsplus.com</a>.</p>\n";
+    affiliateEmailBody += "<hr>\n";
+    affiliateEmailBody += "<p>&copy; " + currentYear + " Graphic News Plus. All rights reserved.</p>\n";
+    affiliateEmailBody += "</div>";
 
     // 1. Inform admin recipients
     if (adminRecipients.isArray()) {
@@ -952,30 +950,27 @@ drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::approveApplication(c
     const std::string loginUrl = "https://dev.graphicnewsplus.com/affiliates/login";
     std::string currentYear = trantor::Date::now().toCustomFormattedString("%Y");
 
-    std::string htmlBody =
-        "<div style=\"font-family: Arial, sans-serif; font-size: 15px; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; padding: 20px;\">\n"
-        "  <h2 style=\"color: #1a1a2e; margin-bottom: 16px;\">Graphic News Plus</h2>\n"
-        "  <p>Dear <strong>" + application.getValueOfFirstName() + " " + application.getValueOfLastName() + "</strong>,</p>\n"
-        "  <div style=\"background: #e8f5e9; border: 1px solid #c8e6c9; border-radius: 6px; padding: 12px 16px; margin: 20px 0;\">\n"
-        "    <p style=\"margin: 0; color: #2e7d32; font-weight: bold;\">&#10004; Congratulations! Your affiliate application has been approved!</p>\n"
-        "  </div>\n"
-        "  <p>You can now access the <strong>Affiliate Dashboard</strong> using the credentials below:</p>\n"
-        "  <p style=\"background: #f0f4ff; padding: 15px; border-radius: 6px; border: 1px solid #dce3f5;\">\n"
-        "    <strong>Login URL:</strong> <a href=\"" + loginUrl + "\" target=\"_blank\" style=\"color:#4f6ef7;\">" + loginUrl + "</a><br>\n"
-        "    <strong>Username:</strong> " + application.getValueOfEmail() + "<br>\n"
-        "    <strong>Temporary Password:</strong> " + password + "<br>\n"
-        "    <strong>Affiliate ID:</strong> " + affiliateId + "\n"
-        "  </p>\n"
-        "  <p style=\"margin: 20px 0;\">\n"
-        "    <a href=\"" + loginUrl + "\"\n"
-        "       target=\"_blank\"\n"
-        "       style=\"background:#4f6ef7;color:#fff;padding:12px 24px;text-decoration:none;border-radius:4px;display:inline-block;font-weight:bold;\">Go to Affiliate Dashboard</a>\n"
-        "  </p>\n"
-        "  <p style=\"font-size: 13px; color: #777;\">&#128274; For security reasons, please change your password immediately after your first login.</p>\n"
-        "  <p style=\"font-size: 13px; color: #777;\">If you have any questions, feel free to contact us at <a href=\"mailto:support@graphicnewsplus.com\" style=\"color: #4f6ef7;\">support@graphicnewsplus.com</a>.</p>\n"
-        "  <hr style=\"border: none; border-top: 1px solid #eee; margin: 25px 0 15px 0;\">\n"
-        "  <p style=\"font-size: 12px; color: #888;\">&copy; " + currentYear + " Graphic News Plus. All rights reserved.</p>\n"
-        "</div>";
+    std::string approvedName = application.getValueOfFirstName()
+                             + " " + application.getValueOfLastName();
+    std::string htmlBody;
+    htmlBody += "<div>\n";
+    htmlBody += "<h2>Graphic News Plus</h2>\n";
+    htmlBody += "<p>Dear <strong>" + approvedName + "</strong>,</p>\n";
+        htmlBody += "<p>Congratulations! Your affiliate application has been approved!</p>\n";
+        htmlBody += "<p>You can now access the <strong>Affiliate Dashboard</strong>";
+        htmlBody += " using the credentials below:</p>\n";
+        htmlBody += "<p><strong>Login URL:</strong> <a href=\"" + loginUrl + "\">";
+        htmlBody += loginUrl + "</a><br>\n";
+        htmlBody += "<strong>Username:</strong> " + application.getValueOfEmail() + "<br>\n";
+        htmlBody += "<strong>Temporary Password:</strong> " + password + "<br>\n";
+        htmlBody += "<strong>Affiliate ID:</strong> " + affiliateId + "</p>\n";
+        htmlBody += "<p><a href=\"" + loginUrl + "\">Go to Affiliate Dashboard</a></p>\n";
+        htmlBody += "<p>For security, please change your password after first login.</p>\n";
+        htmlBody += "<p>Questions? Contact us at ";
+        htmlBody += "<a href=\"mailto:support@graphicnewsplus.com\">support@graphicnewsplus.com</a>.</p>\n";
+        htmlBody += "<hr>\n";
+        htmlBody += "<p>&copy; " + currentYear + " Graphic News Plus. All rights reserved.</p>\n";
+        htmlBody += "</div>";
 
     dto::SendEmailDto emailDto;
     emailDto.setTo(application.getValueOfEmail());
@@ -1076,28 +1071,21 @@ drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::rejectApplication(co
       applicantName = "Applicant";
     }
 
-    std::string reasonBlock;
-    if (!reason.empty()) {
-      reasonBlock =
-          "  <div style=\"background: #f9f9f9; padding: 12px 15px; border-radius: 6px; border: 1px solid #eee; margin: 15px 0;\">\n"
-          "    <p style=\"margin: 0; color: #555;\"><strong>Reason:</strong> " + reason + "</p>\n"
-          "  </div>\n";
-    }
-
-    std::string htmlBody =
-        "<div style=\"font-family: Arial, sans-serif; font-size: 15px; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; padding: 20px;\">\n"
-        "  <h2 style=\"color: #1a1a2e; margin-bottom: 16px;\">Graphic News Plus</h2>\n"
-        "  <p>Dear <strong>" + applicantName + "</strong>,</p>\n"
-        "  <p>Thank you for your interest in the <strong>Graphic News Plus Affiliate Program</strong>.</p>\n"
-        "  <div style=\"background: #fff5f5; border: 1px solid #fed7d7; border-radius: 6px; padding: 12px 16px; margin: 20px 0;\">\n"
-        "    <p style=\"margin: 0; color: #c53030; font-weight: bold;\">&#10006; Application Status: Not Approved</p>\n"
-        "  </div>\n"
-        "  <p>After careful review of your registration details, we regret to inform you that we are unable to approve your affiliate application at this time.</p>\n" +
-        reasonBlock +
-        "  <p>If you believe this decision was made in error or if you have any questions, please contact our support team at <a href=\"mailto:support@graphicnewsplus.com\" style=\"color: #4f6ef7;\">support@graphicnewsplus.com</a>.</p>\n"
-        "  <hr style=\"border: none; border-top: 1px solid #eee; margin: 25px 0 15px 0;\">\n"
-        "  <p style=\"font-size: 12px; color: #888;\">&copy; " + currentYear + " Graphic News Plus. All rights reserved.</p>\n"
-        "</div>";
+    std::string htmlBody;
+    htmlBody += "<div>\n";
+        htmlBody += "<h2>Graphic News Plus</h2>\n";
+        htmlBody += "<p>Dear <strong>" + applicantName + "</strong>,</p>\n";
+        htmlBody += "<p>Thank you for your interest in the ";
+        htmlBody += "<strong>Graphic News Plus Affiliate Program</strong>.</p>\n";
+        htmlBody += "<p>After careful review, we are unable to approve your application at this time.</p>\n";
+        if (!reason.empty()) {
+          htmlBody += "<p><strong>Reason:</strong> " + reason + "</p>\n";
+        }
+        htmlBody += "<p>If you believe this was an error or have questions, contact us at ";
+        htmlBody += "<a href=\"mailto:support@graphicnewsplus.com\">support@graphicnewsplus.com</a>.</p>\n";
+        htmlBody += "<hr>\n";
+        htmlBody += "<p>&copy; " + currentYear + " Graphic News Plus. All rights reserved.</p>\n";
+        htmlBody += "</div>";
 
     dto::SendEmailDto emailDto;
     emailDto.setTo(application.getValueOfEmail());
