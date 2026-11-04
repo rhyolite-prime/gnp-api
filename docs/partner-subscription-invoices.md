@@ -35,11 +35,11 @@ average across invoices. A zero-priced invoice makes the quantity and unit price
 unknown, because the invoice table does not store seat-months separately. The end
 of the reporting window is inclusive.
 
-The report preserves the application's existing policy: VAT 15%, combined
-GETFund/NHIL 5%, and a 5% discount, each computed on the subtotal and rounded to
-the nearest pesewa, then `totalDue = subtotal + VAT + GETFund/NHIL - discount`.
-These rates and the discount are existing application assumptions, **not a
-verification of current Ghana tax law or a partner's contract**. Confirm them
+The report uses VAT 15% and combined GETFund/NHIL 5%, each computed on the
+subtotal and rounded to the nearest pesewa. No discount is applied: `discount`
+and `discountPercent` are zero, and `totalDue = subtotal + VAT + GETFund/NHIL`.
+These rates are application assumptions, **not a verification of current Ghana
+tax law or a partner's contract**. Confirm them
 with the business/tax team. Stored invoices, payments and balances remain
 pre-tax as before; the report's tax-inclusive total is a preview, not a claim that
 tax has been invoiced. `totalBalance` and `outstandingBalance` reflect the

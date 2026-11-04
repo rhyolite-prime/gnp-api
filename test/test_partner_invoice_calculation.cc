@@ -20,16 +20,17 @@ int main() {
     CHECK(durationMultiplier(91 * day) == 4);
     CHECK(toPesewas(12.34) == 1234);
     auto zero = calculate(0);
-    CHECK(zero.subtotal == 0 && zero.totalDue == 0);
+    CHECK(zero.subtotal == 0 && zero.discount == 0 && zero.totalDue == 0);
     auto normal = calculate(10000);
-    CHECK(normal.vat == 1500 && normal.getflNhil == 500 && normal.discount == 500);
-    CHECK(normal.totalDue == 11500);
+    CHECK(normal.vat == 1500 && normal.getflNhil == 500 && normal.discount == 0);
+    CHECK(normal.totalDue == 12000);
     auto fractions = calculate(10); // half-pesewa components round up
-    CHECK(fractions.vat == 2 && fractions.getflNhil == 1 && fractions.discount == 1);
-    CHECK(fractions.totalDue == 12);
+    CHECK(fractions.vat == 2 && fractions.getflNhil == 1 && fractions.discount == 0);
+    CHECK(fractions.totalDue == 13);
     for (long long subtotal = 0; subtotal < 10000; ++subtotal) {
         const auto t = calculate(subtotal);
-        CHECK(t.totalDue == t.subtotal + t.vat + t.getflNhil - t.discount);
+        CHECK(t.discount == 0);
+        CHECK(t.totalDue == t.subtotal + t.vat + t.getflNhil);
     }
     return EXIT_SUCCESS;
 }
