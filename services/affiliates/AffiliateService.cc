@@ -13,6 +13,9 @@
 #include "services/users/UserService.h"
 #include <drogon/orm/CoroMapper.h>
 #include <drogon/orm/Mapper.h>
+#include <chrono>
+#include <iomanip>
+#include <sstream>
 
 #include "bcrypt.h"
 #include "Users.h"
@@ -1221,10 +1224,169 @@ drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::deleteAffiliate(cons
 }
 
 
-drogon::Task<dto::BaseApiResponse> AffiliateService::getAdminDashboardData() {
+drogon::Task<dto::BaseApiResponse> AffiliateService::getAdminDashboardData(
+    const std::string &startDate, const std::string &endDate) {
+  // Dates are inclusive calendar dates. Empty bounds mean no bound; changes and
+  // growth compare against the immediately preceding equal-length period only
+  // when both bounds are provided.
+  auto validDate = [](const std::string &date) {
+    if (date.empty()) return true;
+    if (date.size() != 10 || date[4] != '-' || date[7] != '-') return false;
+    for (size_t i = 0; i < date.size(); ++i) {
+      if (i != 4 && i != 7 && (date[i] < '0' || date[i] > '9')) return false;
+    }
+    using namespace std::chrono;
+    return year_month_day{year{std::stoi(date.substr(0, 4))},
+                          month{static_cast<unsigned>(std::stoi(date.substr(5, 2)))},
+                          day{static_cast<unsigned>(std::stoi(date.substr(8, 2)))}}.ok();
+  };
+  if (!validDate(startDate) || !validDate(endDate) ||
+      (!startDate.empty() && !endDate.empty() && startDate > endDate)) {
+    dto::BaseApiResponse response;
+    response.error["code"] = constants::ERR_VALIDATION;
+    response.error["message"] = "Use valid YYYY-MM-DD dates with startDate no later than endDate.";
+    co_return response;
+  }
 
+  const bool compare = !startDate.empty() && !endDate.empty();
+  auto dbClient = drogon::app().getDbClient();
+  try {
+    // Independent scalar subqueries avoid multiplying monetary totals when an
+    // affiliate has both commissions and payouts.
+    const std::string bounds =
+        "WITH bounds AS (SELECT NULLIF($1, '')::date AS start_date, "
+        "NULLIF($2, '')::date AS end_date) ";
+    const std::string current =
+        "(b.start_date IS NULL OR t.created_at >= b.start_date) "
+        "AND (b.end_date IS NULL OR t.created_at < b.end_date + 1)";
+    const std::string previous =
+        "t.created_at >= b.start_date - (b.end_date - b.start_date + 1) "
+        "AND t.created_at < b.start_date";
+    const std::string query = bounds +
+        "SELECT "
+        "(SELECT COUNT(*) FROM affiliates t WHERE t.status NOT IN (3, 17, 20) AND " + current + ") AS affiliates, "
+        "(SELECT COUNT(*) FROM affiliates t WHERE t.status NOT IN (3, 17, 20) AND " + previous + ") AS prev_affiliates, "
+        "(SELECT COALESCE(SUM(t.amount), 0) FROM affiliate_commissions t WHERE t.status <> 17 AND " + current + ") AS commission, "
+        "(SELECT COALESCE(SUM(t.amount), 0) FROM affiliate_commissions t WHERE t.status <> 17 AND " + previous + ") AS prev_commission, "
+        "(SELECT COUNT(*) FROM affiliates t WHERE t.status = 20 AND " + current + ") AS applications, "
+        "(SELECT COUNT(*) FROM affiliates t WHERE t.status = 20 AND " + previous + ") AS prev_applications, "
+        "(SELECT COALESCE(SUM(t.total_amount), 0) FROM affiliate_payouts t WHERE t.status IN (14, 18) AND " + current + ") AS payouts, "
+        "(SELECT COALESCE(SUM(t.total_amount), 0) FROM affiliate_payouts t WHERE t.status IN (14, 18) AND " + previous + ") AS prev_payouts "
+        "FROM bounds b";
+    auto totals = co_await dbClient->execSqlCoro(query, startDate, endDate);
+    const auto &row = totals[0];
+    auto percent = [compare](double value, double old) {
+      if (!compare || old == 0 || value == old) return std::string("0%");
+      double rate = (value - old) * 100.0 / old;
+      std::ostringstream out;
+      out << (rate >= 0 ? "+" : "") << std::fixed << std::setprecision(1) << rate << "%";
+      return out.str();
+    };
+    auto direction = [compare](double value, double old) {
+      return !compare || value == old ? "neutral" : value > old ? "increase" : "decrease";
+    };
+    Json::Value stats(Json::arrayValue);
+    auto addStat = [&](const char *name, double value, double old,
+                       const char *icon, const char *bg, const char *color,
+                       const char *prefix, bool isCount, bool applications = false) {
+      Json::Value stat;
+      stat["name"] = name;
+      stat["value"] = isCount ? Json::Value(static_cast<Json::Int64>(value)) : Json::Value(value);
+      stat["change"] = applications ? std::to_string(compare ? static_cast<long long>(value - old) : 0) + " new"
+                                    : percent(value, old);
+      stat["changeType"] = direction(value, old);
+      stat["icon"] = icon; // serializable frontend icon identifier
+      stat["bgColor"] = bg;
+      stat["iconColor"] = color;
+      stat["prefix"] = prefix;
+      stat["suffix"] = "";
+      stats.append(stat);
+    };
+    addStat("Total Affiliates", row["affiliates"].as<double>(), row["prev_affiliates"].as<double>(),
+            "UsersIcon", "bg-blue-50", "text-blue-600", "", true);
+    addStat("Total Commission", row["commission"].as<double>(), row["prev_commission"].as<double>(),
+            "CurrencyDollarIcon", "bg-green-50", "text-green-600", "₵", false);
+    addStat("Pending Applications", row["applications"].as<double>(), row["prev_applications"].as<double>(),
+            "DocumentCheckIcon", "bg-orange-50", "text-orange-600", "", true, true);
+    addStat("Pending Payouts", row["payouts"].as<double>(), row["prev_payouts"].as<double>(),
+            "BanknotesIcon", "bg-purple-50", "text-purple-600", "₵", false);
 
+    // A referral conversion is represented by an affiliate commission: there
+    // is no referral-clicks table in the deployed schema.
+    const std::string commissionCurrent =
+        "(b.start_date IS NULL OR c.created_at >= b.start_date) "
+        "AND (b.end_date IS NULL OR c.created_at < b.end_date + 1)";
+    const std::string commissionPrevious =
+        "c.created_at >= b.start_date - (b.end_date - b.start_date + 1) "
+        "AND c.created_at < b.start_date";
+    auto leaders = co_await dbClient->execSqlCoro(bounds +
+        "SELECT a.id::text AS id, TRIM(CONCAT(COALESCE(a.first_name, ''), ' ', COALESCE(a.last_name, ''))) AS name, "
+        "COUNT(c.id) FILTER (WHERE " + commissionCurrent + ") AS referrals, "
+        "COALESCE(SUM(c.amount) FILTER (WHERE " + commissionCurrent + "), 0) AS earnings, "
+        "COUNT(c.id) FILTER (WHERE " + commissionPrevious + ") AS previous_referrals "
+        "FROM affiliates a CROSS JOIN bounds b "
+        "JOIN affiliate_commissions c ON c.affiliate_id = a.id AND c.status <> 17 "
+        "GROUP BY a.id, a.first_name, a.last_name, b.start_date, b.end_date "
+        "HAVING COUNT(c.id) FILTER (WHERE " + commissionCurrent + ") > 0 "
+        "ORDER BY earnings DESC, referrals DESC, a.id LIMIT 4", startDate, endDate);
+    Json::Value top(Json::arrayValue);
+    for (const auto &leader : leaders) {
+      Json::Value item;
+      item["id"] = leader["id"].as<std::string>();
+      item["name"] = leader["name"].as<std::string>();
+      item["referrals"] = static_cast<Json::Int64>(leader["referrals"].as<int64_t>());
+      item["earnings"] = leader["earnings"].as<double>();
+      const double prior = leader["previous_referrals"].as<double>();
+      item["growth"] = compare && prior > 0 ?
+          (leader["referrals"].as<double>() - prior) * 100.0 / prior : 0.0;
+      top.append(item);
+    }
 
+    auto activities = co_await dbClient->execSqlCoro(bounds +
+        "SELECT id, name, action, amount, "
+        "GREATEST(0, EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - activity_at))) AS age_seconds "
+        "FROM ("
+        " SELECT c.id::text AS id, TRIM(CONCAT(COALESCE(a.first_name, ''), ' ', COALESCE(a.last_name, ''))) AS name, "
+        " 'Earned Commission' AS action, c.amount AS amount, c.created_at AS activity_at "
+        " FROM affiliate_commissions c JOIN affiliates a ON a.id = c.affiliate_id WHERE c.status <> 17 "
+        " UNION ALL SELECT a.id::text, TRIM(CONCAT(COALESCE(a.first_name, ''), ' ', COALESCE(a.last_name, ''))), "
+        " 'New Affiliate Signup', 0, a.created_at FROM affiliates a "
+        " UNION ALL SELECT a.id::text, TRIM(CONCAT(COALESCE(a.first_name, ''), ' ', COALESCE(a.last_name, ''))), "
+        " 'Application Approved', 0, a.updated_at FROM affiliates a WHERE a.status = 16 "
+        " UNION ALL SELECT p.id::text, TRIM(CONCAT(COALESCE(a.first_name, ''), ' ', COALESCE(a.last_name, ''))), "
+        " 'Payout Processed', -p.total_amount, p.updated_at FROM affiliate_payouts p "
+        " JOIN affiliates a ON a.id = p.affiliate_id WHERE p.status = 19 "
+        ") events CROSS JOIN bounds b WHERE "
+        "(b.start_date IS NULL OR activity_at >= b.start_date) AND "
+        "(b.end_date IS NULL OR activity_at < b.end_date + 1) "
+        "ORDER BY activity_at DESC, id DESC LIMIT 5", startDate, endDate);
+    Json::Value recent(Json::arrayValue);
+    for (const auto &activity : activities) {
+      Json::Value item;
+      item["id"] = activity["id"].as<std::string>();
+      item["name"] = activity["name"].as<std::string>();
+      item["action"] = activity["action"].as<std::string>();
+      item["amount"] = activity["amount"].as<double>();
+      auto seconds = static_cast<int64_t>(activity["age_seconds"].as<double>());
+      if (seconds < 60) item["date"] = "just now";
+      else if (seconds < 3600) item["date"] = std::to_string(seconds / 60) + " mins ago";
+      else if (seconds < 86400) item["date"] = std::to_string(seconds / 3600) + " hours ago";
+      else item["date"] = std::to_string(seconds / 86400) + " days ago";
+      recent.append(item);
+    }
+    dto::BaseApiResponse response;
+    response.success = true;
+    response.result["stats"] = stats;
+    response.result["recentActivity"] = recent;
+    response.result["topAffiliates"] = top;
+    co_return response;
+  } catch (const DrogonDbException &e) {
+    dto::BaseApiResponse response;
+    response.error["code"] = constants::ERR_DB_QUERY;
+    response.error["message"] = "Database error while fetching affiliate dashboard.";
+    response.error["detail"] = e.base().what();
+    co_return response;
+  }
 }
 
 drogon::Task<dto::BaseApiResponse> AffiliateService::resetAffiliateUserPassword(const std::string &id) {

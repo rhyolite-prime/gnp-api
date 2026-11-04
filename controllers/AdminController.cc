@@ -1640,14 +1640,16 @@ drogon::Task<HttpResponsePtr> AdminController::getAffiliateApplicants(HttpReques
 
 
 drogon::Task<HttpResponsePtr> AdminController::getAffiliateDashboardData(HttpRequestPtr req) {
-
-
   auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
   auto &affiliateService = plugin->getAffiliateService();
 
-  auto apiResp = co_await affiliateService.getAdminDashboardData();
+  auto apiResp = co_await affiliateService.getAdminDashboardData(
+      req->getParameter("startDate"), req->getParameter("endDate"));
   auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
-  resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
+  resp->setStatusCode(apiResp.success ? k200OK :
+      (apiResp.error.isMember("code") &&
+       apiResp.error["code"].asInt() == gnp::constants::ERR_VALIDATION
+           ? k400BadRequest : k500InternalServerError));
   co_return resp;
 }
 
