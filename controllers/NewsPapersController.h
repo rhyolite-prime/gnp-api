@@ -34,6 +34,7 @@ public:
   //ADD_METHOD_TO(NewsPapersController::askArchives, std::string(PREFIX) + "ask-archives", Post, Options, "JwtAuthFilter");
 
   ADD_METHOD_TO(NewsPapersController::getAllVideos, std::string(PREFIX) + "get-all-videos", Get);
+  ADD_METHOD_TO(NewsPapersController::getVideoDetails, std::string(PREFIX) + "get-video-details/{1}", Get);
   ADD_METHOD_TO(NewsPapersController::unPublish, std::string(PREFIX) + "unpublish", Get);
   ADD_METHOD_TO(NewsPapersController::ingestPublication, std::string(PREFIX) + "ingest", Post);
   ADD_METHOD_TO(NewsPapersController::update, std::string(PREFIX) + "update", Post);

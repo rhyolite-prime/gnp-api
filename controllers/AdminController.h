@@ -129,6 +129,7 @@ public:
 
    //videos
    ADD_METHOD_TO(AdminController::getAllVideos, std::string(PREFIX) + "get-all-videos", Get, Options, "JwtAuthFilter");
+   ADD_METHOD_TO(AdminController::getVideoDetails, std::string(PREFIX) + "get-video-details", Get, Options, "JwtAuthFilter");
    ADD_METHOD_TO(AdminController::createVideo, std::string(PREFIX) + "create-video", Post, Options, "JwtAuthFilter");
    ADD_METHOD_TO(AdminController::updateVideo, std::string(PREFIX) + "update-video", Post, Options, "JwtAuthFilter");
    ADD_METHOD_TO(AdminController::deleteVideo, std::string(PREFIX) + "delete-video", Delete, Options, "JwtAuthFilter");
@@ -234,6 +235,7 @@ public:
 
  // videos ...
  drogon::Task<HttpResponsePtr> getAllVideos(HttpRequestPtr req);
+ drogon::Task<HttpResponsePtr> getVideoDetails(HttpRequestPtr req, const std::string &videoId);
  drogon::Task<HttpResponsePtr> createVideo(HttpRequestPtr req);
  drogon::Task<HttpResponsePtr> updateVideo(HttpRequestPtr req, const std::string &videoId);
  drogon::Task<HttpResponsePtr> deleteVideo(HttpRequestPtr req, const std::string &videoId);
