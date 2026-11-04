@@ -145,7 +145,7 @@ namespace gnp::dto {
         const unsigned mp = (5 * doy + 2) / 153;                                         // [0, 11]
         const unsigned d = doy - (153 * mp + 2) / 5 + 1;                                 // [1, 31]
         const unsigned m = mp + (mp < 10 ? 3 : -9);                                      // [1, 12]
-        char buf[16];
+        char buf[64];
         std::snprintf(buf, sizeof(buf), "%04lld-%02u-%02u", y + (m <= 2), m, d);
         return std::string(buf);
     }
@@ -159,9 +159,10 @@ namespace gnp::dto {
 #else
         localtime_r(&tt, &localTm);
 #endif
-        char buf[16];
-        std::snprintf(buf, sizeof(buf), "%04d-%02d-%02d",
-                      localTm.tm_year + 1900, localTm.tm_mon + 1, localTm.tm_mday);
+        char buf[64];
+        std::snprintf(buf, sizeof(buf), "%04lld-%02lld-%02d",
+                      static_cast<long long>(localTm.tm_year) + 1900,
+                      static_cast<long long>(localTm.tm_mon) + 1, localTm.tm_mday);
         return std::string(buf);
     }
 

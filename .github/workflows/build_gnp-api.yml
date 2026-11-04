@@ -68,6 +68,9 @@ jobs:
           cmake ..
           make
 
+      - name: Test UTF-8 model compatibility helper
+        run: ./build/test/utf8_length_test
+
       # Step 6: List files in the build directory
       - name: List build directory files
         run: |
