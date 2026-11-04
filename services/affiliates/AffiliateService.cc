@@ -168,7 +168,9 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::getAll(int pageNo, int page
   }
 }
 
+
 drogon::Task<dto::BaseApiResponse> AffiliateService::getAffiliateAccountDetails(const std::string &id) {
+
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Affiliates> mapper(dbClient);
 
@@ -204,7 +206,6 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::getAffiliateAccountDetails(
     details["userId"] = row["user_id"];
     details["requireTwoFactorAuth"] = row["require_two_factor_auth"];
     details["createdAt"] = row["created_at"];
-    details["updatedAt"] = row["updated_at"];
 
     dto::BaseApiResponse response;
     response.success = true;
