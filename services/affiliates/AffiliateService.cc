@@ -28,7 +28,7 @@ using drogon_model::Gnp::Affiliates;
 
 namespace gnp::services {
 
-drogon::Task<dto::BaseApiResponse> AffiliateService::getAll(int pageNo, int pageSize, const std::string &query, const std::string &sortBy) {
+drogon::Task<dto::BaseApiResponse> AffiliateService::getAll(int pageNo, int pageSize, const std::string &query, int status, const std::string &sortBy) {
 
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Affiliates> mp(dbClient);
@@ -43,6 +43,10 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::getAll(int pageNo, int page
         Criteria(Affiliates::Cols::_email, CompareOperator::Like, likeQuery) ||
         Criteria(Affiliates::Cols::_phone, CompareOperator::Like, likeQuery) ||
         Criteria(Affiliates::Cols::_last_name, CompareOperator::Like, likeQuery);
+  }
+
+  if (status >= 0) {
+    searchCriteria = searchCriteria && Criteria(Affiliates::Cols::_status, CompareOperator::EQ, status);
   }
 
   try {
@@ -64,8 +68,7 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::getAll(int pageNo, int page
     if (sortBy == "earnings-high-to-low" || sortBy == "earnings-low-to-high") {
       // For earnings-based sorting, we need to use a custom SQL query
       // that joins with commissions/payouts and aggregates earnings
-      std::string orderDirection =
-          (sortBy == "earnings-high-to-low") ? "DESC" : "ASC";
+      std::string orderDirection = (sortBy == "earnings-high-to-low") ? "DESC" : "ASC";
 
       std::string sql =
           "SELECT a.*, COALESCE(SUM(c.amount), 0) as total_earnings "
@@ -133,13 +136,14 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::getAll(int pageNo, int page
       // Convert snake_case to camelCase
       Json::Value camelCaseAffiliate;
       camelCaseAffiliate["id"] = affiliateJson["id"];
-      camelCaseAffiliate["name"] = affiliateJson["name"];
+      camelCaseAffiliate["firstName"] = affiliateJson["first_name"];
+      camelCaseAffiliate["lastName"] = affiliateJson["last_name"];
       camelCaseAffiliate["email"] = affiliateJson["email"];
-      camelCaseAffiliate["phone"] = affiliateJson["phone"];
+      camelCaseAffiliate["phoneNo"] = affiliateJson["phone"];
       camelCaseAffiliate["status"] = affiliateJson["status"];
-      camelCaseAffiliate["platforms"] = affiliateJson["platforms"];
-      camelCaseAffiliate["dateJoined"] = affiliateJson["date_joined"];
-      camelCaseAffiliate["updatedAt"] = affiliateJson["updated_at"];
+      camelCaseAffiliate["dateJoined"] = affiliateJson["created_at"];
+      camelCaseAffiliate["totalEarnings"] = affiliateJson["total_earnings"];
+      camelCaseAffiliate["walletBalance"] = affiliateJson["wallet_balance"];
 
       data.append(camelCaseAffiliate);
     }
@@ -151,8 +155,7 @@ drogon::Task<dto::BaseApiResponse> AffiliateService::getAll(int pageNo, int page
     dto::BaseApiResponse errorResponse;
     errorResponse.success = false;
     errorResponse.error["code"] = constants::ERR_DB_QUERY;
-    errorResponse.error["message"] =
-        "Database error while fetching affiliates.";
+    errorResponse.error["message"] = "Database error while fetching affiliates.";
     errorResponse.error["detail"] = e.base().what();
     co_return errorResponse;
   }
@@ -816,7 +819,7 @@ drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::approveApplication(c
     }
 
     // 2. Check if already processed
-    if (application.getValueOfStatus() == constants::StatusTypes::APPROVED) {
+    if (application.getValueOfStatus() == constants::StatusTypes::ACTIVE) {
       dto::BaseApiResponse response;
       response.success = false;
       response.error["code"] = constants::ERR_VALIDATION;
@@ -839,16 +842,13 @@ drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::approveApplication(c
         Criteria(drogon_model::Gnp::Users::Cols::_email, CompareOperator::EQ, application.getValueOfEmail()));
 
     if (!existingUsers.empty()) {
-      // Update application status to rejected
-      application.setStatus(constants::StatusTypes::REJECTED);
-      application.setUpdatedAt(trantor::Date::now());
-      co_await affiliateMapper.update(application);
+      co_await rejectApplication(applicationId, "The email address provided is already registered to an existing account.");
 
       dto::BaseApiResponse response;
       response.success = false;
       response.error["code"] = constants::ERR_VALIDATION;
-      response.error["message"] = "Email already registered. Application rejected.";
-      response.message = "Email already registered. Application rejected.";
+      response.error["message"] = "Email already registered. Application rejected and notification email sent.";
+      response.message = "Email already registered. Application rejected and notification email sent.";
       co_return response;
     }
 
@@ -869,7 +869,7 @@ drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::approveApplication(c
     newUser.setPasswordHash(bcrypt::generateHash(password));
     newUser.setIsPartnerAdminUser(false);
     newUser.setIsAffiliate(true);
-    newUser.setAffiliateId(affiliateId);
+    newUser.setAffiliateId(application.getValueOfId());
     newUser.setIsActive(true);
     newUser.setIsLockedOut(false);
     newUser.setIsAdminUser(false);
@@ -880,7 +880,7 @@ drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::approveApplication(c
     // 6. Update the affiliate record with user_id and affiliate_id
     application.setUserId(user.getValueOfId());
     application.setAffiliateId(affiliateId);
-    application.setStatus(constants::StatusTypes::APPROVED);
+    application.setStatus(constants::StatusTypes::ACTIVE);
     application.setUpdatedAt(trantor::Date::now());
     application.setDateJoined(trantor::Date::now()); // Set join date
     application.setTotalEarnings("0");
@@ -890,79 +890,32 @@ drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::approveApplication(c
 
     // 7. Send welcome email with credentials
     const std::string loginUrl = "https://dev.graphicnewsplus.com/affiliates/login";
+    std::string currentYear = trantor::Date::now().toCustomFormattedString("%Y");
 
     std::string htmlBody =
-        "<!DOCTYPE html>"
-        "<html lang=\"en\"><head><meta charset=\"UTF-8\">"
-        "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0\">"
-        "<title>Welcome to Graphic News Plus Affiliates</title></head>"
-        "<body style=\"margin:0;padding:0;background-color:#f4f4f7;font-family:Arial,sans-serif;\">"
-
-        "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"background-color:#f4f4f7;padding:40px 0;\">"
-        "<tr><td align=\"center\">"
-
-        "<table width=\"600\" cellpadding=\"0\" cellspacing=\"0\" style=\"background-color:#ffffff;border-radius:8px;"
-        "overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);\">"
-
-        "<tr><td style=\"background-color:#1a1a2e;padding:32px 40px;text-align:center;\">"
-        "<h1 style=\"margin:0;color:#ffffff;font-size:22px;font-weight:700;letter-spacing:0.5px;\">"
-        "Graphic News Plus</h1>"
-        "<p style=\"margin:6px 0 0;color:#a0a8c0;font-size:13px;\">Affiliate Program</p>"
-        "</td></tr>"
-
-        "<tr><td style=\"padding:36px 40px;\">"
-        "<div style=\"background-color:#e8f5e9;border-left:4px solid #4CAF50;padding:12px 16px;margin-bottom:20px;\">"
-        "<p style=\"margin:0;font-size:14px;color:#2e7d32;\">&#10004; Congratulations! Your application has been approved!</p>"
-        "</div>"
-
-        "<p style=\"margin:0 0 16px;font-size:16px;color:#333333;\">Dear <strong>" +
-        application.getValueOfFirstName() + " " + application.getValueOfLastName() +
-        "</strong>,</p>"
-        "<p style=\"margin:0 0 16px;font-size:15px;color:#555555;line-height:1.6;\">"
-        "We are pleased to inform you that your affiliate application has been approved. "
-        "You can now access the <strong>Affiliate Dashboard</strong> using the credentials below.</p>"
-
-        "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"background-color:#f0f4ff;"
-        "border-radius:6px;border:1px solid #dce3f5;margin:24px 0;\">"
-        "<tr><td style=\"padding:20px 24px;\">"
-        "<table width=\"100%\" cellpadding=\"6\" cellspacing=\"0\">"
-        "<tr>"
-        "<td style=\"font-size:13px;color:#888888;width:120px;\">Login URL</td>"
-        "<td style=\"font-size:13px;color:#1a1a2e;\"><a href=\"" + loginUrl + "\" style=\"color:#4f6ef7;text-decoration:none;\">" + loginUrl + "</a></td>"
-        "</tr>"
-        "<tr>"
-        "<td style=\"font-size:13px;color:#888888;\">Username</td>"
-        "<td style=\"font-size:13px;color:#1a1a2e;font-family:monospace;\">" + application.getValueOfEmail() + "</td>"
-        "</tr>"
-        "<tr>"
-        "<td style=\"font-size:13px;color:#888888;\">Password</td>"
-        "<td style=\"font-size:13px;color:#1a1a2e;font-family:monospace;\">" + password + "</td>"
-        "</tr>"
-        "</table>"
-        "</td></tr></table>"
-
-        "<div style=\"text-align:center;margin:28px 0;\">"
-        "<a href=\"" + loginUrl + "\" "
-        "style=\"display:inline-block;background-color:#4f6ef7;color:#ffffff;"
-        "text-decoration:none;font-size:15px;font-weight:600;padding:14px 36px;"
-        "border-radius:6px;letter-spacing:0.3px;\">Go to Affiliate Dashboard</a>"
-        "</div>"
-
-        "<p style=\"margin:0 0 8px;font-size:13px;color:#888888;line-height:1.6;\">"
-        "&#128274; For your security, please change your password immediately after your first login.</p>"
-        "<p style=\"margin:0;font-size:13px;color:#888888;line-height:1.6;\">"
-        "If you have any questions, feel free to reach out to our support team.</p>"
-        "</td></tr>"
-
-        "<tr><td style=\"background-color:#f8f9fc;padding:20px 40px;text-align:center;"
-        "border-top:1px solid #e8eaf0;\">"
-        "<p style=\"margin:0;font-size:12px;color:#aaaaaa;\">"
-        "&copy; 2026 Graphic News Plus. All rights reserved.</p>"
-        "</td></tr>"
-
-        "</table>"
-        "</td></tr></table>"
-        "</body></html>";
+        "<div style=\"font-family: Arial, sans-serif; font-size: 15px; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; padding: 20px;\">\n"
+        "  <h2 style=\"color: #1a1a2e; margin-bottom: 16px;\">Graphic News Plus</h2>\n"
+        "  <p>Dear <strong>" + application.getValueOfFirstName() + " " + application.getValueOfLastName() + "</strong>,</p>\n"
+        "  <div style=\"background: #e8f5e9; border: 1px solid #c8e6c9; border-radius: 6px; padding: 12px 16px; margin: 20px 0;\">\n"
+        "    <p style=\"margin: 0; color: #2e7d32; font-weight: bold;\">&#10004; Congratulations! Your affiliate application has been approved!</p>\n"
+        "  </div>\n"
+        "  <p>You can now access the <strong>Affiliate Dashboard</strong> using the credentials below:</p>\n"
+        "  <p style=\"background: #f0f4ff; padding: 15px; border-radius: 6px; border: 1px solid #dce3f5;\">\n"
+        "    <strong>Login URL:</strong> <a href=\"" + loginUrl + "\" target=\"_blank\" style=\"color:#4f6ef7;\">" + loginUrl + "</a><br>\n"
+        "    <strong>Username:</strong> " + application.getValueOfEmail() + "<br>\n"
+        "    <strong>Temporary Password:</strong> " + password + "<br>\n"
+        "    <strong>Affiliate ID:</strong> " + affiliateId + "\n"
+        "  </p>\n"
+        "  <p style=\"margin: 20px 0;\">\n"
+        "    <a href=\"" + loginUrl + "\"\n"
+        "       target=\"_blank\"\n"
+        "       style=\"background:#4f6ef7;color:#fff;padding:12px 24px;text-decoration:none;border-radius:4px;display:inline-block;font-weight:bold;\">Go to Affiliate Dashboard</a>\n"
+        "  </p>\n"
+        "  <p style=\"font-size: 13px; color: #777;\">&#128274; For security reasons, please change your password immediately after your first login.</p>\n"
+        "  <p style=\"font-size: 13px; color: #777;\">If you have any questions, feel free to contact us at <a href=\"mailto:support@graphicnewsplus.com\" style=\"color: #4f6ef7;\">support@graphicnewsplus.com</a>.</p>\n"
+        "  <hr style=\"border: none; border-top: 1px solid #eee; margin: 25px 0 15px 0;\">\n"
+        "  <p style=\"font-size: 12px; color: #888;\">&copy; " + currentYear + " Graphic News Plus. All rights reserved.</p>\n"
+        "</div>";
 
     dto::SendEmailDto emailDto;
     emailDto.setTo(application.getValueOfEmail());
@@ -970,8 +923,14 @@ drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::approveApplication(c
     emailDto.setBody(htmlBody);
 
     if (!emailDto.getTo().empty()) {
-      EmailService emailService;
-      co_await emailService.sendEmailAsync(emailDto);
+      auto plugin = drogon::app().getPlugin<plugins::GnpServicePlugin>();
+      if (plugin) {
+        auto &emailService = plugin->getEmailService();
+        co_await emailService.sendEmailAsync(emailDto);
+      } else {
+        EmailService emailService;
+        co_await emailService.sendEmailAsync(emailDto);
+      }
     }
 
     // 8. Build success response
@@ -1004,13 +963,136 @@ drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::approveApplication(c
 }
 
 
-drogon::Task<dto::BaseApiResponse> AffiliateService::updateAffiliateAccountStatus(const std::string &id, int status) {
+drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::rejectApplication(const std::string &applicationId, const std::string &reason) {
+
+  auto dbClient = drogon::app().getDbClient();
+  CoroMapper<Affiliates> affiliateMapper(dbClient);
+
+  try {
+    // 1. Fetch the application
+    Affiliates application;
+    try {
+      application = co_await affiliateMapper.findByPrimaryKey(applicationId);
+    } catch (const UnexpectedRows &) {
+      dto::BaseApiResponse response;
+      response.success = false;
+      response.error["code"] = constants::ERR_RESOURCE_NOT_FOUND;
+      response.error["message"] = "Application not found.";
+      response.message = "Application not found.";
+      co_return response;
+    }
+
+    // 2. Check if already processed
+    if (application.getValueOfStatus() == constants::StatusTypes::REJECTED) {
+      dto::BaseApiResponse response;
+      response.success = false;
+      response.error["code"] = constants::ERR_VALIDATION;
+      response.error["message"] = "Application has already been rejected.";
+      response.message = "Application has already been rejected.";
+      co_return response;
+    }
+
+    if (application.getValueOfStatus() == constants::StatusTypes::APPROVED) {
+      dto::BaseApiResponse response;
+      response.success = false;
+      response.error["code"] = constants::ERR_VALIDATION;
+      response.error["message"] = "Application has already been approved.";
+      response.message = "Application has already been approved.";
+      co_return response;
+    }
+
+    // 3. Update application status
+    application.setStatus(constants::StatusTypes::REJECTED);
+    application.setUpdatedAt(trantor::Date::now());
+    co_await affiliateMapper.update(application);
+
+    // 4. Send rejection email to the applicant
+    std::string currentYear = trantor::Date::now().toCustomFormattedString("%Y");
+    std::string applicantName = application.getValueOfFirstName();
+    if (!application.getValueOfLastName().empty()) {
+      applicantName += " " + application.getValueOfLastName();
+    }
+    if (applicantName.empty()) {
+      applicantName = "Applicant";
+    }
+
+    std::string reasonBlock;
+    if (!reason.empty()) {
+      reasonBlock =
+          "  <div style=\"background: #f9f9f9; padding: 12px 15px; border-radius: 6px; border: 1px solid #eee; margin: 15px 0;\">\n"
+          "    <p style=\"margin: 0; color: #555;\"><strong>Reason:</strong> " + reason + "</p>\n"
+          "  </div>\n";
+    }
+
+    std::string htmlBody =
+        "<div style=\"font-family: Arial, sans-serif; font-size: 15px; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; padding: 20px;\">\n"
+        "  <h2 style=\"color: #1a1a2e; margin-bottom: 16px;\">Graphic News Plus</h2>\n"
+        "  <p>Dear <strong>" + applicantName + "</strong>,</p>\n"
+        "  <p>Thank you for your interest in the <strong>Graphic News Plus Affiliate Program</strong>.</p>\n"
+        "  <div style=\"background: #fff5f5; border: 1px solid #fed7d7; border-radius: 6px; padding: 12px 16px; margin: 20px 0;\">\n"
+        "    <p style=\"margin: 0; color: #c53030; font-weight: bold;\">&#10006; Application Status: Not Approved</p>\n"
+        "  </div>\n"
+        "  <p>After careful review of your registration details, we regret to inform you that we are unable to approve your affiliate application at this time.</p>\n" +
+        reasonBlock +
+        "  <p>If you believe this decision was made in error or if you have any questions, please contact our support team at <a href=\"mailto:support@graphicnewsplus.com\" style=\"color: #4f6ef7;\">support@graphicnewsplus.com</a>.</p>\n"
+        "  <hr style=\"border: none; border-top: 1px solid #eee; margin: 25px 0 15px 0;\">\n"
+        "  <p style=\"font-size: 12px; color: #888;\">&copy; " + currentYear + " Graphic News Plus. All rights reserved.</p>\n"
+        "</div>";
+
+    dto::SendEmailDto emailDto;
+    emailDto.setTo(application.getValueOfEmail());
+    emailDto.setSubject("Graphic News Plus - Affiliate Application Update");
+    emailDto.setBody(htmlBody);
+
+    if (!emailDto.getTo().empty()) {
+      auto plugin = drogon::app().getPlugin<plugins::GnpServicePlugin>();
+      if (plugin) {
+        auto &emailService = plugin->getEmailService();
+        co_await emailService.sendEmailAsync(emailDto);
+      } else {
+        EmailService emailService;
+        co_await emailService.sendEmailAsync(emailDto);
+      }
+    }
+
+    dto::BaseApiResponse response;
+    response.success = true;
+    response.result["message"] = "Application rejected successfully. Notification email sent.";
+    response.result["applicationId"] = applicationId;
+    response.result["status"] = static_cast<int>(constants::StatusTypes::REJECTED);
+    co_return response;
+
+  } catch (const DrogonDbException &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_DB_QUERY;
+    errorResponse.error["message"] = "Database error while rejecting application.";
+    errorResponse.error["detail"] = e.base().what();
+    errorResponse.message = "Database error while rejecting application.";
+    co_return errorResponse;
+  } catch (const std::exception &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_INTERNAL;
+    errorResponse.error["message"] = "Internal error.";
+    errorResponse.error["detail"] = e.what();
+    errorResponse.message = "Internal error.";
+    co_return errorResponse;
+  }
+}
+
+
+drogon::Task<dto::BaseApiResponse> AffiliateService::updateAffiliateAccountStatus(const std::string &id, int status, const std::string &reason) {
 
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Affiliates> mapper(dbClient);
 
   if (status == static_cast<int>(constants::StatusTypes::APPROVED)) {
     co_return co_await approveApplication(id);
+  }
+
+  if (status == static_cast<int>(constants::StatusTypes::REJECTED)) {
+    co_return co_await rejectApplication(id, reason);
   }
 
   try {
@@ -1136,6 +1218,17 @@ drogon::Task<::gnp::dto::BaseApiResponse> AffiliateService::deleteAffiliate(cons
     co_return errorResponse;
   }
 }
+
+
+
+drogon::Task<dto::BaseApiResponse> AffiliateService::resetAffiliateUserPassword(const std::string &id) {
+
+  //reset password
+
+  //send an email
+
+}
+
 
 // commissions
 

@@ -19,7 +19,7 @@ class AffiliateService {
 
 public:
 
-  drogon::Task<dto::BaseApiResponse> getAll(int pageNo, int pageSize, const std::string &query, const std::string &sortBy);
+  drogon::Task<dto::BaseApiResponse> getAll(int pageNo, int pageSize, const std::string &query, int status, const std::string &sortBy);
 
   drogon::Task<dto::BaseApiResponse> getAllApplicants(int pageNo, int pageSize, const std::string &query, int status);
 
@@ -31,9 +31,13 @@ public:
 
   drogon::Task<::gnp::dto::BaseApiResponse> approveApplication(const std::string &applicationId);
 
-  drogon::Task<dto::BaseApiResponse> updateAffiliateAccountStatus(const std::string &id, int status);
+  drogon::Task<::gnp::dto::BaseApiResponse> rejectApplication(const std::string &applicationId, const std::string &reason = "");
+
+  drogon::Task<dto::BaseApiResponse> updateAffiliateAccountStatus(const std::string &id, int status, const std::string &reason = "");
 
   drogon::Task<dto::BaseApiResponse> deleteAffiliate(const std::string &id);
+
+  drogon::Task<dto::BaseApiResponse> resetAffiliateUserPassword(const std::string &id);
 
   drogon::Task<::gnp::dto::BaseApiResponse> getAllCommissions(int pageNo, int pageSize, const std::string &affiliateId, const std::string &startDate, const std::string &endDate);
 

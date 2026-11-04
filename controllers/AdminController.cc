@@ -1517,9 +1517,18 @@ drogon::Task<HttpResponsePtr> AdminController::getAllAffiliates(HttpRequestPtr r
   }
 
   std::string query = req->getParameter("query");
-
   if (query.empty()) {
     query = "";
+  }
+
+
+  int status = -1;
+  if (!req->getParameter("status").empty()) {
+    try {
+      status = std::stoi(req->getParameter("status"));
+    } catch (...) {
+      // Keep default if conversion fails
+    }
   }
 
   std::string sortBy = req->getParameter("sortBy");
@@ -1531,72 +1540,30 @@ drogon::Task<HttpResponsePtr> AdminController::getAllAffiliates(HttpRequestPtr r
   auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
   auto &affiliateService = plugin->getAffiliateService();
 
-  auto apiResp = co_await affiliateService.getAll(pageNo, pageSize, query, sortBy);
+  auto apiResp = co_await affiliateService.getAll(pageNo, pageSize, query, status, sortBy);
+
   auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
+
   resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
   co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
 
 }
 
 
-drogon::Task<HttpResponsePtr> AdminController::updateAffiliateStatus(HttpRequestPtr req) {
+drogon::Task<HttpResponsePtr> AdminController::updateAffiliateStatus(HttpRequestPtr req, const std::string &affiliateId, const int &status) {
 
-  // --- 1. Extract parameters ---
-  std::string affiliateId = req->getParameter("id");
-  std::string statusStr   = req->getParameter("status");
-
-  // --- 2. Validate required params ---
-  if (affiliateId.empty() || statusStr.empty()) {
-    gnp::dto::BaseApiResponse badReq;
-    badReq.success = false;
-    badReq.error["code"]    = gnp::constants::ERR_VALIDATION;
-    badReq.error["message"] = "Both 'id' and 'status' query parameters are required.";
-    auto resp = HttpResponse::newHttpJsonResponse(badReq.toJson());
-    resp->setStatusCode(k400BadRequest);
-    co_return resp;
-  }
-
-  // --- 3. Parse status to int ---
-  // Valid values (StatusTypes): ARCHIVED(2), ACTIVE(11), INACTIVE(12),
-  //                             SUSPENDED(13), REJECTED(17)
-  int statusInt = -1;
-  try {
-    statusInt = std::stoi(statusStr);
-  } catch (...) {
-    gnp::dto::BaseApiResponse badReq;
-    badReq.success = false;
-    badReq.error["code"]    = gnp::constants::ERR_VALIDATION;
-    badReq.error["message"] = "Invalid 'status' value. Must be an integer (e.g. ACTIVE=11, INACTIVE=12, SUSPENDED=13, REJECTED=17, ARCHIVED=2).";
-    auto resp = HttpResponse::newHttpJsonResponse(badReq.toJson());
-    resp->setStatusCode(k400BadRequest);
-    co_return resp;
-  }
-
-  // --- 4. Whitelist allowed status transitions ---
-  static const std::set<int> kAllowedStatuses = {
-    static_cast<int>(gnp::constants::StatusTypes::ARCHIVED),   // 2
-    static_cast<int>(gnp::constants::StatusTypes::ACTIVE),     // 11
-    static_cast<int>(gnp::constants::StatusTypes::INACTIVE),   // 12
-    static_cast<int>(gnp::constants::StatusTypes::SUSPENDED),  // 13
-    static_cast<int>(gnp::constants::StatusTypes::APPROVED),   // 16 — delegates to approveApplication()
-    static_cast<int>(gnp::constants::StatusTypes::REJECTED),   // 17
-  };
-
-  if (kAllowedStatuses.find(statusInt) == kAllowedStatuses.end()) {
-    gnp::dto::BaseApiResponse badReq;
-    badReq.success = false;
-    badReq.error["code"]    = gnp::constants::ERR_VALIDATION;
-    badReq.error["message"] = "Status value not permitted. Allowed: ARCHIVED(2), ACTIVE(11), INACTIVE(12), SUSPENDED(13), REJECTED(17).";
-    auto resp = HttpResponse::newHttpJsonResponse(badReq.toJson());
-    resp->setStatusCode(k400BadRequest);
-    co_return resp;
-  }
-
-  // --- 5. Delegate to service ---
   auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
   auto &affiliateService = plugin->getAffiliateService();
 
-  auto apiResp = co_await affiliateService.updateAffiliateAccountStatus(affiliateId, statusInt);
+  std::string reason = req->getParameter("reason");
+  if (reason.empty() && req->getContentType() == CT_APPLICATION_JSON) {
+    auto jsonPtr = req->getJsonObject();
+    if (jsonPtr && jsonPtr->isMember("reason") && (*jsonPtr)["reason"].isString()) {
+      reason = (*jsonPtr)["reason"].asString();
+    }
+  }
+
+  auto apiResp = co_await affiliateService.updateAffiliateAccountStatus(affiliateId, status, reason);
 
   // --- 6. Map service result to HTTP status code ---
   drogon::HttpStatusCode httpCode = k200OK;
@@ -1881,14 +1848,41 @@ drogon::Task<HttpResponsePtr> AdminController::updateAffiliateProfileImage(HttpR
 }
 
 
-drogon::Task<HttpResponsePtr> AdminController::deleteAffiliate(HttpRequestPtr req) {
+drogon::Task<HttpResponsePtr> AdminController::deleteAffiliate(HttpRequestPtr req, const std::string &affiliateId) {
 
-  gnp::dto::BaseApiResponse response;
-  response.success = true;
-  response.result["message"] = "Bulk payout processing completed.";
+  if (affiliateId.empty()) {
+    auto resp = HttpResponse::newHttpResponse();
+    resp->setStatusCode(k400BadRequest);
+    resp->setBody("Missing required parameters: partnerId or subscriberId");
+    co_return resp;
+  }
 
-  auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
-  co_return resp;
+  auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
+  auto &affiliateService = plugin->getAffiliateService();
+
+  auto apiResp = co_await affiliateService.deleteAffiliate(affiliateId);
+  auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
+  resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
+  co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
+
+}
+
+drogon::Task<HttpResponsePtr> AdminController::resetAffiliatePassword(HttpRequestPtr req, const std::string &affiliateId) {
+
+  if (affiliateId.empty()) {
+    auto resp = HttpResponse::newHttpResponse();
+    resp->setStatusCode(k400BadRequest);
+    resp->setBody("Missing required parameters: partnerId or subscriberId");
+    co_return resp;
+  }
+
+  auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
+  auto &affiliateService = plugin->getAffiliateService();
+
+  auto apiResp = co_await affiliateService.deleteAffiliate(affiliateId);
+  auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
+  resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
+  co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
 
 }
 

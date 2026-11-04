@@ -33,7 +33,7 @@ drogon::Task<HttpResponsePtr> AffiliateController::getAllCommissions(HttpRequest
     auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
     auto &affiliateService = plugin->getAffiliateService();
 
-    auto result = co_await affiliateService.getAll(pageNo, pageSize, query, sortBy);
+    auto result = co_await affiliateService.getAll(pageNo, pageSize, query, 0, sortBy);
     auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
     co_return resp;
 }
@@ -68,7 +68,7 @@ drogon::Task<HttpResponsePtr> AffiliateController::getAllPayouts(HttpRequestPtr 
     auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
     auto &affiliateService = plugin->getAffiliateService();
 
-    auto result = co_await affiliateService.getAll(pageNo, pageSize, query, sortBy);
+    auto result = co_await affiliateService.getAll(pageNo, pageSize, query, 0, sortBy);
     auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
     co_return resp;
 }

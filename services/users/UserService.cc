@@ -2417,8 +2417,7 @@ drogon::Task<dto::BaseApiResponse> UserService::validatePartnerUserCredentials(c
   co_return response;
 }
 
-drogon::Task<dto::BaseApiResponse>
-UserService::validateAffiliateUserCredentials(
+drogon::Task<dto::BaseApiResponse> UserService::validateAffiliateUserCredentials(
     const dto::SigninDto &signin_dto) {
 
   auto dbClient = drogon::app().getDbClient();
@@ -2535,10 +2534,10 @@ UserService::validateAffiliateUserCredentials(
       response.message = "Affiliate Authentication successful";
       response.result["token"] = token;
       response.result["affiliateId"] = affiliate.getValueOfId();
-      response.result["affiliateName"] = affiliate.getValueOfFirstName() + " " +
-                                         affiliate.getValueOfLastName();
+      response.result["affiliateName"] = affiliate.getValueOfFirstName() + " " +  affiliate.getValueOfLastName();
       response.result["affiliateEmail"] = affiliate.getValueOfEmail();
       response.result["requiresTwoFactorAuth"] = false;
+      response.result["affiliateNo"] = affiliate.getValueOfAffiliateId();
     } else {
       // Password is incorrect
       response.success = false;
