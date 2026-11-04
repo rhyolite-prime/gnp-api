@@ -1,6 +1,7 @@
 #include "VideoService.h"
 
 #include <algorithm>
+#include <cctype>
 #include <drogon/drogon.h>
 #include <drogon/orm/CoroMapper.h>
 #include "constants/ErrorCodes.h"
@@ -20,6 +21,24 @@ dto::BaseApiResponse failure(int code, const std::string &message) {
 }
 
 // PostgreSQL text[] is not JSON: quote every element and escape array syntax.
+Json::Value toCamelCase(const Json::Value &value) {
+    Json::Value result(Json::objectValue);
+    for (const auto &key : value.getMemberNames()) {
+        std::string camelKey;
+        bool uppercaseNext = false;
+        for (char ch : key) {
+            if (ch == '_') {
+                uppercaseNext = true;
+            } else {
+                camelKey += uppercaseNext ? static_cast<char>(std::toupper(static_cast<unsigned char>(ch))) : ch;
+                uppercaseNext = false;
+            }
+        }
+        result[camelKey] = value[key];
+    }
+    return result;
+}
+
 std::string tagsArray(const std::vector<std::string> &tags) {
     std::string result = "{";
     for (const auto &tag : tags) {
@@ -74,7 +93,7 @@ drogon::Task<dto::BaseApiResponse> VideoService::getAll(int pageNo, int pageSize
         if (offset < total) {
             auto videos = co_await mapper.orderBy(Videos::Cols::_created_at, SortOrder::DESC)
                 .orderBy(Videos::Cols::_id).limit(pageSize).offset(offset).findBy(criteria);
-            for (const auto &video : videos) data.append(video.toJson());
+            for (const auto &video : videos) data.append(toCamelCase(video.toJson()));
         }
         dto::BaseApiResponse response;
         response.success = true;
