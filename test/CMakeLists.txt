@@ -4,6 +4,9 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+add_executable(partner_invoice_calculation_test test_partner_invoice_calculation.cc)
+target_include_directories(partner_invoice_calculation_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)
+
 add_executable(utf8_length_test test_utf8_length.cc)
 target_include_directories(utf8_length_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
