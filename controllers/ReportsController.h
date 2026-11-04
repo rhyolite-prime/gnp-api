@@ -11,14 +11,12 @@ class ReportsController : public drogon::HttpController<ReportsController>
 
   METHOD_LIST_BEGIN
     // ---- Group 1: Revenue & Financial --------------------------------------
-    ADD_METHOD_TO(ReportsController::generateReport, std::string(PREFIX) + "sales-revenue", Post, Get, Options, "JwtAuthFilter");
-    ADD_METHOD_TO(ReportsController::generateReport, std::string(PREFIX) + "payment-transactions", Post, Get, Options, "JwtAuthFilter");
-    ADD_METHOD_TO(ReportsController::generatePartnerInvoice, std::string(PREFIX) + "partner-invoices", Post, Get, Options, "JwtAuthFilter");
-    ADD_METHOD_TO(ReportsController::generatePartnerInvoice, std::string(PREFIX) + "partner-invoice", Post, Get, Options, "JwtAuthFilter"); // legacy alias
-    ADD_METHOD_TO(ReportsController::sendPartnerInvoiceEmail, std::string(PREFIX) + "partner-invoice-email", Post, Options, "JwtAuthFilter");
+    ADD_METHOD_TO(ReportsController::generateReport, std::string(PREFIX) + "sales-revenue", Post, Options, "JwtAuthFilter");
+    ADD_METHOD_TO(ReportsController::generateReport, std::string(PREFIX) + "payment-transactions", Post,  Options, "JwtAuthFilter");
+    ADD_METHOD_TO(ReportsController::generatePartnerInvoice, std::string(PREFIX) + "partner-invoice", Post, Options, "JwtAuthFilter"); // legacy alias
     ADD_METHOD_TO(ReportsController::sendPartnerInvoiceEmail, std::string(PREFIX) + "send-partner-invoice-email", Post, Options, "JwtAuthFilter"); // legacy alias
-    ADD_METHOD_TO(ReportsController::generateReport, std::string(PREFIX) + "subscription-renewals", Post, Get, Options, "JwtAuthFilter");
-    ADD_METHOD_TO(ReportsController::generateReport, std::string(PREFIX) + "single-copy-paywall-funnel", Post, Get, Options, "JwtAuthFilter");
+    ADD_METHOD_TO(ReportsController::generateReport, std::string(PREFIX) + "subscription-renewals", Post, Options, "JwtAuthFilter");
+    ADD_METHOD_TO(ReportsController::generateReport, std::string(PREFIX) + "single-copy-paywall-funnel", Post, Options, "JwtAuthFilter");
 
     // ---- Group 2: User & Subscriber ---------------------------------------
     ADD_METHOD_TO(ReportsController::generateReport, std::string(PREFIX) + "subscriber-demographics", Post, Get, Options, "JwtAuthFilter");
