@@ -41,6 +41,8 @@ file(GLOB RAG_SVC "../services/rag/*.cc")
 
 
 add_executable(${PROJECT_NAME} test_main.cc
+        test_video_dto.cc
+        ../services/videos/VideoService.cc
         ${CTL_SRC}
     ${FILTER_SRC}
     ${PLUGIN_SRC}
