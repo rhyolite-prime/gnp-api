@@ -24,6 +24,7 @@
 #include "utils/CsvParser.h"
 #include "utils/IdGeneratorUtils.h"
 #include "utils/PasswordUtils.h"
+#include "utils/PartnerInvoiceCalculation.h"
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
@@ -3608,96 +3609,95 @@ drogon::Task<::gnp::dto::BaseApiResponse> CommercialPartnerService::getPartnerAn
                   yearStr.c_str(), sequence);
     const std::string invoiceNo(invoiceNoBuf);
 
-    // Query partner_invoices table with aggregated values in the billing window
-    std::string sql =
-        "SELECT "
-        "SUM(invoice_amount) as total_invoice_amount, "
-        "SUM(balance) as total_balance "
-        "FROM partner_invoices "
-        "WHERE partner_id = $1 AND created_at >= $2 AND created_at <= $3";
+    // Report only the two generated subscription invoice categories. Other
+    // invoices (onboarding, quota top-ups, etc.) are not subscription lines.
+    // The exclusive upper bound includes the whole final day.
+    auto result = co_await dbClient->execSqlCoro(R"sql(
+      SELECT CASE WHEN description LIKE $4 THEN 'new'
+                  WHEN description LIKE $5 THEN 'renewed'
+                  ELSE 'legacy' END AS category,
+             COALESCE(SUM(invoice_amount), 0) AS amount,
+             COALESCE(SUM(balance), 0) AS balance,
+             COALESCE(SUM(CASE WHEN unit_price > 0 THEN invoice_amount / unit_price ELSE 0 END), 0) AS seat_months,
+             COUNT(*) FILTER (WHERE unit_price <= 0) AS unquantifiable
+      FROM partner_invoices
+      WHERE partner_id = $1 AND created_at >= $2::date
+        AND created_at < $3::date + INTERVAL '1 day'
+        AND (description LIKE $4 OR description LIKE $5 OR description LIKE $6)
+      GROUP BY 1
+    )sql", dto.getPartnerId(), dto.getStartDate(), dto.getEndDate(),
+        std::string(utils::partner_invoice::newPrefix) + "%",
+        std::string(utils::partner_invoice::renewedPrefix) + "%",
+        std::string(utils::partner_invoice::legacyPrefix) + "%");
 
-    auto result = co_await dbClient->execSqlCoro(sql, dto.getPartnerId(), dto.getStartDate(), dto.getEndDate());
+    struct Line { double amount = 0; double balance = 0; double months = 0; bool quantifiable = true; };
+    Line newLine, renewedLine;
+    for (const auto &row : result) {
+      const auto category = row["category"].as<std::string>();
+      if (category == "legacy") {
+        gnp::dto::BaseApiResponse errorResponse;
+        errorResponse.success = false;
+        errorResponse.message = "Combined legacy subscription invoices require reconciliation before this report can be split.";
+        errorResponse.error["code"] = constants::ERR_VALIDATION;
+        co_return errorResponse;
+      }
+      auto &line = category == "new" ? newLine : renewedLine;
+      line.amount = row["amount"].as<double>();
+      line.balance = row["balance"].as<double>();
+      line.months = row["seat_months"].as<double>();
+      line.quantifiable = row["unquantifiable"].as<long long>() == 0;
+    }
 
     gnp::dto::BaseApiResponse response;
     response.success = true;
     response.message = "Invoice generation report retrieved successfully";
-
     Json::Value invoiceData;
-
     invoiceData["invoiceNo"] = invoiceNo;
     invoiceData["date"] = trantor::Date::now().toCustomFormattedString("%d/%m/%Y");
     invoiceData["dueDate"] = trantor::Date::now().after(14 * 24 * 3600).toCustomFormattedString("%d/%m/%Y");
-
-    // Billed-to information (§2.3 Endpoint 1.3 payload contract)
     invoiceData["partnerId"] = dto.getPartnerId();
     invoiceData["partnerName"] = partner.getValueOfName();
     invoiceData["partnerAddress"] = "";
     invoiceData["partnerEmail"] = partner.getValueOfBillingEmail();
     invoiceData["billedTo"]["name"] = partner.getValueOfName();
     invoiceData["billedTo"]["email"] = partner.getValueOfBillingEmail();
-
     invoiceData["billingPeriod"] = dto.getStartDate() + " - " + dto.getEndDate();
 
-    // Extract aggregated values
-    double totalInvoiceAmount = result[0]["total_invoice_amount"].isNull() ? 0.0 : result[0]["total_invoice_amount"].as<double>();
-    double totalBalance = result[0]["total_balance"].isNull() ? 0.0 : result[0]["total_balance"].as<double>();
-
-    // Parse the contracted per-seat rate used to derive line quantities.
-    double unitPrice = 0.0;
-    try {
-      unitPrice = std::stod(partner.getValueOfCostPerHead());
-    } catch (...) {
-      unitPrice = 0.0;
-    }
-
-    // Seat count for the lead line item.
-    auto seatResult = co_await dbClient->execSqlCoro(
-        "SELECT COUNT(*) AS seats FROM users "
-        "WHERE partner_id = $1 AND is_active = TRUE",
-        dto.getPartnerId());
-    double seatCount = seatResult[0]["seats"].isNull()
-                           ? 0.0
-                           : (double)seatResult[0]["seats"].as<long long>();
-
     Json::Value items = Json::arrayValue;
-
-    if (totalInvoiceAmount == 0) {
-      Json::Value emptyItem;
-      emptyItem["description"] = "No invoices found for this period";
-      emptyItem["details"] = "Adjust the billing window and try again";
-      emptyItem["quantity"] = 0;
-      emptyItem["unitPrice"] = 0;
-      emptyItem["amount"] = 0.0;
-      items.append(emptyItem);
-    } else {
-      Json::Value seatsItem;
-      seatsItem["description"] =
-          "Corporate Digital Newsstand Seats — " + partner.getValueOfName();
-      seatsItem["details"] = std::to_string((long long)seatCount) +
-                             " active employee seats × contracted enterprise rate";
-      seatsItem["quantity"] = seatCount;
-      seatsItem["unitPrice"] = unitPrice;
-      seatsItem["amount"] = totalInvoiceAmount;
-      items.append(seatsItem);
-    }
-
+    const auto addLine = [&items](const char *description, const Line &line) {
+      Json::Value item;
+      item["description"] = description;
+      item["details"] = line.quantifiable ? "Billed seat-months (weighted average rate)"
+                                           : "Seat-months unavailable for zero-priced invoices";
+      item["quantity"] = line.quantifiable ? Json::Value(line.months) : Json::Value(Json::nullValue);
+      item["unitPrice"] = line.quantifiable ? Json::Value(line.months > 0 ? line.amount / line.months : 0.0)
+                                            : Json::Value(Json::nullValue);
+      item["amount"] = line.amount;
+      items.append(item);
+    };
+    addLine("New subscriptions", newLine);
+    addLine("Renewed subscriptions", renewedLine);
     invoiceData["items"] = items;
 
-    // ---- Ghana statutory tax formula ----------------------------------
-    // totalDue = subtotal + vat(15%) + getflNhil(5%) - discount
-    const double subtotal = totalInvoiceAmount;
-    const double vat = subtotal * 0.15;
-    const double getflNhil = subtotal * 0.05;
-    const double discount = subtotal * 0.05;
-    const double totalDue = subtotal + vat + getflNhil - discount;
-
-    invoiceData["subtotal"] = subtotal;
-    invoiceData["vat"] = vat;
-    invoiceData["getflNhil"] = getflNhil;
-    invoiceData["discount"] = discount;
-    invoiceData["totalDue"] = totalDue;
-    invoiceData["totalBalance"] = totalBalance;
-    invoiceData["outstandingBalance"] = totalInvoiceAmount - totalBalance;
+    const auto subtotalPesewas = utils::partner_invoice::toPesewas(newLine.amount) +
+                                 utils::partner_invoice::toPesewas(renewedLine.amount);
+    const auto totalBalancePesewas = utils::partner_invoice::toPesewas(newLine.balance) +
+                                     utils::partner_invoice::toPesewas(renewedLine.balance);
+    const auto totals = utils::partner_invoice::calculate(subtotalPesewas);
+    const auto currency = utils::partner_invoice::toCurrency;
+    invoiceData["subtotal"] = currency(totals.subtotal);
+    invoiceData["vat"] = currency(totals.vat);
+    invoiceData["getflNhil"] = currency(totals.getflNhil);
+    invoiceData["discount"] = currency(totals.discount);
+    invoiceData["totalDue"] = currency(totals.totalDue);
+    invoiceData["taxPolicy"]["vatPercent"] = 15;
+    invoiceData["taxPolicy"]["getflNhilPercent"] = 5;
+    invoiceData["taxPolicy"]["discountPercent"] = 5;
+    invoiceData["taxPolicy"]["note"] = "Tax and discount are a report preview; stored invoices and balances are pre-tax.";
+    // Stored invoices and payments are pre-tax. Do not claim that tax on the
+    // preview has already been billed or is part of the receivable balance.
+    invoiceData["totalBalance"] = currency(totalBalancePesewas);
+    invoiceData["outstandingBalance"] = currency(totalBalancePesewas);
 
     // ---- Billing charts (§2.3 Endpoint 1.3 `charts`) ----------------------
     Json::Value charts = Json::arrayValue;
@@ -3709,7 +3709,7 @@ drogon::Task<::gnp::dto::BaseApiResponse> CommercialPartnerService::getPartnerAn
           "       COALESCE(SUM(pi.invoice_amount::NUMERIC), 0) AS subtotal "
           "FROM partner_invoices pi "
           "LEFT JOIN commercial_partners cp ON cp.id = pi.partner_id "
-          "WHERE pi.created_at >= $1 AND pi.created_at <= $2 "
+          "WHERE pi.created_at >= $1::date AND pi.created_at < $2::date + INTERVAL '1 day' "
           "GROUP BY 1 ORDER BY subtotal DESC LIMIT 5",
           dto.getStartDate(), dto.getEndDate());
 
@@ -3721,7 +3721,8 @@ drogon::Task<::gnp::dto::BaseApiResponse> CommercialPartnerService::getPartnerAn
         labels.append(row["partner_name"].isNull() ? "" : row["partner_name"].as<std::string>());
         double sub = row["subtotal"].isNull() ? 0.0 : row["subtotal"].as<double>();
         netSeries.append(sub);
-        taxSeries.append(sub * 0.20);
+        const auto chartTotals = utils::partner_invoice::calculate(utils::partner_invoice::toPesewas(sub));
+        taxSeries.append(utils::partner_invoice::toCurrency(chartTotals.vat + chartTotals.getflNhil));
       }
 
       Json::Value chart;
@@ -3755,7 +3756,7 @@ drogon::Task<::gnp::dto::BaseApiResponse> CommercialPartnerService::getPartnerAn
           "COALESCE(SUM(pi.balance::NUMERIC) FILTER (WHERE pi.status <> 'Paid' "
           "  AND pi.due_date < NOW() - INTERVAL '30 days'), 0) AS overdue_older "
           "FROM partner_invoices pi "
-          "WHERE pi.created_at >= $1 AND pi.created_at <= $2",
+          "WHERE pi.created_at >= $1::date AND pi.created_at < $2::date + INTERVAL '1 day'",
           dto.getStartDate(), dto.getEndDate());
 
       Json::Value itemsJson = Json::arrayValue;

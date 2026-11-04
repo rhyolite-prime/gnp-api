@@ -71,6 +71,14 @@ jobs:
       - name: Test UTF-8 model compatibility helper
         run: ./build/test/utf8_length_test
 
+      - name: Test partner invoice calculations
+        run: ./build/test/partner_invoice_calculation_test
+
+      - name: Test partner invoice aggregation queries
+        run: |
+          python3 -m pip install --user duckdb==1.4.4
+          python3 test/test_partner_invoice_sql.py -v
+
       # Step 6: List files in the build directory
       - name: List build directory files
         run: |

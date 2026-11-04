@@ -9,6 +9,8 @@
 
 #include "plugins/GnpServicePlugin.h"
 #include "utils/CronUtils.h"
+#include "utils/PartnerInvoiceCalculation.h"
+#include "dto/ReportDto.h"
 
 using namespace drogon::orm;
 using drogon_model::Gnp::PartnerInvoices;
@@ -388,113 +390,140 @@ PartnerInvoiceService::deleteInvoice(const std::string &id) {
 drogon::Task<dto::BaseApiResponse>
 PartnerInvoiceService::generatePartnerInvoices(const std::string &invoiceDate) {
   auto dbClient = drogon::app().getDbClient();
-  CoroMapper<drogon_model::Gnp::UserSubscriptions> subMp(dbClient);
   CoroMapper<drogon_model::Gnp::CommercialPartners> partnerMp(dbClient);
 
   try {
-    // 1. Get all subscribers onboarded on invoiceDate
-    Criteria criteria(drogon_model::Gnp::UserSubscriptions::Cols::_start_date,
-                      CompareOperator::EQ, invoiceDate);
-    auto subscriptions = co_await subMp.findBy(criteria);
-
-    if (subscriptions.empty()) {
+    // Quartz supplies a timestamp, while the public endpoint may supply a date.
+    int year, month, day;
+    if (!dto::ReportFilterDto::parseYmd(invoiceDate, year, month, day) ||
+        dto::ReportFilterDto::civilFromDays(
+            dto::ReportFilterDto::daysFromCivil(year, month, day)) != invoiceDate.substr(0, 10)) {
       dto::BaseApiResponse response;
-      response.success = true;
-      response.message = "No subscribers onboarded for the given invoice date.";
+      response.success = false;
+      response.message = "A valid invoice date (YYYY-MM-DD) is required";
+      response.error["code"] = constants::ERR_VALIDATION;
       co_return response;
     }
+    const std::string date = invoiceDate.substr(0, 10);
 
-    // 2. Group subscriptions by partner_id
-    std::map<std::string, std::vector<drogon_model::Gnp::UserSubscriptions>>
-        partnerSubs;
-    for (const auto &sub : subscriptions) {
-      partnerSubs[sub.getValueOfPartnerId()].push_back(sub);
+    // A history row with N/A is created for a first subscription. The latest
+    // matching history with a real previous cycle identifies a renewal. Use
+    // both user and identifier (identifiers alone are not globally unique).
+    // Missing history is ambiguous; it must not be silently billed as new.
+    const auto subscriptions = co_await dbClient->execSqlCoro(R"sql(
+      SELECT s.partner_id,
+             (EXTRACT(EPOCH FROM (s.end_date - s.start_date)) * 1000000)::bigint AS duration_micros,
+             COALESCE(LOWER(TRIM(h.past_billing_cycle)) NOT IN ('n/a', ''), FALSE) AS renewed,
+             h.past_billing_cycle IS NULL AS classification_unknown
+      FROM user_subscriptions s
+      LEFT JOIN LATERAL (
+        SELECT r.past_billing_cycle
+        FROM subscription_renewal_history r
+        WHERE r.user_id = s.user_id
+          AND r.subscription_identifier = s.subscription_identifier
+          AND (r.partner_id IS NULL OR r.partner_id = s.partner_id)
+          AND LOWER(r.transaction_status) = 'successful'
+        ORDER BY r.created_at DESC, r.id DESC
+        LIMIT 1
+      ) h ON TRUE
+      WHERE s.partner_id IS NOT NULL
+        AND s.start_date >= $1::date AND s.start_date < $1::date + INTERVAL '1 day'
+    )sql", date);
+
+    struct Amounts { long long newMonths = 0; long long renewedMonths = 0; bool unknown = false; };
+    std::map<std::string, Amounts> partnerSubs;
+    for (const auto &row : subscriptions) {
+      auto &amounts = partnerSubs[row["partner_id"].as<std::string>()];
+      amounts.unknown |= row["classification_unknown"].as<bool>();
+      auto &months = row["renewed"].as<bool>() ? amounts.renewedMonths : amounts.newMonths;
+      months += utils::partner_invoice::durationMultiplier(row["duration_micros"].as<long long>());
     }
 
     int invoicesGenerated = 0;
-
-    // 3. Process each partner to compute the invoice
-    for (const auto &[partnerId, subs] : partnerSubs) {
-      // Retrieve partner to get cost_per_head, name, etc.
+    int legacyPartnersSkipped = 0;
+    int unclassifiedPartnersSkipped = 0;
+    for (const auto &[partnerId, amounts] : partnerSubs) {
+      if (amounts.unknown) {
+        ++unclassifiedPartnersSkipped;
+        continue;
+      }
       auto partner = co_await partnerMp.findByPrimaryKey(partnerId);
-
-      double costPerHead = 3.0;
-      if (!partner.getValueOfCostPerHead().empty()) {
-        costPerHead = std::stod(partner.getValueOfCostPerHead());
+      const double costPerHead = partner.getValueOfCostPerHead().empty()
+                                     ? 3.0 : std::stod(partner.getValueOfCostPerHead());
+      if (!std::isfinite(costPerHead) || costPerHead < 0) {
+        throw std::runtime_error("Invalid cost per head for partner " + partnerId);
       }
+      const auto unitPesewas = utils::partner_invoice::toPesewas(costPerHead);
+      const auto invoiceDateObj = trantor::Date::fromDbStringLocal(date + " 00:00:00");
+      const std::string email = partner.getValueOfBillingEmail().empty()
+                                    ? partner.getValueOfContactEmail() : partner.getValueOfBillingEmail();
 
-      double totalInvoiceAmount = 0.0;
-
-      for (const auto &sub : subs) {
-        // Compute duration multiplier
-        auto startEpoch = sub.getValueOfStartDate().microSecondsSinceEpoch();
-        auto endEpoch = sub.getValueOfEndDate().microSecondsSinceEpoch();
-        long long diffMicros = endEpoch - startEpoch;
-
-        if (diffMicros < 0)
-          diffMicros = 0;
-        long long diffDays = diffMicros / (1000000LL * 3600 * 24);
-
-        int multiplier = 1;
-        if (diffDays <= 31) {
-          multiplier = 1;
-        } else if (diffDays <= 60) {
-          multiplier = 2;
-        } else if (diffDays <= 90) {
-          multiplier = 3;
-        } else {
-          multiplier = (diffDays + 29) / 30;
+      // A partner/day is atomic and retry-safe, including concurrent requests.
+      auto tx = co_await dbClient->newTransactionCoro();
+      try {
+        co_await tx->execSqlCoro("SELECT pg_advisory_xact_lock(hashtextextended($1::text, 0))",
+                                 "partner-invoice:" + partnerId + ":" + date);
+        auto existing = co_await tx->execSqlCoro(
+            "SELECT description FROM partner_invoices WHERE partner_id = $1 "
+            "AND (description = $2 OR description = $3 OR description LIKE $4)", partnerId,
+            utils::partner_invoice::description(false, date),
+            utils::partner_invoice::description(true, date),
+            std::string(utils::partner_invoice::legacyPrefix) + date + "%");
+        bool hasNew = false, hasRenewed = false, hasLegacy = false;
+        for (const auto &row : existing) {
+          const auto desc = row["description"].as<std::string>();
+          hasNew |= desc == utils::partner_invoice::description(false, date);
+          hasRenewed |= desc == utils::partner_invoice::description(true, date);
+          hasLegacy |= desc.rfind(std::string(utils::partner_invoice::legacyPrefix) + date, 0) == 0;
         }
-
-        totalInvoiceAmount += (costPerHead * multiplier);
+        if (hasLegacy) {
+          // A combined historical invoice cannot be split reliably. Do not
+          // silently double-bill it; reconcile it manually before regeneration.
+          ++legacyPartnersSkipped;
+        } else {
+          CoroMapper<PartnerInvoices> invoiceMapper(tx);
+          for (bool renewed : {false, true}) {
+            if (renewed ? hasRenewed : hasNew) continue;
+            const auto months = renewed ? amounts.renewedMonths : amounts.newMonths;
+            const auto amount = utils::partner_invoice::toCurrency(unitPesewas * months);
+            PartnerInvoices invoice;
+            invoice.setId(utils::IdGeneratorUtils::generateGuid());
+            invoice.setPartnerId(partnerId);
+            invoice.setPartnerName(partner.getValueOfName());
+            invoice.setPartnerEmail(email);
+            invoice.setBillingCycle("Daily");
+            invoice.setInvoiceNumber("GNP-INV-" + utils::IdGeneratorUtils::generateAlphanumericId());
+            invoice.setDescription(utils::partner_invoice::description(renewed, date));
+            char buf[64];
+            std::snprintf(buf, sizeof(buf), "%.2f", utils::partner_invoice::toCurrency(unitPesewas));
+            invoice.setUnitPrice(buf);
+            std::snprintf(buf, sizeof(buf), "%.2f", amount);
+            invoice.setInvoiceAmount(buf);
+            invoice.setBalance(buf);
+            invoice.setCurrency("GHS");
+            invoice.setStatus("Pending");
+            invoice.setCreatedAt(invoiceDateObj);
+            invoice.setDueDate(invoiceDateObj.after(30.0 * 24.0 * 3600.0));
+            co_await invoiceMapper.insert(invoice);
+            ++invoicesGenerated;
+          }
+        }
+      } catch (...) {
+        tx->rollback();
+        throw;
       }
-
-      // Prepare the invoice dto
-      dto::PartnerInvoiceDto invDto;
-      invDto.setPartnerId(partnerId);
-      invDto.setPartnerName(partner.getValueOfName());
-
-      std::string partnerEmail = partner.getValueOfBillingEmail();
-
-      if (partnerEmail.empty()) {
-        partnerEmail = partner.getValueOfContactEmail();
-      }
-
-      invDto.setPartnerEmail(partnerEmail);
-
-      invDto.setBillingCycle("Daily"); // Or derive from subscriptions
-      invDto.setInvoiceNumber("GNP-INV-" + utils::IdGeneratorUtils::generateAlphanumericId());
-      invDto.setDescription("Invoice for new and renewed subscriptions as of " +
-                            invoiceDate);
-      invDto.setUnitPrice(costPerHead);
-      invDto.setInvoiceAmount(totalInvoiceAmount);
-      invDto.setBalance(totalInvoiceAmount);
-      invDto.setCurrency("GHS");
-      invDto.setStatus("Pending");
-
-
-      trantor::Date invoiceDateObj;
-      if (!invoiceDate.empty()) {
-        invoiceDateObj =
-            trantor::Date::fromDbStringLocal(invoiceDate + " 00:00:00");
-      } else {
-        invoiceDateObj = trantor::Date::now();
-      }
-      invDto.setInvoiceDate(invoiceDateObj);
-
-      invDto.setDueDate(invoiceDateObj.after(30.0 * 24.0 * 3600.0)); // 30 days due
-
-      auto createRes = co_await createInvoice(invDto);
-      if (createRes.success) {
-        invoicesGenerated++;
-      }
+      tx.reset(); // Drogon commits the transaction on destruction.
     }
 
     dto::BaseApiResponse response;
     response.success = true;
-    response.message = "Successfully generated " +
-                       std::to_string(invoicesGenerated) +
+    response.message = "Successfully generated " + std::to_string(invoicesGenerated) +
                        " invoices for partner subscribers.";
+    response.result["invoicesGenerated"] = invoicesGenerated;
+    response.result["legacyPartnersSkipped"] = legacyPartnersSkipped;
+    response.result["unclassifiedPartnersSkipped"] = unclassifiedPartnersSkipped;
+    if (legacyPartnersSkipped || unclassifiedPartnersSkipped)
+      response.message += " Some partners were skipped and require reconciliation.";
 
     //schedule periodic invoice generation for the next day at 23:59:59
 
