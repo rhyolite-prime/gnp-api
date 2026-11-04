@@ -1768,8 +1768,11 @@ drogon::Task<HttpResponsePtr> AdminController::getAffiliateProgramSettings(HttpR
 
   auto apiResp = co_await affiliateService.getAffiliateSettings();
   auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
-  resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
-  co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
+  resp->setStatusCode(apiResp.success ? k200OK :
+      (apiResp.error.isMember("code") &&
+       apiResp.error["code"].asInt() == gnp::constants::ERR_VALIDATION
+           ? k400BadRequest : k500InternalServerError));
+  co_return resp;
 
 }
 
@@ -1797,8 +1800,11 @@ drogon::Task<HttpResponsePtr> AdminController::createAffiliateProgramSettings(Ht
 
   auto apiResp = co_await affiliateService.createAffiliateSettings(dto);
   auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
-  resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
-  co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
+  resp->setStatusCode(apiResp.success ? k200OK :
+      (apiResp.error.isMember("code") &&
+       apiResp.error["code"].asInt() == gnp::constants::ERR_VALIDATION
+           ? k400BadRequest : k500InternalServerError));
+  co_return resp;
 
 }
 
