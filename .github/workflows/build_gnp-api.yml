@@ -8,6 +8,9 @@ on:
 
 jobs:
   build:
+    # Must stay on ubuntu-22.04: the deployment server runs Ubuntu 22.X.
+    # The GCC 13 toolchain below comes from the ubuntu-toolchain-r PPA on
+    # this same 22.04 runner, so the artifact remains deployable there.
     runs-on: ubuntu-22.04
 
     steps:
@@ -22,9 +25,13 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y cmake gcc-12 g++-12 libjsoncpp-dev uuid-dev openssl libssl-dev zlib1g-dev
-          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100
-          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 100
+          # GCC 12 ICEs on large C++20 coroutines (drogon::Task) in
+          # services/rag/RagManager.cc (build_special_member_call during
+          # morph_fn_to_coro). Use GCC 13 from the toolchain PPA instead.
+          sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+          sudo apt install -y cmake gcc-13 g++-13 libjsoncpp-dev uuid-dev openssl libssl-dev zlib1g-dev
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
           sudo apt install postgresql libhiredis-dev  doxygen graphviz dia
           sudo apt-get install -y libmupdf-dev libfreetype-dev libharfbuzz-dev libjbig2dec0-dev libgumbo-dev libmujs-dev libopenjp2-7-dev libjpeg-dev
           
