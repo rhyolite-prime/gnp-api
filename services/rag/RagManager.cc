@@ -1157,243 +1157,40 @@ void setValidationError(dto::BaseApiResponse &response,
 
 } // namespace
 
-drogon::Task<dto::BaseApiResponse> RagManager::answerArchiveQuestion(
-    const dto::RagQueryDto &request,
-    const std::string &userId) {
-  dto::BaseApiResponse response;
-  const std::string question = trim(request.getQuestion());
-  const int64_t ragStartedAt = trantor::Date::now().microSecondsSinceEpoch();
+// Keep the coroutine frame for response formatting and generation separate from
+// the retrieval coroutine. GCC 11 (Ubuntu 22.04) ICEs while lowering the single
+// coroutine containing both sets of awaiters and nontrivial local objects.
+struct AnswerContext {
+  std::string question, userId, dateFrom, dateTo, publicationDate;
+  std::string publicationId, publicationName, baseUrl, chatPath, model;
+  int publicationYear, topK;
+  int64_t ragStartedAt;
+  bool vectorUsed, chunkFtsUsed, expansionRequested;
+  bool useVectorSearch, useReranking, isGenerationEnabled;
+};
 
-  if (request.hasInvalidInput()) {
-    setValidationError(response, "One or more request fields have an invalid JSON type.");
-    co_return response;
-  }
-  if (question.empty()) {
-    setValidationError(response, "A research question is required.");
-    co_return response;
-  }
-  if (question.size() > kMaxQuestionLength) {
-    setValidationError(response, "The question must be no longer than 2000 characters.");
-    co_return response;
-  }
-
-  const std::string dateFrom = trim(request.getDateFrom());
-  const std::string dateTo = trim(request.getDateTo());
-  const std::string publicationDate = trim(request.getPublicationDate());
-  const std::string publicationId = trim(request.getPublicationId());
-  const std::string publicationName = trim(request.getPublicationName());
-  const int publicationYear = request.getPublicationYear();
-
-  if ((!dateFrom.empty() && !isValidIsoDate(dateFrom)) ||
-      (!dateTo.empty() && !isValidIsoDate(dateTo)) ||
-      (!publicationDate.empty() && !isValidIsoDate(publicationDate))) {
-    setValidationError(response,
-        "dateFrom, dateTo and publicationDate must be valid dates in YYYY-MM-DD format.");
-    co_return response;
-  }
-  if (!dateFrom.empty() && !dateTo.empty() && dateFrom > dateTo) {
-    setValidationError(response, "dateFrom must be on or before dateTo.");
-    co_return response;
-  }
-  if (publicationYear < 0 || publicationYear > 9999) {
-    setValidationError(response, "publicationYear must be between 1 and 9999, or 0 for no year filter.");
-    co_return response;
-  }
-  if (!publicationDate.empty() && publicationYear != 0) {
-    setValidationError(response, "Use publicationDate or publicationYear, not both.");
-    co_return response;
-  }
-  if (publicationId.size() > 128 || publicationName.size() > 200) {
-    setValidationError(response, "publicationId or publicationName is too long.");
-    co_return response;
-  }
-
-  std::string yearStart;
-  std::string yearEnd;
-  if (publicationYear != 0) {
-    yearStart = isoDateRangeStart(publicationYear);
-    yearEnd = isoDateRangeEnd(publicationYear);
-  }
-
-  const int topK = std::max(1, std::min(kMaxTopK,
-      request.getTopK() < 1 ? kDefaultTopK : request.getTopK()));
-  const int candidateLimit = std::min(60, std::max(20, topK * 5));
-  const std::string candidateLimitArg = std::to_string(candidateLimit);
-
-  Json::Value customConfig = drogon::app().getCustomConfig();
-  const Json::Value ragConfig = customConfig.isObject() &&
-          customConfig.isMember("ArchiveRag")
-      ? customConfig["ArchiveRag"] : Json::Value(Json::objectValue);
-  const bool isGenerationEnabled = generationEnabled(ragConfig);
-  const bool useVectorSearch = vectorSearchEnabled(ragConfig);
-  const bool useReranking = rerankingEnabled(ragConfig);
-  std::string baseUrl = envOrConfig("GNP_RAG_BASE_URL", ragConfig, "BaseUrl");
-  std::string chatPath = envOrConfig("GNP_RAG_CHAT_PATH", ragConfig, "ChatPath");
-  std::string model = envOrConfig("GNP_RAG_MODEL", ragConfig, "Model");
-  std::string embeddingPath = envOrConfig(
-      "GNP_RAG_EMBEDDING_PATH", ragConfig, "EmbeddingPath");
-  std::string embeddingModel = envOrConfig(
-      "GNP_RAG_EMBEDDING_MODEL", ragConfig, "EmbeddingModel");
-  if (baseUrl.empty()) baseUrl = "http://127.0.0.1:11434";
-  if (model.empty()) model = "llama3.2";
-  if (chatPath.empty()) chatPath = "/api/chat";
-  if (embeddingPath.empty()) embeddingPath = "/api/embed";
-  if (embeddingModel.empty()) embeddingModel = "nomic-embed-text";
-  while (baseUrl.size() > 1 && baseUrl.back() == '/') baseUrl.pop_back();
-  if (chatPath.front() != '/') chatPath.insert(0, "/");
-  if (embeddingPath.front() != '/') embeddingPath.insert(0, "/");
-
-  ArchiveSearchPlan searchPlan = makeFallbackSearchPlan(question);
-  const bool expansionRequested =
-      isGenerationEnabled && queryExpansionEnabled(ragConfig);
-  if (expansionRequested) {
-    searchPlan = co_await expandArchiveQuery(baseUrl, chatPath, model, question);
-  }
-
-  const std::string strictQuery = buildStrictTsQuery(searchPlan);
-  const std::string eventQuery = buildEventTsQuery(searchPlan);
-  const std::string broadQuery = makeOrTsQuery(question);
-  if (strictQuery.empty() && eventQuery.empty() && broadQuery.empty()) {
-    setValidationError(response,
-        "Include at least one searchable word or year in the question.");
-    co_return response;
-  }
-
-  auto dbClient = drogon::app().getDbClient();
-  std::map<std::string, RagSource> fused;
-  std::vector<RagSource> sources;
-  bool vectorUsed = false;
-  bool chunkFtsUsed = false;
-  const size_t stageThreshold = static_cast<size_t>(topK * 2);
-  try {
-    // Stage 1: require a detected entity and an event/action phrase. If the
-    // archive has too few matches, relax to event terms, then alternative and
-    // original-query lanes. RRF keeps the lanes' score scales comparable.
-    if (!strictQuery.empty()) {
-      const auto lane = co_await retrievePageFtsLane(
-          dbClient, strictQuery, publicationId, publicationName, dateFrom,
-          dateTo, publicationDate, yearStart, yearEnd, candidateLimitArg);
-      mergeRetrievalLane(fused, lane, 1.25);
-    }
-    if (fused.size() < stageThreshold && !eventQuery.empty() &&
-        eventQuery != strictQuery) {
-      const auto lane = co_await retrievePageFtsLane(
-          dbClient, eventQuery, publicationId, publicationName, dateFrom,
-          dateTo, publicationDate, yearStart, yearEnd, candidateLimitArg);
-      mergeRetrievalLane(fused, lane, 0.85);
-    }
-    if (fused.size() < stageThreshold) {
-      for (const auto &alternate : searchPlan.alternateQueries) {
-        const std::string alternateQuery = makeOrTsQuery(
-            std::vector<std::string>{alternate});
-        if (alternateQuery.empty()) continue;
-        const auto lane = co_await retrievePageFtsLane(
-            dbClient, alternateQuery, publicationId, publicationName, dateFrom,
-            dateTo, publicationDate, yearStart, yearEnd, candidateLimitArg);
-        mergeRetrievalLane(fused, lane, 0.60);
-        if (fused.size() >= stageThreshold) break;
-      }
-    }
-    if (fused.size() < stageThreshold && !broadQuery.empty()) {
-      const auto lane = co_await retrievePageFtsLane(
-          dbClient, broadQuery, publicationId, publicationName, dateFrom,
-          dateTo, publicationDate, yearStart, yearEnd, candidateLimitArg);
-      mergeRetrievalLane(fused, lane, 0.40);
-    }
-
-    if (useVectorSearch) {
-      const auto queryVectors = co_await callOllamaEmbeddings(
-          baseUrl, embeddingPath, embeddingModel,
-          std::vector<std::string>{question});
-      if (queryVectors.size() == 1) {
-        const std::string chunkQuery = !eventQuery.empty()
-            ? eventQuery : broadQuery;
-        if (!chunkQuery.empty()) {
-          try {
-            const auto chunkLane = co_await retrieveChunkFtsLane(
-                dbClient, chunkQuery, publicationId, publicationName, dateFrom,
-                dateTo, publicationDate, yearStart, yearEnd, embeddingModel,
-                candidateLimitArg);
-            if (!chunkLane.empty()) {
-              mergeRetrievalLane(fused, chunkLane, 0.90);
-              chunkFtsUsed = true;
-            }
-          } catch (const drogon::orm::DrogonDbException &e) {
-            LOG_WARN << "Archive RAG chunk FTS unavailable; using page FTS: "
-                     << e.base().what();
-          }
-        }
-
-        static const std::string vectorSql =
-            "WITH q AS (SELECT $1::vector AS embedding) "
-            "SELECT c.detail_id::text AS id, "
-            "c.detail_id::text || ':' || c.chunk_index::text AS chunk_id, "
-            "nd.newspaper_id::text AS newspaper_id, "
-            "nd.publication_id::text AS publication_id, "
-            "COALESCE(nd.publication_name, '') AS publication_name, "
-            "COALESCE(nd.publication_date::text, '') AS publication_date, "
-            "COALESCE(nd.edition_number::text, '') AS edition_number, "
-            "COALESCE(nd.document_id::text, '') AS document_id, "
-            "COALESCE(nd.page_number, 0) AS page_number, "
-            "1.0 - (c.embedding <=> q.embedding) AS relevance, "
-            "LEFT(c.chunk_text, 1800) AS excerpt "
-            "FROM public.newspaper_archive_rag_chunks c "
-            "JOIN public.newspaper_details nd ON nd.id = c.detail_id CROSS JOIN q "
-            "WHERE c.embedding_model = $9 "
-            "AND ($2 = '' OR nd.publication_id::text = $2) "
-            "AND ($3 = '' OR lower(COALESCE(nd.publication_name, '')) LIKE "
-            "'%' || lower($3) || '%') "
-            "AND ($4 = '' OR nd.publication_date >= NULLIF($4, '')::date) "
-            "AND ($5 = '' OR nd.publication_date <= NULLIF($5, '')::date) "
-            "AND ($6 = '' OR nd.publication_date = NULLIF($6, '')::date) "
-            "AND ($7 = '' OR nd.publication_date >= NULLIF($7, '')::date) "
-            "AND ($8 = '' OR nd.publication_date <= NULLIF($8, '')::date) "
-            "ORDER BY c.embedding <=> q.embedding LIMIT $10";
-        try {
-          const auto vectorRows = co_await dbClient->execSqlCoro(
-              vectorSql, vectorLiteral(queryVectors.front()), publicationId,
-              publicationName, dateFrom, dateTo, publicationDate, yearStart,
-              yearEnd, embeddingModel, candidateLimitArg);
-          std::vector<RagSource> vectorLane;
-          vectorLane.reserve(vectorRows.size());
-          for (const auto &row : vectorRows) {
-            vectorLane.push_back(sourceFromRow(row));
-          }
-          if (!vectorLane.empty()) {
-            mergeRetrievalLane(fused, vectorLane, 1.0);
-            vectorUsed = true;
-          }
-        } catch (const drogon::orm::DrogonDbException &e) {
-          LOG_WARN << "Archive RAG vector retrieval unavailable; using FTS: "
-                   << e.base().what();
-        }
-      }
-    }
-
-    sources = sortedFusedSources(fused);
-    if (useReranking && isGenerationEnabled && sources.size() > 1) {
-      sources = co_await rerankArchiveSources(
-          baseUrl, chatPath, model, question, sources);
-    }
-    if (sources.size() > static_cast<size_t>(topK)) {
-      sources.resize(static_cast<size_t>(topK));
-    }
-  } catch (const drogon::orm::DrogonDbException &e) {
-    LOG_ERROR << "Archive RAG retrieval failed: " << e.base().what();
-    response.success = false;
-    response.message = "Failed to retrieve archive evidence.";
-    response.error["code"] = constants::ERR_DB_QUERY;
-    response.error["message"] = "The archive search could not be completed.";
-    co_return response;
-  } catch (const std::exception &e) {
-    LOG_ERROR << "Unexpected archive RAG retrieval error: " << e.what();
-    response.success = false;
-    response.message = "Failed to retrieve archive evidence.";
-    response.error["code"] = constants::ERR_DB_QUERY;
-    response.error["message"] = "The archive search could not be completed.";
-    co_return response;
-  }
-
+static drogon::Task<dto::BaseApiResponse> finishArchiveAnswer(
+    dto::BaseApiResponse response, const std::vector<RagSource> &sources,
+    const ArchiveSearchPlan &searchPlan, const AnswerContext &context) {
+  const auto &question = context.question;
+  const auto &userId = context.userId;
+  const auto &dateFrom = context.dateFrom;
+  const auto &dateTo = context.dateTo;
+  const auto &publicationDate = context.publicationDate;
+  const auto &publicationId = context.publicationId;
+  const auto &publicationName = context.publicationName;
+  const auto &baseUrl = context.baseUrl;
+  const auto &chatPath = context.chatPath;
+  const auto &model = context.model;
+  const auto publicationYear = context.publicationYear;
+  const auto topK = context.topK;
+  const auto ragStartedAt = context.ragStartedAt;
+  const auto vectorUsed = context.vectorUsed;
+  const auto chunkFtsUsed = context.chunkFtsUsed;
+  const auto expansionRequested = context.expansionRequested;
+  const auto useVectorSearch = context.useVectorSearch;
+  const auto useReranking = context.useReranking;
+  const auto isGenerationEnabled = context.isGenerationEnabled;
   response.success = true;
   response.message = sources.empty()
       ? "No archive pages matched the question."
@@ -1530,6 +1327,306 @@ drogon::Task<dto::BaseApiResponse> RagManager::answerArchiveQuestion(
            << " | evidence=" << sources.size()
            << " | generated=" << (generated ? "true" : "false");
   co_return response;
+}
+
+// Retrieval has its own coroutine frame so GCC 11 does not have to lower
+// retrieval and answer generation as one giant coroutine.
+struct RetrievalContext {
+  std::string question, publicationId, publicationName, dateFrom, dateTo;
+  std::string publicationDate, yearStart, yearEnd, candidateLimitArg;
+  std::string baseUrl, chatPath, model, embeddingPath, embeddingModel;
+  std::string strictQuery, eventQuery, broadQuery;
+  int topK;
+  bool useVectorSearch, useReranking, isGenerationEnabled;
+};
+struct RetrievalResult {
+  std::vector<RagSource> sources;
+  bool vectorUsed = false;
+  bool chunkFtsUsed = false;
+};
+
+static drogon::Task<RetrievalResult> retrieveArchiveSources(
+    const drogon::orm::DbClientPtr &dbClient,
+    const ArchiveSearchPlan &searchPlan, const RetrievalContext &context) {
+  const auto &question = context.question;
+  const auto &publicationId = context.publicationId;
+  const auto &publicationName = context.publicationName;
+  const auto &dateFrom = context.dateFrom;
+  const auto &dateTo = context.dateTo;
+  const auto &publicationDate = context.publicationDate;
+  const auto &yearStart = context.yearStart;
+  const auto &yearEnd = context.yearEnd;
+  const auto &candidateLimitArg = context.candidateLimitArg;
+  const auto &baseUrl = context.baseUrl;
+  const auto &chatPath = context.chatPath;
+  const auto &model = context.model;
+  const auto &embeddingPath = context.embeddingPath;
+  const auto &embeddingModel = context.embeddingModel;
+  const auto &strictQuery = context.strictQuery;
+  const auto &eventQuery = context.eventQuery;
+  const auto &broadQuery = context.broadQuery;
+  const auto topK = context.topK;
+  const auto useVectorSearch = context.useVectorSearch;
+  const auto useReranking = context.useReranking;
+  const auto isGenerationEnabled = context.isGenerationEnabled;
+  std::map<std::string, RagSource> fused;
+  RetrievalResult result;
+  auto &sources = result.sources;
+  auto &vectorUsed = result.vectorUsed;
+  auto &chunkFtsUsed = result.chunkFtsUsed;
+  const size_t stageThreshold = static_cast<size_t>(topK * 2);
+    // Stage 1: require a detected entity and an event/action phrase. If the
+    // archive has too few matches, relax to event terms, then alternative and
+    // original-query lanes. RRF keeps the lanes' score scales comparable.
+    if (!strictQuery.empty()) {
+      const auto lane = co_await retrievePageFtsLane(
+          dbClient, strictQuery, publicationId, publicationName, dateFrom,
+          dateTo, publicationDate, yearStart, yearEnd, candidateLimitArg);
+      mergeRetrievalLane(fused, lane, 1.25);
+    }
+    if (fused.size() < stageThreshold && !eventQuery.empty() &&
+        eventQuery != strictQuery) {
+      const auto lane = co_await retrievePageFtsLane(
+          dbClient, eventQuery, publicationId, publicationName, dateFrom,
+          dateTo, publicationDate, yearStart, yearEnd, candidateLimitArg);
+      mergeRetrievalLane(fused, lane, 0.85);
+    }
+    if (fused.size() < stageThreshold) {
+      for (const auto &alternate : searchPlan.alternateQueries) {
+        const std::string alternateQuery = makeOrTsQuery(
+            std::vector<std::string>{alternate});
+        if (alternateQuery.empty()) continue;
+        const auto lane = co_await retrievePageFtsLane(
+            dbClient, alternateQuery, publicationId, publicationName, dateFrom,
+            dateTo, publicationDate, yearStart, yearEnd, candidateLimitArg);
+        mergeRetrievalLane(fused, lane, 0.60);
+        if (fused.size() >= stageThreshold) break;
+      }
+    }
+    if (fused.size() < stageThreshold && !broadQuery.empty()) {
+      const auto lane = co_await retrievePageFtsLane(
+          dbClient, broadQuery, publicationId, publicationName, dateFrom,
+          dateTo, publicationDate, yearStart, yearEnd, candidateLimitArg);
+      mergeRetrievalLane(fused, lane, 0.40);
+    }
+
+    if (useVectorSearch) {
+      const auto queryVectors = co_await callOllamaEmbeddings(
+          baseUrl, embeddingPath, embeddingModel,
+          std::vector<std::string>{question});
+      if (queryVectors.size() == 1) {
+        const std::string chunkQuery = !eventQuery.empty()
+            ? eventQuery : broadQuery;
+        if (!chunkQuery.empty()) {
+          try {
+            const auto chunkLane = co_await retrieveChunkFtsLane(
+                dbClient, chunkQuery, publicationId, publicationName, dateFrom,
+                dateTo, publicationDate, yearStart, yearEnd, embeddingModel,
+                candidateLimitArg);
+            if (!chunkLane.empty()) {
+              mergeRetrievalLane(fused, chunkLane, 0.90);
+              chunkFtsUsed = true;
+            }
+          } catch (const drogon::orm::DrogonDbException &e) {
+            LOG_WARN << "Archive RAG chunk FTS unavailable; using page FTS: "
+                     << e.base().what();
+          }
+        }
+
+        static const std::string vectorSql =
+            "WITH q AS (SELECT $1::vector AS embedding) "
+            "SELECT c.detail_id::text AS id, "
+            "c.detail_id::text || ':' || c.chunk_index::text AS chunk_id, "
+            "nd.newspaper_id::text AS newspaper_id, "
+            "nd.publication_id::text AS publication_id, "
+            "COALESCE(nd.publication_name, '') AS publication_name, "
+            "COALESCE(nd.publication_date::text, '') AS publication_date, "
+            "COALESCE(nd.edition_number::text, '') AS edition_number, "
+            "COALESCE(nd.document_id::text, '') AS document_id, "
+            "COALESCE(nd.page_number, 0) AS page_number, "
+            "1.0 - (c.embedding <=> q.embedding) AS relevance, "
+            "LEFT(c.chunk_text, 1800) AS excerpt "
+            "FROM public.newspaper_archive_rag_chunks c "
+            "JOIN public.newspaper_details nd ON nd.id = c.detail_id CROSS JOIN q "
+            "WHERE c.embedding_model = $9 "
+            "AND ($2 = '' OR nd.publication_id::text = $2) "
+            "AND ($3 = '' OR lower(COALESCE(nd.publication_name, '')) LIKE "
+            "'%' || lower($3) || '%') "
+            "AND ($4 = '' OR nd.publication_date >= NULLIF($4, '')::date) "
+            "AND ($5 = '' OR nd.publication_date <= NULLIF($5, '')::date) "
+            "AND ($6 = '' OR nd.publication_date = NULLIF($6, '')::date) "
+            "AND ($7 = '' OR nd.publication_date >= NULLIF($7, '')::date) "
+            "AND ($8 = '' OR nd.publication_date <= NULLIF($8, '')::date) "
+            "ORDER BY c.embedding <=> q.embedding LIMIT $10";
+        try {
+          const auto vectorRows = co_await dbClient->execSqlCoro(
+              vectorSql, vectorLiteral(queryVectors.front()), publicationId,
+              publicationName, dateFrom, dateTo, publicationDate, yearStart,
+              yearEnd, embeddingModel, candidateLimitArg);
+          std::vector<RagSource> vectorLane;
+          vectorLane.reserve(vectorRows.size());
+          for (const auto &row : vectorRows) {
+            vectorLane.push_back(sourceFromRow(row));
+          }
+          if (!vectorLane.empty()) {
+            mergeRetrievalLane(fused, vectorLane, 1.0);
+            vectorUsed = true;
+          }
+        } catch (const drogon::orm::DrogonDbException &e) {
+          LOG_WARN << "Archive RAG vector retrieval unavailable; using FTS: "
+                   << e.base().what();
+        }
+      }
+    }
+
+    sources = sortedFusedSources(fused);
+    if (useReranking && isGenerationEnabled && sources.size() > 1) {
+      sources = co_await rerankArchiveSources(
+          baseUrl, chatPath, model, question, sources);
+    }
+    if (sources.size() > static_cast<size_t>(topK)) {
+      sources.resize(static_cast<size_t>(topK));
+    }
+  co_return result;
+}
+
+drogon::Task<dto::BaseApiResponse> RagManager::answerArchiveQuestion(
+    const dto::RagQueryDto &request,
+    const std::string &userId) {
+  dto::BaseApiResponse response;
+  const std::string question = trim(request.getQuestion());
+  const int64_t ragStartedAt = trantor::Date::now().microSecondsSinceEpoch();
+
+  if (request.hasInvalidInput()) {
+    setValidationError(response, "One or more request fields have an invalid JSON type.");
+    co_return response;
+  }
+  if (question.empty()) {
+    setValidationError(response, "A research question is required.");
+    co_return response;
+  }
+  if (question.size() > kMaxQuestionLength) {
+    setValidationError(response, "The question must be no longer than 2000 characters.");
+    co_return response;
+  }
+
+  const std::string dateFrom = trim(request.getDateFrom());
+  const std::string dateTo = trim(request.getDateTo());
+  const std::string publicationDate = trim(request.getPublicationDate());
+  const std::string publicationId = trim(request.getPublicationId());
+  const std::string publicationName = trim(request.getPublicationName());
+  const int publicationYear = request.getPublicationYear();
+
+  if ((!dateFrom.empty() && !isValidIsoDate(dateFrom)) ||
+      (!dateTo.empty() && !isValidIsoDate(dateTo)) ||
+      (!publicationDate.empty() && !isValidIsoDate(publicationDate))) {
+    setValidationError(response,
+        "dateFrom, dateTo and publicationDate must be valid dates in YYYY-MM-DD format.");
+    co_return response;
+  }
+  if (!dateFrom.empty() && !dateTo.empty() && dateFrom > dateTo) {
+    setValidationError(response, "dateFrom must be on or before dateTo.");
+    co_return response;
+  }
+  if (publicationYear < 0 || publicationYear > 9999) {
+    setValidationError(response, "publicationYear must be between 1 and 9999, or 0 for no year filter.");
+    co_return response;
+  }
+  if (!publicationDate.empty() && publicationYear != 0) {
+    setValidationError(response, "Use publicationDate or publicationYear, not both.");
+    co_return response;
+  }
+  if (publicationId.size() > 128 || publicationName.size() > 200) {
+    setValidationError(response, "publicationId or publicationName is too long.");
+    co_return response;
+  }
+
+  std::string yearStart;
+  std::string yearEnd;
+  if (publicationYear != 0) {
+    yearStart = isoDateRangeStart(publicationYear);
+    yearEnd = isoDateRangeEnd(publicationYear);
+  }
+
+  const int topK = std::max(1, std::min(kMaxTopK,
+      request.getTopK() < 1 ? kDefaultTopK : request.getTopK()));
+  const int candidateLimit = std::min(60, std::max(20, topK * 5));
+  const std::string candidateLimitArg = std::to_string(candidateLimit);
+
+  Json::Value customConfig = drogon::app().getCustomConfig();
+  const Json::Value ragConfig = customConfig.isObject() &&
+          customConfig.isMember("ArchiveRag")
+      ? customConfig["ArchiveRag"] : Json::Value(Json::objectValue);
+  const bool isGenerationEnabled = generationEnabled(ragConfig);
+  const bool useVectorSearch = vectorSearchEnabled(ragConfig);
+  const bool useReranking = rerankingEnabled(ragConfig);
+  std::string baseUrl = envOrConfig("GNP_RAG_BASE_URL", ragConfig, "BaseUrl");
+  std::string chatPath = envOrConfig("GNP_RAG_CHAT_PATH", ragConfig, "ChatPath");
+  std::string model = envOrConfig("GNP_RAG_MODEL", ragConfig, "Model");
+  std::string embeddingPath = envOrConfig(
+      "GNP_RAG_EMBEDDING_PATH", ragConfig, "EmbeddingPath");
+  std::string embeddingModel = envOrConfig(
+      "GNP_RAG_EMBEDDING_MODEL", ragConfig, "EmbeddingModel");
+  if (baseUrl.empty()) baseUrl = "http://127.0.0.1:11434";
+  if (model.empty()) model = "llama3.2";
+  if (chatPath.empty()) chatPath = "/api/chat";
+  if (embeddingPath.empty()) embeddingPath = "/api/embed";
+  if (embeddingModel.empty()) embeddingModel = "nomic-embed-text";
+  while (baseUrl.size() > 1 && baseUrl.back() == '/') baseUrl.pop_back();
+  if (chatPath.front() != '/') chatPath.insert(0, "/");
+  if (embeddingPath.front() != '/') embeddingPath.insert(0, "/");
+
+  ArchiveSearchPlan searchPlan = makeFallbackSearchPlan(question);
+  const bool expansionRequested =
+      isGenerationEnabled && queryExpansionEnabled(ragConfig);
+  if (expansionRequested) {
+    searchPlan = co_await expandArchiveQuery(baseUrl, chatPath, model, question);
+  }
+
+  const std::string strictQuery = buildStrictTsQuery(searchPlan);
+  const std::string eventQuery = buildEventTsQuery(searchPlan);
+  const std::string broadQuery = makeOrTsQuery(question);
+  if (strictQuery.empty() && eventQuery.empty() && broadQuery.empty()) {
+    setValidationError(response,
+        "Include at least one searchable word or year in the question.");
+    co_return response;
+  }
+
+  RetrievalResult retrieval;
+  try {
+    const RetrievalContext retrievalContext{
+        question, publicationId, publicationName, dateFrom, dateTo,
+        publicationDate, yearStart, yearEnd, candidateLimitArg,
+        baseUrl, chatPath, model, embeddingPath, embeddingModel,
+        strictQuery, eventQuery, broadQuery, topK,
+        useVectorSearch, useReranking, isGenerationEnabled};
+    auto dbClient = drogon::app().getDbClient();
+    retrieval = co_await retrieveArchiveSources(
+        dbClient, searchPlan, retrievalContext);
+  } catch (const drogon::orm::DrogonDbException &e) {
+    LOG_ERROR << "Archive RAG retrieval failed: " << e.base().what();
+    response.success = false;
+    response.message = "Failed to retrieve archive evidence.";
+    response.error["code"] = constants::ERR_DB_QUERY;
+    response.error["message"] = "The archive search could not be completed.";
+    co_return response;
+  } catch (const std::exception &e) {
+    LOG_ERROR << "Unexpected archive RAG retrieval error: " << e.what();
+    response.success = false;
+    response.message = "Failed to retrieve archive evidence.";
+    response.error["code"] = constants::ERR_DB_QUERY;
+    response.error["message"] = "The archive search could not be completed.";
+    co_return response;
+  }
+
+  const AnswerContext answerContext{
+      question, userId, dateFrom, dateTo, publicationDate,
+      publicationId, publicationName, baseUrl, chatPath, model,
+      publicationYear, topK, ragStartedAt, retrieval.vectorUsed,
+      retrieval.chunkFtsUsed, expansionRequested, useVectorSearch,
+      useReranking, isGenerationEnabled};
+  co_return co_await finishArchiveAnswer(
+      std::move(response), retrieval.sources, searchPlan, answerContext);
 }
 
 drogon::Task<dto::BaseApiResponse> RagManager::indexPendingArchiveBatch(
