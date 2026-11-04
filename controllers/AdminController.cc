@@ -965,6 +965,22 @@ Task<HttpResponsePtr> AdminController::getAllVideos(HttpRequestPtr req) {
 
 }
 
+
+drogon::Task<HttpResponsePtr> AdminController::getVideoDetails(HttpRequestPtr req, const std::string &videoId) {
+
+  auto plugin = drogon::app().getPlugin<gnp::plugins::GnpServicePlugin>();
+  auto &videoService = plugin->getVideoService();
+
+  auto apiResp = co_await videoService.getVideoDetails(videoId);
+
+  auto resp = HttpResponse::newHttpJsonResponse(apiResp.toJson());
+  resp->setStatusCode(apiResp.success ? k200OK : (apiResp.error.isMember("code") && apiResp.error["code"].asInt() == gnp::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
+  co_return HttpResponse::newHttpJsonResponse(apiResp.toJson());
+
+
+}
+
+
 Task<HttpResponsePtr> AdminController::createVideo(HttpRequestPtr req) {
 
   auto jsonBody = req->getJsonObject();
