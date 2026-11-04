@@ -8,6 +8,9 @@ on:
 
 jobs:
   build:
+    # Must stay on ubuntu-22.04: the deployment server runs Ubuntu 22.X.
+    # The GCC 13 toolchain below comes from the ubuntu-toolchain-r PPA on
+    # this same 22.04 runner, so the artifact remains deployable there.
     runs-on: ubuntu-22.04
 
     steps:
