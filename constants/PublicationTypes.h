@@ -9,6 +9,7 @@ namespace gnp::constants {
     enum PublicationTypes {
         Magazine = 0,
         News = 1,
+        Archives = 2,
     };
 
     enum DifficultyMultipliers {

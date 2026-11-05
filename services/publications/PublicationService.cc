@@ -26,7 +26,7 @@ drogon::Task<gnp::dto::BaseApiResponse> PublicationService::getAllPublications(i
   CoroMapper<drogon_model::Gnp::Publications> mp(dbClient);
 
   // 1. Build the search criteria
-  Criteria searchCriteria = Criteria(drogon_model::Gnp::Publications::Cols::_type, CompareOperator::EQ, static_cast<int>(constants::NON_STANDARD));
+  Criteria searchCriteria = Criteria(drogon_model::Gnp::Publications::Cols::_type, CompareOperator::EQ, static_cast<int>(constants::Archives));
 
   if (!query.empty()) {
     std::string likeQuery = "%" + query + "%";
