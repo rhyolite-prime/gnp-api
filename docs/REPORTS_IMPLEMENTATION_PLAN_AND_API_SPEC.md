@@ -513,12 +513,11 @@ interface PartnerQuotaSummary {
       },
       {
         "id": "invoice_collection_status",
-        "title": "Receivables Aging Breakdown",
+        "title": "New vs Renewed Subscription Invoices (GHS, pre-tax)",
         "type": "donut",
         "items": [
-          { "name": "Paid on Time", "value": 112008.5 },
-          { "name": "Current (Due < 14d)", "value": 36216.0 },
-          { "name": "Overdue (15–30d)", "value": 15904.75 }
+          { "name": "New subscriptions", "value": 30000.0 },
+          { "name": "Renewed subscriptions", "value": 21550.0 }
         ]
       }
     ]
