@@ -74,6 +74,9 @@ jobs:
       - name: Test partner invoice calculations
         run: ./build/test/partner_invoice_calculation_test
 
+      - name: Test partner invoice chart
+        run: ./build/test/partner_invoice_chart_test
+
       - name: Test partner invoice aggregation queries
         run: |
           python3 -m pip install --user duckdb==1.4.4

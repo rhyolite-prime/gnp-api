@@ -34,6 +34,11 @@ billed **seat-months**, not active users; the displayed unit price is the weight
 average across invoices. A zero-priced invoice makes the quantity and unit price
 unknown, because the invoice table does not store seat-months separately. The end
 of the reporting window is inclusive.
+The `invoice_collection_status` donut (ID retained for client compatibility)
+compares the two line items' pre-tax GHS amounts for the selected partner and
+window, not counts or seat-months. Both
+slices are returned even if their value is zero; the frontend should treat two
+zero values as an empty chart.
 
 The report uses VAT 15% and combined GETFund/NHIL 5%, each computed on the
 subtotal and rounded to the nearest pesewa. No discount is applied: `discount`
