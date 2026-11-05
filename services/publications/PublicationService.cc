@@ -4,6 +4,7 @@
 #include "PublicationService.h"
 #include "Publications.h"
 #include "constants/ErrorCodes.h"
+#include "constants/StatusTypes.h"
 #include <drogon/drogon.h>
 #include <drogon/orm/CoroMapper.h>
 #include <drogon/orm/Criteria.h>
@@ -12,6 +13,7 @@
 #include <string>
 
 #include <drogon/orm/Exception.h>
+#include "constants/PublicationTypes.h"
 
 using namespace drogon::orm;
 using namespace gnp::dto;
@@ -24,7 +26,8 @@ drogon::Task<gnp::dto::BaseApiResponse> PublicationService::getAllPublications(i
   CoroMapper<drogon_model::Gnp::Publications> mp(dbClient);
 
   // 1. Build the search criteria
-  Criteria searchCriteria;
+  Criteria searchCriteria = Criteria(drogon_model::Gnp::Publications::Cols::_type, CompareOperator::EQ, static_cast<int>(constants::NON_STANDARD));
+
   if (!query.empty()) {
     std::string likeQuery = "%" + query + "%";
     searchCriteria = Criteria(drogon_model::Gnp::Publications::Cols::_name, CompareOperator::Like, likeQuery) ||

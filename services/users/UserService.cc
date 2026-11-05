@@ -1229,8 +1229,7 @@ drogon::Task<dto::BaseApiResponse> UserService::createSubscriber(const dto::Subs
       auto &paymentService = plugin->getPaymentService();
       dto::CreatePaymentDto paymentDto;
       paymentDto.setUserId(user.getValueOfId());
-      paymentDto.setUserName(user.getValueOfFirstName() + " " +
-                             user.getValueOfLastName());
+      paymentDto.setUserName(user.getValueOfFirstName() + " " + user.getValueOfLastName());
       paymentDto.setUserEmail(user.getValueOfEmail());
       paymentDto.setPackageName(plan.getValueOfName());
       paymentDto.setAmountPaid(dto.getSubscriptionBillAmount());
@@ -1327,16 +1326,14 @@ drogon::Task<dto::BaseApiResponse> UserService::createSubscriber(const dto::Subs
       renewal.setSubscriptionIdentifier(
           newSub.getValueOfSubscriptionIdentifier());
       renewal.setUserId(user.getValueOfId());
-      renewal.setUserName(user.getValueOfFirstName() + " " +
-                          user.getValueOfLastName());
+      renewal.setUserName(user.getValueOfFirstName() + " " + user.getValueOfLastName());
       renewal.setEmail(user.getValueOfEmail());
       renewal.setSubscriptionPlanId(plan.getValueOfId());
       renewal.setSubscriptionPlanName(plan.getValueOfName());
       renewal.setPastBillingCycle("N/A");
       renewal.setCurrentBillingCycle(dto.getBillingCycle());
       renewal.setTransactionStatus("Successful");
-      renewal.setPaidBy(user.getValueOfFirstName() + " " +
-                        user.getValueOfLastName());
+      renewal.setPaidBy(user.getValueOfFirstName() + " " + user.getValueOfLastName());
       renewal.setAmountPaid(dto.getSubscriptionBillAmount());
       renewal.setCreatedAt(trantor::Date::now());
       co_await renewalMapper.insert(renewal);
@@ -1369,6 +1366,17 @@ drogon::Task<dto::BaseApiResponse> UserService::createSubscriber(const dto::Subs
       co_await emailService.sendEmailAsync(emailDto);
 
       LOG_INFO << "[createSubscriber] Welcome email sent to: " << email;
+
+      //send SMS also ...
+      auto &hubtelSmsApi = plugin->getHubtelSmsApi();
+
+      std::string messageContent =
+        "Congratulations! Your Graphic NewsPlus account has been created. "
+        "Visit https://new.graphicnewsplus.com and login with Username: " +
+        dto.getPhoneNumber() + " & Password: " + password;
+
+      co_await hubtelSmsApi.sendSms(dto.getPhoneNumber(), messageContent);
+      LOG_INFO << "[createSubscriber] Welcome SMS sent to: " << dto.getPhoneNumber();
     }
 
     // 10. Build success response
