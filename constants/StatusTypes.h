@@ -38,6 +38,11 @@ namespace gnp::constants {
         AUDIO = 3,
     };
 
+    enum PublicationTypes {
+        STANDARD = 1,
+        NON_STANDARD = 2,
+    };
+
 
 
 }

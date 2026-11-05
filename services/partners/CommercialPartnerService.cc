@@ -2437,8 +2437,8 @@ drogon::Task<::gnp::dto::BaseApiResponse> CommercialPartnerService::onboardSubsc
     LOG_INFO << "[onboardSubscriberAsync] STEP 4 — Loading partner record for "
                 "partnerId="
              << partnerId;
-    CoroMapper<drogon_model::Gnp::CommercialPartners> partnerMapper(dbClient);
-    drogon_model::Gnp::CommercialPartners partner;
+    CoroMapper<CommercialPartners> partnerMapper(dbClient);
+    CommercialPartners partner;
     try {
       partner = co_await partnerMapper.findByPrimaryKey(partnerId);
       LOG_INFO << "[onboardSubscriberAsync] STEP 4 — Partner found: name="
@@ -2836,7 +2836,7 @@ drogon::Task<::gnp::dto::BaseApiResponse> CommercialPartnerService::onboardSubsc
     // STEP 11: Create subscription record
     LOG_INFO << "[onboardSubscriberAsync] STEP 11 — Creating UserSubscription "
                 "record";
-    drogon_model::Gnp::UserSubscriptions newSub;
+    UserSubscriptions newSub;
     newSub.setUserId(newUserResult.getValueOfId());
     newSub.setPartnerId(apiKey.getValueOfPartnerId());
     newSub.setSubscriptionPlanId(plan.getValueOfId());
