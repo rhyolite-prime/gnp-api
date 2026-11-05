@@ -25,6 +25,7 @@
 #include "utils/IdGeneratorUtils.h"
 #include "utils/PasswordUtils.h"
 #include "utils/PartnerInvoiceCalculation.h"
+#include "utils/PartnerInvoiceChart.h"
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
@@ -3744,48 +3745,10 @@ drogon::Task<::gnp::dto::BaseApiResponse> CommercialPartnerService::getPartnerAn
       charts.append(chart);
     }
 
-    {
-      // invoice_collection_status — receivables aging breakdown
-      auto agingResult = co_await dbClient->execSqlCoro(
-          "SELECT "
-          "COALESCE(SUM(pi.balance::NUMERIC) FILTER (WHERE pi.status = 'Paid'), 0) AS paid_on_time, "
-          "COALESCE(SUM(pi.balance::NUMERIC) FILTER (WHERE pi.status <> 'Paid' "
-          "  AND pi.due_date >= NOW()), 0) AS current_due, "
-          "COALESCE(SUM(pi.balance::NUMERIC) FILTER (WHERE pi.status <> 'Paid' "
-          "  AND pi.due_date < NOW() AND pi.due_date >= NOW() - INTERVAL '30 days'), 0) AS overdue_30, "
-          "COALESCE(SUM(pi.balance::NUMERIC) FILTER (WHERE pi.status <> 'Paid' "
-          "  AND pi.due_date < NOW() - INTERVAL '30 days'), 0) AS overdue_older "
-          "FROM partner_invoices pi "
-          "WHERE pi.created_at >= $1::date AND pi.created_at < $2::date + INTERVAL '1 day'",
-          dto.getStartDate(), dto.getEndDate());
-
-      Json::Value itemsJson = Json::arrayValue;
-      auto addAging = [&itemsJson](const char *name, double value) {
-        Json::Value item;
-        item["name"] = name;
-        item["value"] = value;
-        itemsJson.append(item);
-      };
-      addAging("Paid on Time", agingResult[0]["paid_on_time"].isNull()
-                                  ? 0.0
-                                  : agingResult[0]["paid_on_time"].as<double>());
-      addAging("Current (Due < 14d)", agingResult[0]["current_due"].isNull()
-                                          ? 0.0
-                                          : agingResult[0]["current_due"].as<double>());
-      addAging("Overdue (15–30d)", agingResult[0]["overdue_30"].isNull()
-                                       ? 0.0
-                                       : agingResult[0]["overdue_30"].as<double>());
-      addAging("Overdue (30d+)", agingResult[0]["overdue_older"].isNull()
-                                     ? 0.0
-                                     : agingResult[0]["overdue_older"].as<double>());
-
-      Json::Value chart;
-      chart["id"] = "invoice_collection_status";
-      chart["title"] = "Receivables Aging Breakdown";
-      chart["type"] = "donut";
-      chart["items"] = itemsJson;
-      charts.append(chart);
-    }
+    // Use the same partner-scoped, inclusive-period amounts as the two
+    // invoice items. Both slices remain present even when there is no data.
+    charts.append(utils::partner_invoice::subscriptionInvoiceDonut(
+        newLine.amount, renewedLine.amount));
 
     invoiceData["charts"] = charts;
 
